@@ -1,5 +1,6 @@
 package com.epam.esm.config;
 
+import com.epam.esm.repository.impl.MySQLGiftCertificateRepository;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -11,20 +12,17 @@ import java.beans.PropertyVetoException;
 @Configuration
 @PropertySource("classpath:MySQLdb.properties")
 @ComponentScan(basePackages = "com.epam.esm")
-public class CoreConfig {
+public class TestConfig {
 
     @Bean
-    public DataSource dataSource(@Value("${db.driver.name}") String driverName,
-                                 @Value("${db.url}") String url,
-                                 @Value("${db.user}") String user,
-                                 @Value("${db.password}") String password,
-                                 @Value("${db.pool.size}") Integer poolSize) throws PropertyVetoException {
+    public DataSource dataSource(@Value("${db.driver.name}") String driverName) throws PropertyVetoException {
+        System.out.println(driverName);
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setDriverClass(driverName);
-        dataSource.setJdbcUrl(url);
-        dataSource.setUser(user);
-        dataSource.setPassword(password);
-        dataSource.setInitialPoolSize(poolSize);
+        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/gift_certificates");
+        dataSource.setUser("root");
+        dataSource.setPassword("root");
+        dataSource.setInitialPoolSize(10);
         return dataSource;
     }
 
@@ -32,4 +30,5 @@ public class CoreConfig {
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
+
 }
