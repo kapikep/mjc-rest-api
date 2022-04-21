@@ -4,24 +4,20 @@ import com.epam.esm.config.CoreConfig;
 import com.epam.esm.repository.GiftCertificateRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
-
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = CoreConfig.class)
 class MySQLGiftCertificateRepositoryTest {
-
-    private ApplicationContext applicationContext;
+    @Autowired
     private GiftCertificateRepository giftCertificateRepository;
-
-    @BeforeEach
-    public void init() {
-        this.applicationContext = new AnnotationConfigApplicationContext(CoreConfig.class);
-        System.out.println(Arrays.toString(applicationContext.getBeanDefinitionNames()));
-        System.out.println(applicationContext.getBean("jdbcTemplate", JdbcTemplate.class));
-        this.giftCertificateRepository = applicationContext.getBean(MySQLGiftCertificateRepository.class);
-    }
 
     @Test
     void readAll() {
