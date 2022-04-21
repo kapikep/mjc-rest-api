@@ -1,4 +1,4 @@
 package com.epam.esm.controller;
 
-public class Controller {
+public interface Controller {
 }
