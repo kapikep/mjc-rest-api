@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface GiftCertificateRepository {
     List<GiftCertificate> readAll();
+
+    GiftCertificate readGiftCertificate(int id);
 }

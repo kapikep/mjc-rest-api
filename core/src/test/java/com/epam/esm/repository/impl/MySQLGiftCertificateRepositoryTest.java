@@ -25,14 +25,12 @@ class MySQLGiftCertificateRepositoryTest {
 
     @Test
     void readAll() {
-        List<GiftCertificate> giftCertificates;
-        System.out.println(giftCertificateRepository);
-        giftCertificates = giftCertificateRepository.readAll();
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
         System.out.println(giftCertificates);
-        try {
-            System.out.println(Class.forName("org.mariadb.jdbc.Driver"));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    }
+
+    @Test
+    void readGiftCertificate() {
+        System.out.println(giftCertificateRepository.readGiftCertificate(2));
     }
 }

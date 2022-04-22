@@ -6,7 +6,6 @@ import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -22,9 +21,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     public List<GiftCertificate> readAll() {
         List<GiftCertificate> giftCertificates;
         giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate", new GiftCertificateMapper());
-
-        System.out.println("readAll");
         return giftCertificates;
+    }
 
+    @Override
+    public GiftCertificate readGiftCertificate(int id) {
+        GiftCertificate giftCertificate = jdbcTemplate.queryForObject("SELECT * FROM gift_certificate WHERE id=?", new GiftCertificateMapper(), id);
+        return giftCertificate;
     }
 }
