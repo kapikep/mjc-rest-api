@@ -24,7 +24,7 @@ public class CoreConfig {
         dataSource.setJdbcUrl(url);
         dataSource.setUser(user);
         dataSource.setPassword(password);
-        dataSource.setInitialPoolSize(poolSize);
+        dataSource.setMaxPoolSize(poolSize);
         return dataSource;
     }
 
