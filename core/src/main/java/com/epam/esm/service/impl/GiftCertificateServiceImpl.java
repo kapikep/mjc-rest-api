@@ -6,8 +6,10 @@ import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
+import com.epam.esm.service.validator.ServiceUtil;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -31,11 +33,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate readGiftCertificate(String idStr) throws ServiceException, ValidateException {
-        int id = Integer.parseInt(idStr);
+        int id = ServiceUtil.parseInt(idStr);
         GiftCertificate giftCertificate = null;
         try {
             giftCertificate = repository.readGiftCertificate(id);
         } catch (RepositoryException e) {
+            System.out.println("Service ->" + e);
             throw new ServiceException(e);
         }
         return giftCertificate;

@@ -4,6 +4,9 @@ public class ApiException {
     private String errorMessage;
     private String errorCode;
 
+    public ApiException() {
+    }
+
     public ApiException(String errorMessage, String errorCode) {
         this.errorMessage = errorMessage;
         this.errorCode = errorCode;

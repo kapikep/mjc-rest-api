@@ -1,14 +1,14 @@
 package com.epam.esm.controller.impl;
 
+import com.epam.esm.controller.exception.ApiException;
 import com.epam.esm.controller.interf.GiftCertificateController;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +27,8 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @GetMapping("/gift-certificate/{id}")
-    public GiftCertificate findGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
+    public GiftCertificate readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
             return service.readGiftCertificate(id);
     }
+
 }
