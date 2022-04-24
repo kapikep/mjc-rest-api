@@ -17,6 +17,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    public String testStr() {
+        return "TestServ";
+    }
+
+    @Override
     public List<GiftCertificate> readAll() {
         List<GiftCertificate> giftCertificates = repository.readAll();
         return giftCertificates;

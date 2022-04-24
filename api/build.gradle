@@ -19,6 +19,9 @@ dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
 
     testImplementation 'org.springframework:spring-test:5.3.19'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
