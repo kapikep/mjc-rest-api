@@ -39,7 +39,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate = repository.readGiftCertificate(id);
         } catch (RepositoryException e) {
             System.out.println("Service ->" + e);
-            throw new ServiceException(e);
+            throw new ServiceException(e.getMessage(), e);
         }
         return giftCertificate;
     }

@@ -36,7 +36,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             giftCertificate = jdbcTemplate.queryForObject("SELECT * FROM gift_certificate WHERE id=?", new GiftCertificateMapper(), id);
         }catch (DataAccessException e){
             System.out.println("Rep ->" + e);
-            throw new RepositoryException(e);
+            throw new RepositoryException(String.format("Requested resource not found (id = %d)", id), e);
         }
         return giftCertificate;
     }

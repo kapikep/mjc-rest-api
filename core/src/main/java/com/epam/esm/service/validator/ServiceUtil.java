@@ -20,7 +20,7 @@ public class ServiceUtil {
         if (str != null && Pattern.matches("\\d+", str)) {
             i = Integer.parseInt(str);
         } else {
-            throw new ValidateException("Incorrect parameter " + str);
+            throw new ValidateException(String.format("Incorrect parameter (%s)", str));
         }
         return i;
     }
@@ -30,7 +30,7 @@ public class ServiceUtil {
         if (str != null) {
             d = Double.parseDouble(str);
         } else {
-            throw new ValidateException("Incorrect parameter " + str);
+            throw new ValidateException(String.format("Incorrect parameter (%s)", str));
         }
         return d;
     }
