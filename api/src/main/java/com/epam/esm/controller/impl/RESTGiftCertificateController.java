@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 public class RESTGiftCertificateController implements GiftCertificateController {
     private final GiftCertificateService service;
 
@@ -18,7 +18,7 @@ public class RESTGiftCertificateController implements GiftCertificateController 
         this.service = service;
     }
 
-    @GetMapping("/giftCertificates")
+    @GetMapping("/gift")
     public List<GiftCertificate> readAll() {
         return service.readAll();
     }

@@ -1,4 +1,4 @@
 package com.epam.esm.controller;
 
-public interface Controller {
+public class DispatcherServlet {
 }
