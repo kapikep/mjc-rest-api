@@ -1,8 +1,10 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.repository.impl.MySQLGiftCertificateRepository;
+import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
+import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +19,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public String testStr() {
-        return "TestServ";
-    }
-
-    @Override
-    public List<GiftCertificate> readAll() {
-        List<GiftCertificate> giftCertificates = repository.readAll();
+    public List<GiftCertificate> readAll() throws ServiceException, ValidateException {
+        List<GiftCertificate> giftCertificates = null;
+        try {
+            giftCertificates = repository.readAll();
+        } catch (RepositoryException e) {
+            throw new ServiceException(e);
+        }
         return giftCertificates;
     }
 
     @Override
-    public GiftCertificate readGiftCertificate(String idStr) {
+    public GiftCertificate readGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = Integer.parseInt(idStr);
-        GiftCertificate giftCertificate = repository.readGiftCertificate(id);
+        GiftCertificate giftCertificate = null;
+        try {
+            giftCertificate = repository.readGiftCertificate(id);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e);
+        }
         return giftCertificate;
     }
 }

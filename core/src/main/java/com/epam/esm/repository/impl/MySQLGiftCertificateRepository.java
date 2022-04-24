@@ -1,11 +1,13 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.mapper.GiftCertificateMapper;
+import com.epam.esm.repository.exception.RepositoryException;
+import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -18,14 +20,16 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public List<GiftCertificate> readAll() {
+    public List<GiftCertificate> readAll() throws RepositoryException{
         List<GiftCertificate> giftCertificates;
-        giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate", new GiftCertificateMapper());
+
+            giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate", new GiftCertificateMapper());
+
         return giftCertificates;
     }
 
     @Override
-    public GiftCertificate readGiftCertificate(int id) {
+    public GiftCertificate readGiftCertificate(int id) throws RepositoryException {
         GiftCertificate giftCertificate = jdbcTemplate.queryForObject("SELECT * FROM gift_certificate WHERE id=?", new GiftCertificateMapper(), id);
         return giftCertificate;
     }

@@ -1,6 +1,8 @@
 package com.epam.esm.controller.impl;
 
 import com.epam.esm.config.CoreConfig;
+import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +20,7 @@ class RESTGiftCertificateControllerTest {
     private GiftCertificateService service;
 
     @Test
-    void readAll() {
+    void readAll() throws ValidateException, ServiceException {
         System.out.println("service -> " + service.readAll());
     }
 }

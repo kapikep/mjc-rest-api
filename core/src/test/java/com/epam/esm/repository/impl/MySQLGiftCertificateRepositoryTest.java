@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.config.CoreConfig;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +25,13 @@ class MySQLGiftCertificateRepositoryTest {
     private GiftCertificateRepository giftCertificateRepository;
 
     @Test
-    void readAll() {
+    void readAll() throws RepositoryException {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
         System.out.println(giftCertificates);
     }
 
     @Test
-    void readGiftCertificate() {
+    void readGiftCertificate() throws RepositoryException {
         System.out.println(giftCertificateRepository.readGiftCertificate(2));
     }
 }
