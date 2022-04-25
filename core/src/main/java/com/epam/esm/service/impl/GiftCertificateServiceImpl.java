@@ -9,7 +9,6 @@ import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.validator.ServiceUtil;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -21,12 +20,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> readAll() throws ServiceException, ValidateException {
-        List<GiftCertificate> giftCertificates = null;
+    public List<GiftCertificate> readAllGiftCertificates() throws ServiceException, ValidateException {
+        List<GiftCertificate> giftCertificates;
         try {
             giftCertificates = repository.readAll();
         } catch (RepositoryException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e.getMessage(), e);
         }
         return giftCertificates;
     }
@@ -34,13 +33,40 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate readGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
-        GiftCertificate giftCertificate = null;
+        GiftCertificate giftCertificate;
         try {
             giftCertificate = repository.readGiftCertificate(id);
         } catch (RepositoryException e) {
-            System.out.println("Service ->" + e);
             throw new ServiceException(e.getMessage(), e);
         }
         return giftCertificate;
+    }
+
+    @Override
+    public void createGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
+        try {
+            repository.createGiftCertificate(giftCertificate);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
+        try {
+            repository.updateGiftCertificate(giftCertificate);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException {
+        int id = ServiceUtil.parseInt(idStr);
+        try {
+            repository.deleteGiftCertificate(id);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 }

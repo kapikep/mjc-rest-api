@@ -10,7 +10,7 @@ import java.util.Objects;
 public class GiftCertificate implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int giftCertificateId;
+    private int id;
     private String name;
     private String description;
     private Double price;
@@ -24,9 +24,9 @@ public class GiftCertificate implements Serializable {
     public GiftCertificate() {
     }
 
-    public GiftCertificate(int giftCertificateId, String name, String description, Double price,
+    public GiftCertificate(int id, String name, String description, Double price,
                            Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-        this.giftCertificateId = giftCertificateId;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -35,9 +35,9 @@ public class GiftCertificate implements Serializable {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public GiftCertificate(int giftCertificateId, String name, String description, Double price,
+    public GiftCertificate(int id, String name, String description, Double price,
                            Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
-        this.giftCertificateId = giftCertificateId;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -47,12 +47,12 @@ public class GiftCertificate implements Serializable {
         this.tags = tags;
     }
 
-    public int getGiftCertificateId() {
-        return giftCertificateId;
+    public int getId() {
+        return id;
     }
 
-    public void setGiftCertificateId(int giftCertificateId) {
-        this.giftCertificateId = giftCertificateId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -116,18 +116,18 @@ public class GiftCertificate implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return giftCertificateId == that.giftCertificateId && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(giftCertificateId, name, description, price, duration, createDate, lastUpdateDate);
+        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
     }
 
     @Override
     public String toString() {
         return "GiftCertificate{" +
-                "giftCertificateId=" + giftCertificateId +
+                "giftCertificateId=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +

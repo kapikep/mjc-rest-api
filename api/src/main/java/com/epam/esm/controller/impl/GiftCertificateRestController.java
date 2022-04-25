@@ -1,13 +1,10 @@
 package com.epam.esm.controller.impl;
 
-import com.epam.esm.controller.exception.ApiException;
 import com.epam.esm.controller.interf.GiftCertificateController;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +19,8 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @GetMapping("/gift-certificates")
-    public List<GiftCertificate> readAll() throws ValidateException, ServiceException {
-        return service.readAll();
+    public List<GiftCertificate> readAllGiftCertificates() throws ValidateException, ServiceException {
+        return service.readAllGiftCertificates();
     }
 
     @GetMapping("/gift-certificate/{id}")
@@ -31,4 +28,9 @@ public class GiftCertificateRestController implements GiftCertificateController 
             return service.readGiftCertificate(id);
     }
 
+    @PostMapping("/gift-certificates")
+    public GiftCertificate createGiftCertificate (@RequestBody GiftCertificate giftCertificate) throws ValidateException, ServiceException {
+        service.createGiftCertificate(giftCertificate);
+        return giftCertificate;
+    }
 }

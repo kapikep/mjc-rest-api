@@ -10,12 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.xml.crypto.Data;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -33,5 +27,27 @@ class MySQLGiftCertificateRepositoryTest {
     @Test
     void readGiftCertificate() throws RepositoryException {
         System.out.println(giftCertificateRepository.readGiftCertificate(2));
+    }
+
+    @Test
+    void createGiftCertificate() throws RepositoryException {
+        GiftCertificate gs = new GiftCertificate();
+        gs.setId(4);
+        gs.setName("Боулинг для компании");
+        gs.setDescription("Игра в боулинг станет отличным вариантом активного отдыха для большой компании.");
+        gs.setPrice(45.0);
+        gs.setDuration(60);
+        //giftCertificateRepository.CreateGiftCertificate(gs);
+    }
+
+    @Test
+    void updateGiftCertificate() throws RepositoryException {
+        GiftCertificate gs = new GiftCertificate();
+        gs.setId(4);
+        gs.setName("Боулинг для компании");
+        gs.setDescription("Игра в боулинг станет отличным вариантом активного отдыха для большой компании.");
+        //gs.setPrice(45.0);
+        gs.setDuration(60);
+        //giftCertificateRepository.updateGiftCertificate(gs);
     }
 }

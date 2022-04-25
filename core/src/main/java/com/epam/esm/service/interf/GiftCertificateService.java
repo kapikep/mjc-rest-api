@@ -8,7 +8,13 @@ import java.util.List;
 
 public interface GiftCertificateService {
 
-    List<GiftCertificate> readAll() throws ServiceException, ValidateException;
+    List<GiftCertificate> readAllGiftCertificates() throws ServiceException, ValidateException;
 
     GiftCertificate readGiftCertificate(String id) throws ServiceException, ValidateException;
+
+    void createGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException;
+
+    void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException;;
+
+    void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;;
 }

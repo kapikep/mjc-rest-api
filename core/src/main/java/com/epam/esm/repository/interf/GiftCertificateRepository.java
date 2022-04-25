@@ -9,4 +9,10 @@ public interface GiftCertificateRepository {
     List<GiftCertificate> readAll() throws RepositoryException;
 
     GiftCertificate readGiftCertificate(int id) throws RepositoryException;
+
+    void createGiftCertificate(GiftCertificate giftCertificate)  throws RepositoryException;
+
+    void updateGiftCertificate(GiftCertificate giftCertificate)  throws RepositoryException;
+
+    void deleteGiftCertificate(int id)  throws RepositoryException;
 }

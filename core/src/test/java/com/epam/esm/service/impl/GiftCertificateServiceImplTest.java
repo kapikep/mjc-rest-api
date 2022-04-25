@@ -22,7 +22,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void readAll() throws ValidateException, ServiceException {
-        List<GiftCertificate>giftCertificates = giftCertificateService.readAll();
+        List<GiftCertificate>giftCertificates = giftCertificateService.readAllGiftCertificates();
         System.out.println("service ->" + giftCertificates);
     }
 
