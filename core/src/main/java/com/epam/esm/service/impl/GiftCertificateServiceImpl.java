@@ -6,6 +6,7 @@ import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
+import com.epam.esm.service.validator.GiftCertificateValidator;
 import com.epam.esm.service.validator.ServiceUtil;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void createGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
+        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
         try {
             repository.createGiftCertificate(giftCertificate);
         } catch (RepositoryException e) {
@@ -53,6 +55,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
+        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
         try {
             repository.updateGiftCertificate(giftCertificate);
         } catch (RepositoryException e) {
