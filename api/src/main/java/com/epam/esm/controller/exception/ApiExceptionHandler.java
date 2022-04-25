@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    //TODO 404 error
+
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
         String code;
