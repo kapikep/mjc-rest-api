@@ -89,7 +89,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             newGiftCertificate.setPrice(oldGiftCertificate.getPrice());
         }
         if (newGiftCertificate.getDuration() == null) {
-            newGiftCertificate.setPrice(oldGiftCertificate.getPrice());
+            newGiftCertificate.setDuration(oldGiftCertificate.getDuration());
         }
         if (newGiftCertificate.getCreateDate() == null) {
             newGiftCertificate.setCreateDate(oldGiftCertificate.getCreateDate());
