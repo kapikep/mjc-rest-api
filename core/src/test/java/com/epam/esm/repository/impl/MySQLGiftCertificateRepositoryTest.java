@@ -21,7 +21,7 @@ class MySQLGiftCertificateRepositoryTest {
     @Test
     void readAll() throws RepositoryException {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
-        System.out.println(giftCertificates);
+        giftCertificates.forEach(System.out::println);
     }
 
     @Test

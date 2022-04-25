@@ -2,10 +2,7 @@ package com.epam.esm.config;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -14,7 +11,7 @@ import java.beans.PropertyVetoException;
 @Configuration
 @PropertySource("classpath:MySQLTestDb.properties")
 @ComponentScan(basePackages = "com.epam.esm")
-//@Profile("test")
+@Profile("test")
 public class TestConfig {
 
     @Bean
