@@ -23,7 +23,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
         return service.readAllGiftCertificates();
     }
 
-    @GetMapping("/gift-certificate/{id}")
+    @GetMapping("/gift-certificates/{id}")
     public GiftCertificate readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
             return service.readGiftCertificate(id);
     }
@@ -38,5 +38,10 @@ public class GiftCertificateRestController implements GiftCertificateController 
     public GiftCertificate updateGiftCertificate (@RequestBody GiftCertificate giftCertificate) throws ValidateException, ServiceException {
         service.updateGiftCertificate(giftCertificate);
         return giftCertificate;
+    }
+
+    @DeleteMapping("/gift-certificates/{id}")
+    public GiftCertificate deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
+        return service.readGiftCertificate(id);
     }
 }
