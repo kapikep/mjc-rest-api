@@ -55,8 +55,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
-        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
         try {
+            if(!GiftCertificateValidator.allNotNullFieldValidation(giftCertificate)){
+                GiftCertificate oldGiftCertificate = repository.readGiftCertificate(giftCertificate.getId());
+                updateFields(giftCertificate, oldGiftCertificate);
+            }
+            GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
             repository.updateGiftCertificate(giftCertificate);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -70,6 +74,28 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             repository.deleteGiftCertificate(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+    private void updateFields(GiftCertificate newGiftCertificate, GiftCertificate oldGiftCertificate) {
+
+        if (newGiftCertificate.getName() == null) {
+            newGiftCertificate.setName(oldGiftCertificate.getName());
+        }
+        if(newGiftCertificate.getDescription() == null){
+            newGiftCertificate.setDescription(oldGiftCertificate.getDescription());
+        }
+        if (newGiftCertificate.getPrice() == null) {
+            newGiftCertificate.setPrice(oldGiftCertificate.getPrice());
+        }
+        if (newGiftCertificate.getDuration() == null) {
+            newGiftCertificate.setPrice(oldGiftCertificate.getPrice());
+        }
+        if (newGiftCertificate.getCreateDate() == null) {
+            newGiftCertificate.setCreateDate(oldGiftCertificate.getCreateDate());
+        }
+        if (newGiftCertificate.getLastUpdateDate() == null) {
+            newGiftCertificate.setLastUpdateDate(oldGiftCertificate.getLastUpdateDate());
         }
     }
 }

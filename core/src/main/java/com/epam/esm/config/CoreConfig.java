@@ -11,6 +11,7 @@ import java.beans.PropertyVetoException;
 @Configuration
 @PropertySource("classpath:MySQLdb.properties")
 @ComponentScan(basePackages = "com.epam.esm")
+//@Profile("prod")
 public class CoreConfig {
 
     @Bean

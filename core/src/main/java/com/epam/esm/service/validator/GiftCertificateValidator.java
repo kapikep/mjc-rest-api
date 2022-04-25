@@ -16,113 +16,134 @@ public class GiftCertificateValidator {
 
     public static void giftCertificateFieldValidation(GiftCertificate giftCertificate) throws ValidateException {
         StringBuilder resMes = new StringBuilder();
-        if(!idValidation(giftCertificate.getId())){
+        if (!idValidation(giftCertificate.getId())) {
             resMes.append("Wrong id ");
         }
-        if(!nameValidation(giftCertificate.getName())){
+        if (!nameValidation(giftCertificate.getName())) {
             resMes.append("Wrong name ");
         }
-        if(!descriptionValidation(giftCertificate.getDescription())){
+        if (!descriptionValidation(giftCertificate.getDescription())) {
             resMes.append("Wrong description ");
         }
-        if(!priceValidation(giftCertificate.getPrice())){
+        if (!priceValidation(giftCertificate.getPrice())) {
             resMes.append("Wrong price ");
         }
-        if(!durationValidation(giftCertificate.getDuration())){
+        if (!durationValidation(giftCertificate.getDuration())) {
             resMes.append("Wrong duration ");
         }
-        if(!createDateValidation(giftCertificate.getCreateDate())){
+        if (!createDateValidation(giftCertificate.getCreateDate())) {
             resMes.append("Wrong create date ");
         }
-        if(!lastUpdateDateValidation(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate())){
+        if (!lastUpdateDateValidation(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate())) {
             resMes.append("Wrong update date ");
         }
 
-        if(resMes.length() != 0){
+        if (resMes.length() != 0) {
             throw new ValidateException(resMes.toString());
         }
     }
 
-    public static boolean idValidation(int id){
+
+    public static boolean idValidation(int id) {
         boolean res = true;
 
-        if(id < 0 || id > MAX_ID){
+        if (id < 0 || id > MAX_ID) {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean nameValidation(String name){
+    public static boolean nameValidation(String name) {
         boolean res = true;
 
-        if(name != null){
-            if(name.isEmpty() || name.length() > MAX_NAME_LENGHT) {
+        if (name != null) {
+            if (name.isEmpty() || name.length() > MAX_NAME_LENGHT) {
                 res = false;
             }
         } else {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean descriptionValidation(String description){
+    public static boolean descriptionValidation(String description) {
         boolean res = true;
 
-        if(description != null){
-            if(description.isEmpty() || description.length() > MAX_DESCRIPTION_LENGHT) {
+        if (description != null) {
+            if (description.isEmpty() || description.length() > MAX_DESCRIPTION_LENGHT) {
                 res = false;
             }
         } else {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean priceValidation(double price){
+    public static boolean priceValidation(double price) {
         boolean res = true;
 
-        if(price < MIN_PRICE || price > MAX_PRICE){
+        if (price < MIN_PRICE || price > MAX_PRICE) {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean durationValidation(int duration){
+    public static boolean durationValidation(int duration) {
         boolean res = true;
 
-        if(duration < MIN_DURATION || duration > MAX_DURATION){
+        if (duration < MIN_DURATION || duration > MAX_DURATION) {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean createDateValidation(LocalDateTime createDate){
+    public static boolean createDateValidation(LocalDateTime createDate) {
         boolean res = true;
 
-        if(createDate == null){
+        if (createDate == null) {
             res = false;
         }
-
         return res;
     }
 
-    public static boolean lastUpdateDateValidation(LocalDateTime createDate ,LocalDateTime lastUpdateDate){
+    public static boolean lastUpdateDateValidation(LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         boolean res = true;
 
-        if(lastUpdateDate == null){
+        if (lastUpdateDate == null) {
             res = false;
-        }else {
-            if(lastUpdateDate.isBefore(createDate)){
+        } else {
+            if (lastUpdateDate.isBefore(createDate)) {
                 res = false;
             }
         }
-
         return res;
     }
 
+    public static boolean allNotNullFieldValidation(GiftCertificate g) throws ValidateException {
+        boolean res = true;
+
+        if (g.getId() == 0) {
+            throw new ValidateException("No Id");
+        }
+        if (res && g.getName() == null) {
+            res = false;
+        }
+        if(res && g.getDescription() == null){
+            res = false;
+        }
+        if (res && g.getPrice() == null) {
+            res = false;
+        }
+        if (res && g.getDuration() == null) {
+            res = false;
+        }
+        if (res && g.getCreateDate() == null) {
+            res = false;
+        }
+        if (res && g.getLastUpdateDate() == null) {
+            res = false;
+        }
+        return res;
+    }
 }
+
