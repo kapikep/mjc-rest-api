@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
+    private final String SELECT_ALL = "SELECT * FROM gift_certificate";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,7 +24,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     public List<GiftCertificate> readAll() throws RepositoryException {
         List<GiftCertificate> giftCertificates;
         try {
-            giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate", new GiftCertificateMapper());
+            giftCertificates = jdbcTemplate.query(SELECT_ALL, new GiftCertificateMapper());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
