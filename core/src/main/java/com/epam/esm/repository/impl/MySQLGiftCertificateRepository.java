@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
-    private final String SELECT_ALL = "SELECT * FROM gift_certificate";
+    private final String SELECT_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) LEFT OUTER JOIN tag t ON (gcht.tag_id = t.id)";
 
     private final JdbcTemplate jdbcTemplate;
 

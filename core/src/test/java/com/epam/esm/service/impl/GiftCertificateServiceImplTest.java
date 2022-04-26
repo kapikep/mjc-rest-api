@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.config.CoreConfig;
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
@@ -22,7 +23,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void readAll() throws ValidateException, ServiceException {
-        List<GiftCertificate>giftCertificates = giftCertificateService.readAllGiftCertificates();
+        List<GiftCertificateDto> giftCertificates = giftCertificateService.readAllGiftCertificates();
         System.out.println("service ->" + giftCertificates);
     }
 

@@ -1,15 +1,12 @@
-package com.epam.esm.entity;
+package com.epam.esm.dto;
 
+import com.epam.esm.entity.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
-public class GiftCertificate implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class GiftCertificateDto {
     private int id;
     private String name;
     private String description;
@@ -19,10 +16,7 @@ public class GiftCertificate implements Serializable {
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime lastUpdateDate;
-    private Tag tag;
-
-    public GiftCertificate() {
-    }
+    List<Tag> tags;
 
     public int getId() {
         return id;
@@ -68,50 +62,37 @@ public class GiftCertificate implements Serializable {
         return createDate;
     }
 
-    public LocalDateTime getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
     }
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Tag getTag() {
-        return tag;
+    public List<Tag> getTags() {
+        return tags;
     }
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GiftCertificate that = (GiftCertificate) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     @Override
     public String toString() {
-        return "GiftCertificate{" +
-                "giftCertificateId=" + id +
+        return "GiftCertificateDto{" +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", duration=" + duration +
                 ", createDate=" + createDate +
                 ", lastUpdateDate=" + lastUpdateDate +
-                ", tag=" + tag +
+                ", tags=" + tags +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
@@ -21,14 +22,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> readAllGiftCertificates() throws ServiceException, ValidateException {
+    public List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException, ValidateException {
         List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtos;
         try {
             giftCertificates = repository.readAll();
+            giftCertificateDtos = ServiceUtil.giftCertificateEntityToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
-        return giftCertificates;
+        return giftCertificateDtos;
     }
 
     @Override

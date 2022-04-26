@@ -1,12 +1,15 @@
 package com.epam.esm.controller.impl;
 
 import com.epam.esm.controller.interf.GiftCertificateController;
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,7 +22,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @GetMapping("/gift-certificates")
-    public List<GiftCertificate> readAllGiftCertificates() throws ValidateException, ServiceException {
+    public List<GiftCertificateDto> readAllGiftCertificates() throws ValidateException, ServiceException {
         return service.readAllGiftCertificates();
     }
 

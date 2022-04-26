@@ -1,6 +1,7 @@
 package com.epam.esm.repository.mapper;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
         giftCertificate.setDuration(rs.getInt("duration"));
         giftCertificate.setCreateDate(rs.getTimestamp("create_date").toLocalDateTime());
         giftCertificate.setLastUpdateDate(rs.getTimestamp("last_update_date").toLocalDateTime());
+        giftCertificate.setTag(new Tag(rs.getInt("t.id"), rs.getString("t.name")));
 
         return giftCertificate;
     }
