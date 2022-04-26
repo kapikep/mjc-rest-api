@@ -1,5 +1,6 @@
 package com.epam.esm.service.validator;
 
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ValidateException;
 
@@ -14,29 +15,31 @@ public class GiftCertificateValidator {
     private static final int MIN_DURATION = 1;
     private static final int MAX_DURATION = 10_000;
 
-    public static void giftCertificateFieldValidation(GiftCertificate giftCertificate) throws ValidateException {
+    public static void giftCertificateFieldValidation(GiftCertificateDto giftCertificateDto) throws ValidateException {
         StringBuilder resMes = new StringBuilder();
-        if (!idValidation(giftCertificate.getId())) {
+        if (!idValidation(giftCertificateDto.getId())) {
             resMes.append("Wrong id ");
         }
-        if (!nameValidation(giftCertificate.getName())) {
+        if (!nameValidation(giftCertificateDto.getName())) {
             resMes.append("Wrong name ");
         }
-        if (!descriptionValidation(giftCertificate.getDescription())) {
+        if (!descriptionValidation(giftCertificateDto.getDescription())) {
             resMes.append("Wrong description ");
         }
-        if (!priceValidation(giftCertificate.getPrice())) {
+        if (!priceValidation(giftCertificateDto.getPrice())) {
             resMes.append("Wrong price ");
         }
-        if (!durationValidation(giftCertificate.getDuration())) {
+        if (!durationValidation(giftCertificateDto.getDuration())) {
             resMes.append("Wrong duration ");
         }
-        if (!createDateValidation(giftCertificate.getCreateDate())) {
+        if (!createDateValidation(giftCertificateDto.getCreateDate())) {
             resMes.append("Wrong create date ");
         }
-        if (!lastUpdateDateValidation(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate())) {
+        if (!lastUpdateDateValidation(giftCertificateDto.getCreateDate(), giftCertificateDto.getLastUpdateDate())) {
             resMes.append("Wrong update date ");
         }
+
+        //TODO Tag validate
 
         if (resMes.length() != 0) {
             throw new ValidateException(resMes.toString());

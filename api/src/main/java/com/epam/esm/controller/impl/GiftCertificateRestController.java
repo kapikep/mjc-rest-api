@@ -32,9 +32,9 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @PostMapping("/gift-certificates")
-    public GiftCertificate createGiftCertificate (@RequestBody GiftCertificate giftCertificate) throws ValidateException, ServiceException {
-        service.createGiftCertificate(giftCertificate);
-        return giftCertificate;
+    public GiftCertificateDto createGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
+        service.createGiftCertificate(giftCertificateDto);
+        return giftCertificateDto;
     }
 
     @PutMapping("/gift-certificates")

@@ -13,7 +13,7 @@ public interface GiftCertificateService {
 
     GiftCertificateDto readGiftCertificate(String id) throws ServiceException, ValidateException;
 
-    void createGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException;
+    void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
     void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException;;
 

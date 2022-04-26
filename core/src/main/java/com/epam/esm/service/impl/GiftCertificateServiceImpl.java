@@ -53,8 +53,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
-        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
+    public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException {
+        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificateDto);
+        GiftCertificate giftCertificate = null;
         try {
             repository.createGiftCertificate(giftCertificate);
         } catch (RepositoryException e) {
@@ -69,7 +70,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 //GiftCertificate oldGiftCertificate = repository.readGiftCertificate(giftCertificate.getId());
                 //updateFields(giftCertificate, oldGiftCertificate);
             }
-            GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
+            //GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
             repository.updateGiftCertificate(giftCertificate);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
