@@ -26,7 +26,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
-            giftCertificates = repository.readAll();
+            giftCertificates = repository.readAllGiftCertificates();
             giftCertificateDtoList = ServiceUtil.giftCertificateEntityToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);

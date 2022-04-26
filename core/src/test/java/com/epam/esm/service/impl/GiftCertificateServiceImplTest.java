@@ -29,7 +29,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void readGiftCertificate() {
-        GiftCertificate giftCertificate = null;
+        GiftCertificateDto giftCertificate = null;
         try {
             giftCertificate = giftCertificateService.readGiftCertificate("2");
         } catch (com.epam.esm.service.exception.ServiceException e) {

@@ -22,7 +22,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public List<GiftCertificate> readAll() throws RepositoryException {
+    public List<GiftCertificate> readAllGiftCertificates() throws RepositoryException {
         List<GiftCertificate> giftCertificates;
         try {
             giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateMapper());
@@ -68,7 +68,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     @Override
     public void deleteGiftCertificate(int id) throws RepositoryException {
         try {
-            jdbcTemplate.update("DELETE * FROM gift_certificate WHERE id=?", id);
+            jdbcTemplate.update("DELETE FROM gift_certificate WHERE id=?", id);
         } catch (DataAccessException e) {
             throw new RepositoryException(String.format("Requested resource not found (id = %d)", id), e);
         }

@@ -6,7 +6,7 @@ import com.epam.esm.repository.exception.RepositoryException;
 import java.util.List;
 
 public interface GiftCertificateRepository {
-    List<GiftCertificate> readAll() throws RepositoryException;
+    List<GiftCertificate> readAllGiftCertificates() throws RepositoryException;
 
     List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException;
 
