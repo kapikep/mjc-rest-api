@@ -24,26 +24,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException, ValidateException {
         List<GiftCertificate> giftCertificates;
-        List<GiftCertificateDto> giftCertificateDtos;
+        List<GiftCertificateDto> giftCertificateDtoList;
         try {
             giftCertificates = repository.readAll();
-            giftCertificateDtos = ServiceUtil.giftCertificateEntityToDtoConverting(giftCertificates);
+            giftCertificateDtoList = ServiceUtil.giftCertificateEntityToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
-        return giftCertificateDtos;
+        return giftCertificateDtoList;
     }
 
     @Override
-    public GiftCertificate readGiftCertificate(String idStr) throws ServiceException, ValidateException {
+    public GiftCertificateDto readGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
-        GiftCertificate giftCertificate;
+        List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtoList;
         try {
-            giftCertificate = repository.readGiftCertificate(id);
+            giftCertificates = repository.readGiftCertificate(id);
+
+            if(giftCertificates.isEmpty()){
+                throw new ServiceException(String.format("Requested resource not found (id = %d)", id));
+            }
+            giftCertificateDtoList = ServiceUtil.giftCertificateEntityToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
-        return giftCertificate;
+        return giftCertificateDtoList.get(0);
     }
 
     @Override
@@ -60,8 +66,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException {
         try {
             if(!GiftCertificateValidator.allNotNullFieldValidation(giftCertificate)){
-                GiftCertificate oldGiftCertificate = repository.readGiftCertificate(giftCertificate.getId());
-                updateFields(giftCertificate, oldGiftCertificate);
+                //GiftCertificate oldGiftCertificate = repository.readGiftCertificate(giftCertificate.getId());
+                //updateFields(giftCertificate, oldGiftCertificate);
             }
             GiftCertificateValidator.giftCertificateFieldValidation(giftCertificate);
             repository.updateGiftCertificate(giftCertificate);

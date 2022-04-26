@@ -27,7 +27,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @GetMapping("/gift-certificates/{id}")
-    public GiftCertificate readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
+    public GiftCertificateDto readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
             return service.readGiftCertificate(id);
     }
 
@@ -45,6 +45,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
 
     @DeleteMapping("/gift-certificates/{id}")
     public GiftCertificate deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
-        return service.readGiftCertificate(id);
+        service.deleteGiftCertificate(id);
+        return new GiftCertificate();
     }
 }

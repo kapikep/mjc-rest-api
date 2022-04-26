@@ -72,7 +72,7 @@ public class ServiceUtil {
         return giftCertificateDtoList;
     }
 
-    private static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificate gift) {
+    public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificate gift) {
         GiftCertificateDto giftDto = new GiftCertificateDto();
         giftDto.setId(gift.getId());
         giftDto.setName(gift.getName());

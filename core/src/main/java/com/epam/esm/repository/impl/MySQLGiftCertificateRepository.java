@@ -12,7 +12,8 @@ import java.util.List;
 
 @Repository
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
-    private final String SELECT_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) LEFT OUTER JOIN tag t ON (gcht.tag_id = t.id)";
+    private final String READ_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) LEFT OUTER JOIN tag t ON (gcht.tag_id = t.id)";
+    private final String READ_ONE = READ_ALL + " WHERE gc.id=?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -24,7 +25,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     public List<GiftCertificate> readAll() throws RepositoryException {
         List<GiftCertificate> giftCertificates;
         try {
-            giftCertificates = jdbcTemplate.query(SELECT_ALL, new GiftCertificateMapper());
+            giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateMapper());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -32,14 +33,14 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public GiftCertificate readGiftCertificate(int id) throws RepositoryException {
-        GiftCertificate giftCertificate = null;
+    public List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException {
+        List<GiftCertificate> giftCertificates;
         try {
-            giftCertificate = jdbcTemplate.queryForObject("SELECT * FROM gift_certificate WHERE id=?", new GiftCertificateMapper(), id);
+            giftCertificates = jdbcTemplate.query(READ_ONE, new GiftCertificateMapper(), id);
         } catch (DataAccessException e) {
-            throw new RepositoryException(String.format("Requested resource not found (id = %d)", id), e);
+            throw new RepositoryException(e.getMessage(), e);
         }
-        return giftCertificate;
+        return giftCertificates;
     }
 
     @Override

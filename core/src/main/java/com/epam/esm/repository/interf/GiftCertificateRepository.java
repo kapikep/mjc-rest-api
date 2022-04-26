@@ -8,7 +8,7 @@ import java.util.List;
 public interface GiftCertificateRepository {
     List<GiftCertificate> readAll() throws RepositoryException;
 
-    GiftCertificate readGiftCertificate(int id) throws RepositoryException;
+    List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException;
 
     void createGiftCertificate(GiftCertificate giftCertificate)  throws RepositoryException;
 
