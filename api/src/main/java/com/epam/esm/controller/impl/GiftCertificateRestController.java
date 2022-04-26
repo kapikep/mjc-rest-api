@@ -38,9 +38,9 @@ public class GiftCertificateRestController implements GiftCertificateController 
     }
 
     @PutMapping("/gift-certificates")
-    public GiftCertificate updateGiftCertificate (@RequestBody GiftCertificate giftCertificate) throws ValidateException, ServiceException {
-        service.updateGiftCertificate(giftCertificate);
-        return giftCertificate;
+    public GiftCertificateDto updateGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
+        service.updateGiftCertificate(giftCertificateDto);
+        return giftCertificateDto;
     }
 
     @DeleteMapping("/gift-certificates/{id}")

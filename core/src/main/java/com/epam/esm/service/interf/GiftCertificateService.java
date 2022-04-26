@@ -1,7 +1,6 @@
 package com.epam.esm.service.interf;
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 
@@ -15,7 +14,7 @@ public interface GiftCertificateService {
 
     void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
-    void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException, ValidateException;;
+    void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;;
 
     void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;;
 }

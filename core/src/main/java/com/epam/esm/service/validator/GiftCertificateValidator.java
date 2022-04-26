@@ -122,14 +122,14 @@ public class GiftCertificateValidator {
         return res;
     }
 
-    public static boolean allNotNullFieldValidation(GiftCertificate g) throws ValidateException {
+    public static boolean allNotNullFieldValidation(GiftCertificateDto g) throws ValidateException {
         boolean res = true;
 
         if (g.getId() == 0) {
             throw new ValidateException("No Id");
         }
         if (res && g.getName() == null) {
-            res = false;
+            return false; //TODO
         }
         if(res && g.getDescription() == null){
             res = false;
@@ -146,6 +146,10 @@ public class GiftCertificateValidator {
         if (res && g.getLastUpdateDate() == null) {
             res = false;
         }
+        if (res && g.getTags() == null) {
+            res = false;
+        }
+
         return res;
     }
 }

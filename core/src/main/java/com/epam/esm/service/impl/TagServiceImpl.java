@@ -6,13 +6,9 @@ import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
-import com.epam.esm.service.validator.ServiceUtil;
+import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.validator.TagValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.List;
 
