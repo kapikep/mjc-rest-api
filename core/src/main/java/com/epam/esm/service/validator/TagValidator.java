@@ -17,10 +17,10 @@ public class TagValidator {
     public static void tagFieldValidator(Tag tag) throws ValidateException {
         StringBuilder resMes = new StringBuilder();
         if (!idValidation(tag.getId())) {
-            resMes.append("Wrong id ");
+            resMes.append("Wrong tag id ");
         }
         if (!nameValidation(tag.getName())) {
-            resMes.append("Wrong name ");
+            resMes.append("Wrong tag name ");
         }
 
         if (resMes.length() != 0) {

@@ -44,6 +44,32 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    @Override
+    public Tag readTag(int id) throws ServiceException, ValidateException {
+        TagValidator.idValidation(id);
+        Tag tag;
+        try{
+            tag = repository.readTag(id);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return tag;
+    }
+
+    @Override
+    public Tag readTagByName(String name) throws ServiceException, ValidateException {
+        if(!TagValidator.nameValidation(name)) {
+            throw new ValidateException("Wrong tag name");
+        }
+        Tag tag;
+        try{
+            tag = repository.readTag(name);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return tag;
+    }
+
 
     @Override
     public void createTag(Tag tag) throws ServiceException, ValidateException {

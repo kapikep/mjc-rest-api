@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.service.exception.ServiceException;
@@ -17,9 +18,11 @@ import java.util.List;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
+    private final TagServiceImpl tagService;
 
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagServiceImpl tagService) {
         this.repository = repository;
+        this.tagService = tagService;
     }
 
     @Override
@@ -43,7 +46,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificates = repository.readGiftCertificate(id);
 
-            if(giftCertificates.isEmpty()){
+            if (giftCertificates.isEmpty()) {
+                throw new ServiceException(String.format("Requested resource not found (id = %d)", id));
+            }
+            giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return giftCertificateDtoList.get(0);
+    }
+
+    @Override
+    public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
+        GiftCertificateValidator.idValidation(id);
+        List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtoList;
+        try {
+            giftCertificates = repository.readGiftCertificate(id);
+
+            if (giftCertificates.isEmpty()) {
                 throw new ServiceException(String.format("Requested resource not found (id = %d)", id));
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
@@ -65,15 +86,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException {
+    public void updateGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         try {
-            if(!GiftCertificateValidator.allNotNullFieldValidation(giftCertificateDto)){
-                GiftCertificateDto oldGiftCertificateDto = readGiftCertificate(Integer.toString(giftCertificateDto.getId()));
-                GiftCertificateUtil.updateFields(giftCertificateDto, oldGiftCertificateDto);
+            if (!GiftCertificateValidator.allNotNullFieldValidation(giftDto)) {
+                GiftCertificateDto oldGiftCertificateDto = readGiftCertificate(giftDto.getId());
+                GiftCertificateUtil.updateFields(giftDto, oldGiftCertificateDto);
             }
-            GiftCertificateValidator.giftCertificateFieldValidation(giftCertificateDto);
-            GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftCertificateDto);
-            repository.updateGiftCertificate(gift);
+            GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
+            GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
+            List<Tag> tags = giftDto.getTags();
+            for (Tag tag : tags) {
+                int id;
+                try {
+                    id = tagService.readTagByName(tag.getName()).getId();
+                } catch (ServiceException e) {
+                    tagService.createTag(tag);
+                    id = tagService.readTagByName(tag.getName()).getId();
+                }
+                tag.setId(id);
+            }
+            repository.updateGiftCertificate(gift, tags);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }

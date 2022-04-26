@@ -1,6 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
@@ -16,9 +17,11 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     private final String READ_ONE = READ_ALL + " WHERE gc.id=?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final MySQLTagRepository tagRepository;
 
-    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate) {
+    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate, MySQLTagRepository tagRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -55,11 +58,15 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public void updateGiftCertificate(GiftCertificate giftCertificate) throws RepositoryException {
+    public void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
         try {
             jdbcTemplate.update("UPDATE gift_certificate SET name=?, description=?, price=?, duration=?, create_date=?, last_update_date=?" +
                             " WHERE id=?", giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate(), giftCertificate.getId());
+            jdbcTemplate.update("DELETE FROM gift_certificate_has_tag WHERE gift_certificate_id=?", giftCertificate.getId());
+            tags.forEach(tag -> {
+                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate.getId(), tag.getId());
+            });
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
