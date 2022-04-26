@@ -15,6 +15,8 @@ import java.util.List;
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
     private final String READ_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) LEFT OUTER JOIN tag t ON (gcht.tag_id = t.id)";
     private final String READ_ONE = READ_ALL + " WHERE gc.id=?";
+    private final String SEARCH_BY_NAME = READ_ALL + " WHERE gc.name=?";
+
 
     private final JdbcTemplate jdbcTemplate;
     private final MySQLTagRepository tagRepository;
@@ -52,8 +54,9 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             jdbcTemplate.update("INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)" +
                             " VALUES(?, ?, ?, ?, ?, ?)", giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate());
+            GiftCertificate giftCertificate1 = jdbcTemplate.queryForObject(SEARCH_BY_NAME,  new GiftCertificateMapper(), giftCertificate.getName());
             tags.forEach(tag -> {
-                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate.getId(), tag.getId());
+                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate1.getId(), tag.getId());
             });
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
