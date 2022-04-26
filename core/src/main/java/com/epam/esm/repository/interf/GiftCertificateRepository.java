@@ -11,7 +11,7 @@ public interface GiftCertificateRepository {
 
     List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException;
 
-    void createGiftCertificate(GiftCertificate giftCertificate)  throws RepositoryException;
+    void createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException;
 
     void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags)  throws RepositoryException;
 

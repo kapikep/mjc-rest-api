@@ -47,11 +47,14 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificate giftCertificate) throws RepositoryException {
+    public void createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
         try {
             jdbcTemplate.update("INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)" +
                             " VALUES(?, ?, ?, ?, ?, ?)", giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate());
+            tags.forEach(tag -> {
+                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate.getId(), tag.getId());
+            });
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }

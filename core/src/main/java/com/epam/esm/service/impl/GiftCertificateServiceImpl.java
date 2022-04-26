@@ -75,11 +75,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException {
-        GiftCertificateValidator.giftCertificateFieldValidation(giftCertificateDto);
-        GiftCertificate giftCertificate = null;
+    public void createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+        GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
+        GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
+
         try {
-            repository.createGiftCertificate(giftCertificate);
+            List<Tag> tags = giftDto.getTags();
+            for (Tag tag : tags) {
+                int id;
+                try {
+                    id = tagService.readTagByName(tag.getName()).getId();
+                } catch (ServiceException e) {
+                    tagService.createTag(tag);
+                    id = tagService.readTagByName(tag.getName()).getId();
+                }
+                tag.setId(id);
+            }
+            repository.createGiftCertificate(gift, tags);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
