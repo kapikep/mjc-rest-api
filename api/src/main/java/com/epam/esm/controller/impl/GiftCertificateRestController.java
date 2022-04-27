@@ -9,8 +9,7 @@ import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/gift-certificates")
@@ -44,26 +43,22 @@ public class GiftCertificateRestController implements GiftCertificateController 
         return new GiftCertificate();
     }
 
-    /**
-     * Searches for certificate by provided params
-     * @param tagName name of the tag that certificate should be connected with
-     * @param name part of the certificate name
-     * @param description part of the certificate description
-     * @param sortByDate is sort by date should be carried out
-     * @param sortByDateType sort by date ASC or DESC
-     * @param sortByName is sort by name should be carried out
-     * @param sortByNameType sort by name ASC or DESC
-     * @return list of the certificates that correspond to the provided params
-     */
     @GetMapping
     public List<GiftCertificateDto> findByParams(
-            @RequestParam(required = false, name = "tagName") String tagName,
+            @RequestParam(required = false, name = "tag") String tagName,
             @RequestParam(required = false, name = "name") String name,
             @RequestParam(required = false, name = "description") String description,
-            @RequestParam(required = false, name = "sortByDate") String sortByDate,
-            @RequestParam(required = false, name = "sortByDateType") String sortByDateType,
-            @RequestParam(required = false, name = "sortByName") String sortByName,
-            @RequestParam(required = false, name = "sortByNameType") String sortByNameType) throws ValidateException, ServiceException {
-        return service.findGiftCertificates(tagName, name, description, sortByDate, sortByDateType, sortByName, sortByNameType);
+            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        if(tagName != null){
+            criteriaMap.put("t.name", tagName);
+        }
+        if(name != null){
+            criteriaMap.put("name", name);
+        }
+        if(description != null){
+            criteriaMap.put("description", description);
+        }
+        return service.findGiftCertificates(criteriaMap, sort);
     }
 }

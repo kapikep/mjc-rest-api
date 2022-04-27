@@ -12,6 +12,13 @@ import java.util.List;
 
 @Repository
 public class MySQLTagRepository implements TagRepository {
+    public static final String INSERT = "INSERT INTO tag (name) VALUES(?)";
+    public static final String SELECT = "SELECT * FROM tag";
+    public static final String SELECT_FROM_TAG_WHERE_ID = "SELECT * FROM tag WHERE id=?";
+    public static final String SELECT_FROM_TAG_WHERE_NAME = "SELECT * FROM tag WHERE name=?";
+    public static final String UPDATE = "UPDATE tag SET name=? WHERE id=?";
+    public static final String DELETE = "DELETE FROM tag WHERE id=?";
+
     private final JdbcTemplate jdbcTemplate;
 
     public MySQLTagRepository(JdbcTemplate jdbcTemplate) {
@@ -22,7 +29,7 @@ public class MySQLTagRepository implements TagRepository {
     public List<Tag> readAllTags() throws RepositoryException {
         List<Tag> tags;
         try {
-            tags = jdbcTemplate.query("SELECT * FROM tag", new TagMapper());
+            tags = jdbcTemplate.query(SELECT, new TagMapper());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -33,7 +40,7 @@ public class MySQLTagRepository implements TagRepository {
     public Tag readTag(int id) throws RepositoryException {
         Tag tag;
         try {
-            tag = jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?", new TagMapper(), id);
+            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_ID, new TagMapper(), id);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -44,7 +51,7 @@ public class MySQLTagRepository implements TagRepository {
     public Tag readTag(String name) throws RepositoryException {
         Tag tag;
         try {
-            tag = jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?", new TagMapper(), name);
+            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_NAME, new TagMapper(), name);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -54,7 +61,7 @@ public class MySQLTagRepository implements TagRepository {
     @Override
     public void createTag(Tag tag) throws RepositoryException {
         try {
-            jdbcTemplate.update("INSERT INTO tag (name) VALUES(?)", tag.getName());
+            jdbcTemplate.update(INSERT, tag.getName());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -63,7 +70,7 @@ public class MySQLTagRepository implements TagRepository {
     @Override
     public void updateTag(Tag tag) throws RepositoryException {
         try {
-            jdbcTemplate.update("UPDATE tag SET name=? WHERE id=?", tag.getName(), tag.getId());
+            jdbcTemplate.update(UPDATE, tag.getName(), tag.getId());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -72,7 +79,7 @@ public class MySQLTagRepository implements TagRepository {
     @Override
     public void deleteTag(int id) throws RepositoryException {
         try {
-            jdbcTemplate.update("DELETE FROM tag WHERE id=?", id);
+            jdbcTemplate.update(DELETE, id);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = CoreConfig.class)
@@ -49,5 +51,16 @@ class MySQLGiftCertificateRepositoryTest {
         //gs.setPrice(45.0);
         gs.setDuration(60);
         //giftCertificateRepository.updateGiftCertificate(gs);
+    }
+
+    @Test
+    void findGiftCertificate() throws RepositoryException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("name", "трассе");
+        criteriaMap.put("description", "сертификат");
+        //criteriaMap.put("t.name", "Спорт");
+        List<GiftCertificate> giftCertificates =
+                giftCertificateRepository.findGiftCertificate(criteriaMap, "name_desc");
+        giftCertificates.forEach(System.out::println);
     }
 }

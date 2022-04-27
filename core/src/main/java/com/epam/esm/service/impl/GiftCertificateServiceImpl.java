@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
@@ -144,14 +145,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findGiftCertificates(String tagName, String certificateName, String certificateDescription,
-                                                         String sortByDate, String sortByDateType, String sortByName,
-                                                         String sortByNameType) throws ServiceException, ValidateException {
-
+    public List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException {
+        //TODO Criteria validation
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
-            giftCertificates = repository.readAllGiftCertificates();
+            giftCertificates = repository.findGiftCertificate(criteriaMap, sorting);
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
