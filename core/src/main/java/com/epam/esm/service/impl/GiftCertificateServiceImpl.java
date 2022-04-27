@@ -142,4 +142,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<GiftCertificateDto> findGiftCertificates(String tagName, String certificateName, String certificateDescription,
+                                                         String sortByDate, String sortByDateType, String sortByName,
+                                                         String sortByNameType) throws ServiceException, ValidateException {
+
+        List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtoList;
+        try {
+            giftCertificates = repository.readAllGiftCertificates();
+            giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return giftCertificateDtoList;
+    }
 }

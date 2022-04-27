@@ -16,5 +16,5 @@ public interface TagRepository {
 
     void updateTag(Tag tag) throws RepositoryException;
 
-    void deleteTag(Tag tag) throws RepositoryException;
+    void deleteTag(int id) throws RepositoryException;
 }

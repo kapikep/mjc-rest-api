@@ -10,6 +10,10 @@ public interface GiftCertificateService {
 
     List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException, ValidateException;
 
+    List<GiftCertificateDto> findGiftCertificates( String tagName, String certificateName, String certificateDescription,
+                                                   String sortByDate, String sortByDateType, String sortByName,
+                                                   String sortByNameType) throws ServiceException, ValidateException;
+
     GiftCertificateDto readGiftCertificate(String id) throws ServiceException, ValidateException;
 
     GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException;
@@ -18,5 +22,7 @@ public interface GiftCertificateService {
 
     void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;;
 
-    void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;;
+    void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;
+
+
 }

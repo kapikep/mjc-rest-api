@@ -19,6 +19,6 @@ public interface TagService {
 
     void updateTag(Tag tag) throws ServiceException, ValidateException;
 
-    void deleteTag(Tag tag) throws ServiceException, ValidateException;
+    void deleteTag(String id) throws ServiceException, ValidateException;
 
 }

@@ -46,7 +46,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
-        TagValidator.idValidation(id);
+        if(!TagValidator.idValidation(id)){
+            throw new ValidateException("Wrong tag id");
+        }
         Tag tag;
         try{
             tag = repository.readTag(id);
@@ -70,7 +72,6 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
-
     @Override
     public void createTag(Tag tag) throws ServiceException, ValidateException {
         TagValidator.tagFieldValidator(tag);
@@ -92,9 +93,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void deleteTag(Tag tag) throws ServiceException, ValidateException {
+    public void deleteTag(String idStr) throws ServiceException, ValidateException {
+        int id = ServiceUtil.parseInt(idStr);
         try {
-            repository.deleteTag(tag);
+            repository.deleteTag(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }

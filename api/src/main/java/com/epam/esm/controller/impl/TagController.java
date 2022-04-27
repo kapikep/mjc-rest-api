@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/tags")
 public class TagController {
     private final TagService service;
 
@@ -17,25 +17,31 @@ public class TagController {
         this.service = service;
     }
 
-    @GetMapping("/tags")
+    @GetMapping
     public List<Tag> readAllTags() throws ValidateException, ServiceException {
         return service.readAllTags();
     }
 
-    @GetMapping("tags/{id}")
+    @GetMapping("/{id}")
     public Tag readTag(@PathVariable String id)  throws ValidateException, ServiceException {
         return service.readTag(id);
     }
 
-    @PostMapping("/tags")
+    @PostMapping
     public Tag crateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         service.createTag(tag);
         return tag;
     }
 
-    @PutMapping("/tags")
+    @PutMapping
     public Tag updateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         service.updateTag(tag);
         return tag;
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteTag(@PathVariable String id)  throws ValidateException, ServiceException {
+        service.deleteTag(id);
+        return id;
     }
 }

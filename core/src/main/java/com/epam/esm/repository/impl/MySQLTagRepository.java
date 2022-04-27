@@ -70,9 +70,9 @@ public class MySQLTagRepository implements TagRepository {
     }
 
     @Override
-    public void deleteTag(Tag tag) throws RepositoryException {
+    public void deleteTag(int id) throws RepositoryException {
         try {
-            jdbcTemplate.update("DELETE FROM tag WHERE id=?", tag.getId());
+            jdbcTemplate.update("DELETE FROM tag WHERE id=?", id);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
