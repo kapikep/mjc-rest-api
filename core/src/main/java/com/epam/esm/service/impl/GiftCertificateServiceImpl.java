@@ -13,6 +13,7 @@ import com.epam.esm.service.validator.GiftCertificateValidator;
 import com.epam.esm.service.utils.ServiceUtil;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -76,6 +77,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+        if (giftDto.getCreateDate() == null) {
+            giftDto.setCreateDate(LocalDateTime.now());
+        }
+        if (giftDto.getLastUpdateDate() == null) {
+            giftDto.setLastUpdateDate(LocalDateTime.now());
+        }
         GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
         GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
 
@@ -99,6 +106,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+        if (giftDto.getLastUpdateDate() == null) {
+            giftDto.setLastUpdateDate(LocalDateTime.now());
+        }
         try {
             if (!GiftCertificateValidator.allNotNullFieldValidation(giftDto)) {
                 GiftCertificateDto oldGiftCertificateDto = readGiftCertificate(giftDto.getId());

@@ -55,9 +55,8 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
                             " VALUES(?, ?, ?, ?, ?, ?)", giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate());
             GiftCertificate giftCertificate1 = jdbcTemplate.queryForObject(SEARCH_BY_NAME,  new GiftCertificateMapper(), giftCertificate.getName());
-            tags.forEach(tag -> {
-                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate1.getId(), tag.getId());
-            });
+            tags.forEach(tag -> jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)",
+                    giftCertificate1.getId(), tag.getId()));
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -70,9 +69,8 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
                             " WHERE id=?", giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate(), giftCertificate.getId());
             jdbcTemplate.update("DELETE FROM gift_certificate_has_tag WHERE gift_certificate_id=?", giftCertificate.getId());
-            tags.forEach(tag -> {
-                jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)", giftCertificate.getId(), tag.getId());
-            });
+            tags.forEach(tag -> jdbcTemplate.update("INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)",
+                    giftCertificate.getId(), tag.getId()));
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
