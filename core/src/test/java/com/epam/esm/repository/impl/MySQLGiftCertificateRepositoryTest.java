@@ -34,6 +34,7 @@ class MySQLGiftCertificateRepositoryTest {
     @Test
     void readAll() throws RepositoryException {
         List<GiftCertificate> gifts = repository.readAllGiftCertificates();
+
         assertEquals(8, gifts.size());
         gifts.forEach(Assertions::assertNotNull);
     }
@@ -68,11 +69,14 @@ class MySQLGiftCertificateRepositoryTest {
         criteriaMap.put("description", "washing");
         List<GiftCertificate> actualGifts =
                 repository.findGiftCertificate(criteriaMap, "name_desc");
+
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
+
         criteriaMap.put("tag.name", "Спорт");
         actualGifts =
                 repository.findGiftCertificate(criteriaMap, null);
+
         assertEquals(0, actualGifts.size());
         assertFalse(actualGifts.contains(expectedGift));
     }
@@ -99,6 +103,7 @@ class MySQLGiftCertificateRepositoryTest {
 
         expectedLastGift.setTag(new Tag(1, "Sport"));
         expectedFirstGift.setTag(new Tag(7, "Health"));
+
         assertEquals(8, actualGifts.size());
         assertEquals(expectedLastGift, actualGifts.get(0));
         assertEquals(expectedFirstGift, actualGifts.get(7));
@@ -107,17 +112,15 @@ class MySQLGiftCertificateRepositoryTest {
     @Test
     void createGiftCertificate() throws RepositoryException {
         GiftCertificate gs = new GiftCertificate(6, "Name", "Description", 45.0, 60,
-                LocalDateTime.now(), LocalDateTime.now(), new Tag(0, null));
+                LocalDateTime.now(), LocalDateTime.now(), new Tag(1, "Sport"));
         List<Tag> tags = new ArrayList<>();
-//        tags.add(new Tag("Health"));
-//        tags.add(new Tag("Auto"));
-//        tags.add(new Tag("New tag"));
-//        tags.add(new Tag("New tag"));
+        tags.add(new Tag(1,"Sport"));
 
         repository.createGiftCertificate(gs, tags);
 
         List<GiftCertificate> actualGifts = repository.readGiftCertificate(6);
         repository.deleteGiftCertificate(6);
+
         assertEquals(gs, actualGifts.get(0));
     }
 
