@@ -30,7 +30,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     private static final List<String> SEARCH_CERTIFICATE_PARAM = Arrays.asList("name", "description");
     private static final List<String> SORT_PARAM = Arrays.asList("create_date", "last_update_date", "name", "description");
 
-
     private final JdbcTemplate jdbcTemplate;
     private final MySQLTagRepository tagRepository;
 
@@ -70,7 +69,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             if (!criteriaMap.isEmpty()) {
                 findQuery.append(" WHERE ");
             }
-
             Iterator<String> iter = criteriaMap.keySet().iterator();
             while (iter.hasNext()) {
                 String s = iter.next();
