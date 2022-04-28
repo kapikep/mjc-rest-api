@@ -14,8 +14,10 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
+@Profile("prod")
 @Configuration
 @PropertySource("classpath:MySQLdb.properties")
+@PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "com.epam.esm")
 
 public class CoreConfig {
