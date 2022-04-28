@@ -24,6 +24,18 @@ public class GiftCertificate implements Serializable {
     public GiftCertificate() {
     }
 
+    public GiftCertificate(int id, String name, String description, Double price, Integer duration,
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate, Tag tag) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.tag = tag;
+    }
+
     public int getId() {
         return id;
     }
@@ -93,12 +105,12 @@ public class GiftCertificate implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tag, that.tag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
+        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tag);
     }
 
     @Override

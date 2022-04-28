@@ -52,7 +52,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
             @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
         Map<String, String> criteriaMap = new HashMap<>();
         if(tagName != null){
-            criteriaMap.put("t.name", tagName);
+            criteriaMap.put("tag.name", tagName);
         }
         if(name != null){
             criteriaMap.put("name", name);

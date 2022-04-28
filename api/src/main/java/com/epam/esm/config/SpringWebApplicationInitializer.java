@@ -7,7 +7,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 //Instead of web.xml
-@Profile("prod")
 public class SpringWebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {

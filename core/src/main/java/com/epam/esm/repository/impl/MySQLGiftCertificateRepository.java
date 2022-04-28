@@ -24,7 +24,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     public static final String DELETE = "DELETE FROM gift_certificate WHERE id=?";
     public static final String DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG = "DELETE FROM gift_certificate_has_tag WHERE gift_certificate_id=?";
     private static final String READ_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) " +
-            "LEFT OUTER JOIN tag t ON (gcht.tag_id = t.id)";
+            "LEFT OUTER JOIN tag tag ON (gcht.tag_id = tag.id)";
     private static final String READ_ONE = READ_ALL + " WHERE gc.id=?";
     private static final String SEARCH_BY_NAME = READ_ALL + " WHERE gc.name=?";
     private static final List<String> SEARCH_CERTIFICATE_PARAM = Arrays.asList("name", "description");
