@@ -54,7 +54,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificates = repository.readGiftCertificate(id);
 
             if (giftCertificates.isEmpty()) {
-                throw new ServiceException(RESOURCE_NOT_FOUND, new Object[]{id});
+                throw new ServiceException(RESOURCE_NOT_FOUND, id);
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
@@ -66,7 +66,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
         if(!GiftCertificateValidator.idValidation(id)){
-            throw new ValidateException(INCORRECT_ID, new Object[]{id});
+            throw new ValidateException(INCORRECT_ID, id);
         }
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
@@ -74,7 +74,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificates = repository.readGiftCertificate(id);
 
             if (giftCertificates.isEmpty()) {
-                throw new ServiceException(RESOURCE_NOT_FOUND, new Object[]{id});
+                throw new ServiceException(RESOURCE_NOT_FOUND, id);
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {

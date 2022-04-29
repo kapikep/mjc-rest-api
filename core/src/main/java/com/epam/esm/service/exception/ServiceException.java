@@ -25,19 +25,19 @@ public class ServiceException extends Exception{
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public ServiceException(Throwable cause, String resourceBundleCode, Object[] args){
+    public ServiceException(Throwable cause, String resourceBundleCode, Object...args){
         this(cause);
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;
     }
 
-    public ServiceException(String message, Throwable cause, String resourceBundleCode, Object[] args){
+    public ServiceException(String message, Throwable cause, String resourceBundleCode, Object...args){
         this(message, cause);
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;
     }
 
-    public ServiceException(String resourceBundleCode, Object[] args){
+    public ServiceException(String resourceBundleCode, Object...args){
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;
     }

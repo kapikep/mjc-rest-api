@@ -36,13 +36,13 @@ public class ValidateException extends Exception{
         this.args = args;
     }
 
-    public ValidateException(String message, Throwable cause, String resourceBundleCode, @Nullable Object[] args){
+    public ValidateException(String message, Throwable cause, String resourceBundleCode, @Nullable Object...args){
         this(cause, message);
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;
     }
 
-    public ValidateException(String resourceBundleCode, @Nullable Object[] args){
+    public ValidateException(String resourceBundleCode, @Nullable Object...args){
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;
     }
