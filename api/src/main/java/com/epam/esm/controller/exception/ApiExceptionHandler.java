@@ -2,6 +2,7 @@ package com.epam.esm.controller.exception;
 
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,6 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    private final MessageSource source;
+
+    public ApiExceptionHandler(MessageSource source) {
+        this.source = source;
+    }
 
     //TODO 404 error
     @ExceptionHandler
@@ -28,6 +34,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
         String code;
+        String message;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
 

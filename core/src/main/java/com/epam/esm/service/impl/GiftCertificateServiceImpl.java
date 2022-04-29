@@ -12,6 +12,7 @@ import com.epam.esm.service.utils.GiftCertificateUtil;
 import com.epam.esm.service.validator.GiftCertificateValidator;
 import com.epam.esm.service.utils.ServiceUtil;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
     private final TagServiceImpl tagService;
     private final MessageSource source;
-    private final String message = "Requested123 resource not found (id = %d)";
 
     public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagServiceImpl tagService, MessageSource source) {
         this.repository = repository;
@@ -54,7 +54,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificates = repository.readGiftCertificate(id);
 
             if (giftCertificates.isEmpty()) {
-                throw new ServiceException(String.format(source.getMessage("message", null, new Locale("ru")), id));
+                throw new ServiceException(source.getMessage("message", new Object[] {id}, LocaleContextHolder.getLocale()));
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
