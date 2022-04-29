@@ -111,27 +111,29 @@ class MySQLGiftCertificateRepositoryTest {
 
     @Test
     void createGiftCertificate() throws RepositoryException {
-        GiftCertificate gs = new GiftCertificate(6, "Name", "Description", 45.0, 60,
-                LocalDateTime.now(), LocalDateTime.now(), new Tag(1, "Sport"));
+        GiftCertificate expectedLastGift = new GiftCertificate(6, "Name", "Description", 45.0, 60,
+                LocalDateTime.parse("2020-04-27T04:43:55.000"), LocalDateTime.parse("2021-04-27T04:43:55.000"), new Tag(1, "Sport"));
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(1,"Sport"));
 
-        repository.createGiftCertificate(gs, tags);
+        repository.createGiftCertificate(expectedLastGift, tags);
 
         List<GiftCertificate> actualGifts = repository.readGiftCertificate(6);
         repository.deleteGiftCertificate(6);
 
-        assertEquals(gs, actualGifts.get(0));
+        assertEquals(expectedLastGift, actualGifts.get(0));
     }
 
     @Test
     void updateGiftCertificate() throws RepositoryException {
-        GiftCertificate expectedLastGift = new GiftCertificate(1, "Water skiing",
-                "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), new Tag(1, "Sport"));
-        repository.updateGiftCertificate(expectedLastGift, new ArrayList<>());
-        List<GiftCertificate> actualGifts = repository.readGiftCertificate(1);
+        GiftCertificate expectedLastGift = new GiftCertificate(5, "New name",
+                "New description", 20.0, 50, LocalDateTime.parse("2010-04-27T04:43:55.000"),
+                LocalDateTime.parse("2010-04-27T04:43:55.000"), new Tag(4, "Cafe"));
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag(4,"Cafe"));
+        repository.updateGiftCertificate(expectedLastGift, tags);
+        List<GiftCertificate> actualGifts = repository.readGiftCertificate(5);
         //        tags.add(new Tag("New tag"));
-        //assertEquals(expectedLastGift, actualGifts.get(0));
+        assertEquals(expectedLastGift, actualGifts.get(0));
     }
 }
