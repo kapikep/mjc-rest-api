@@ -10,6 +10,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.BufferedReader;
+import java.util.Iterator;
+import java.util.List;
+
 @RestControllerAdvice
 public class ApiExceptionHandler {
     private final MessageSource source;
@@ -34,55 +38,77 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
+        String message;
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
-
-        return new ResponseEntity<>(apiException, httpStatus);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(ServiceException e) {
-        String code;
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        ApiException apiException = new ApiException();
-
-        code = codeDefinition(e, httpStatus);
-        apiException.setErrorCode(code);
-        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
-
-        return new ResponseEntity<>(apiException, httpStatus);
-    }
-
-    private String setErrorMessage(Exception e, String getResourceBundleCode, Object[] args) {
-        if (getResourceBundleCode != null) {
-            return source.getMessage(getResourceBundleCode, args, LocaleContextHolder.getLocale());
-        } else {
-            return e.getMessage();
+        if(!e.getResourceBundleCodeList().isEmpty()){
+            StringBuilder builder = new StringBuilder();
+            List<String> strings = e.getResourceBundleCodeList();
+            Iterator<String> iter = strings.iterator();
+            while (iter.hasNext()){
+                String s = iter.next();
+                s = source.getMessage(s, null, LocaleContextHolder.getLocale());
+                builder.append(s);
+                if(iter.hasNext()){
+                    builder.append(" ,");
+                }
+            }
+            message = builder.toString();
+            apiException.setErrorMessage(message);
+        }else {
+            if(e.getResourceBundleCode() != null){
+                message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
+                apiException.setErrorMessage(message);
+            }else {
+                apiException.setErrorMessage(e.getMessage());
+            }
         }
+
+        return new ResponseEntity<>(apiException, httpStatus);
     }
+
 //    @ExceptionHandler
 //    public ResponseEntity<ApiException> handleException(ServiceException e) {
 //        String code;
-//        String message;
 //        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 //        ApiException apiException = new ApiException();
 //
 //        code = codeDefinition(e, httpStatus);
 //        apiException.setErrorCode(code);
-//        if(e.getResourceBundleCode() != null){
-//            message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
-//            apiException.setErrorMessage(message);
-//        }else {
-//            apiException.setErrorMessage(e.getMessage());
-//        }
+//        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
 //
 //        return new ResponseEntity<>(apiException, httpStatus);
 //    }
+
+//    private String setErrorMessage(Exception e, String getResourceBundleCode, Object[] args) {
+//        if (getResourceBundleCode != null) {
+//            return source.getMessage(getResourceBundleCode, args, LocaleContextHolder.getLocale());
+//        } else {
+//            return e.getMessage();
+//        }
+//    }
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleException(ServiceException e) {
+        String code;
+        String message;
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ApiException apiException = new ApiException();
+
+        code = codeDefinition(e, httpStatus);
+        apiException.setErrorCode(code);
+        if(e.getResourceBundleCode() != null){
+            message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
+            apiException.setErrorMessage(message);
+        }else {
+            apiException.setErrorMessage(e.getMessage());
+        }
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
 //    private ResponseEntity getApiExceptionResponseEntity(HttpStatus httpStatus, Exception e){
 //        String code;
 //        ApiException apiException = new ApiException();

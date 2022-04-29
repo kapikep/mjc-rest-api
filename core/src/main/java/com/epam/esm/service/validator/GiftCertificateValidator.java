@@ -5,6 +5,8 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GiftCertificateValidator {
     private static final int MAX_ID = 1_000_000;
@@ -16,33 +18,33 @@ public class GiftCertificateValidator {
     private static final int MAX_DURATION = 10_000;
 
     public static void giftCertificateFieldValidation(GiftCertificateDto giftCertificateDto) throws ValidateException {
-        StringBuilder resMes = new StringBuilder();
+        List<String> resList = new ArrayList<>();
+
         if (!idValidation(giftCertificateDto.getId())) {
-            resMes.append("Wrong id ");
+            resList.add("incorrect.id");
         }
         if (!nameValidation(giftCertificateDto.getName())) {
-            resMes.append("Wrong name ");
+            resList.add("incorrect.name");
         }
         if (!descriptionValidation(giftCertificateDto.getDescription())) {
-            resMes.append("Wrong description ");
+            resList.add("incorrect.description");
         }
         if (!priceValidation(giftCertificateDto.getPrice())) {
-            resMes.append("Wrong price ");
+            resList.add("incorrect.price");
         }
         if (!durationValidation(giftCertificateDto.getDuration())) {
-            resMes.append("Wrong duration ");
+            resList.add("incorrect.duration");
         }
         if (!createDateValidation(giftCertificateDto.getCreateDate())) {
-            resMes.append("Wrong create date ");
+            resList.add("incorrect.create.date");
         }
         if (!lastUpdateDateValidation(giftCertificateDto.getCreateDate(), giftCertificateDto.getLastUpdateDate())) {
-            resMes.append("Wrong update date ");
-        }
+            resList.add("incorrect.update.date");        }
 
         //TODO Tag validate
 
-        if (resMes.length() != 0) {
-            throw new ValidateException(resMes.toString());
+        if (!resList.isEmpty()) {
+            throw new ValidateException(resList);
         }
     }
 
