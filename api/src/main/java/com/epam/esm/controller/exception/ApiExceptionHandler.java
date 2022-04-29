@@ -3,6 +3,7 @@ package com.epam.esm.controller.exception;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -34,13 +35,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
         String code;
-        String message;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        apiException.setErrorMessage(e.getMessage());
+        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
 
         return new ResponseEntity<>(apiException, httpStatus);
     }
@@ -53,21 +53,55 @@ public class ApiExceptionHandler {
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        apiException.setErrorMessage(e.getMessage());
+        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
 
         return new ResponseEntity<>(apiException, httpStatus);
     }
+
+    private String setErrorMessage(Exception e, String getResourceBundleCode, Object[] args) {
+        if (getResourceBundleCode != null) {
+            return source.getMessage(getResourceBundleCode, args, LocaleContextHolder.getLocale());
+        } else {
+            return e.getMessage();
+        }
+    }
+//    @ExceptionHandler
+//    public ResponseEntity<ApiException> handleException(ServiceException e) {
+//        String code;
+//        String message;
+//        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+//        ApiException apiException = new ApiException();
+//
+//        code = codeDefinition(e, httpStatus);
+//        apiException.setErrorCode(code);
+//        if(e.getResourceBundleCode() != null){
+//            message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
+//            apiException.setErrorMessage(message);
+//        }else {
+//            apiException.setErrorMessage(e.getMessage());
+//        }
+//
+//        return new ResponseEntity<>(apiException, httpStatus);
+//    }
+//    private ResponseEntity getApiExceptionResponseEntity(HttpStatus httpStatus, Exception e){
+//        String code;
+//        ApiException apiException = new ApiException();
+//        code = codeDefinition(e, httpStatus);
+//        apiException.setErrorCode(code);
+//
+//        return new ResponseEntity<>(apiException, httpStatus);
+//    }
 
     private String codeDefinition(Exception e, HttpStatus httpStatus) {
         String res = "00";
         String className = e.getStackTrace()[1].getClassName();
         int httpStatusCode = httpStatus.value();
 
-        if(className.contains("GiftCertificate")){
+        if (className.contains("GiftCertificate")) {
             res = "01";
         }
 
-        if(className.contains("Tag")){
+        if (className.contains("Tag")) {
             res = "02";
         }
 

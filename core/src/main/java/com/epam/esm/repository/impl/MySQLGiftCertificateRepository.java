@@ -140,7 +140,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         try {
             jdbcTemplate.update(DELETE, id);
         } catch (DataAccessException e) {
-            throw new RepositoryException(String.format("Requested resource not found (id = %d)", id), e);
+            throw new RepositoryException(e.getMessage(), e);
         }
     }
 }

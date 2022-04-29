@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
         try{
             tag = repository.readTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e, "resource.not.found", new Object[]{id});
         }
         return tag;
     }
@@ -47,7 +47,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
         if(!TagValidator.idValidation(id)){
-            throw new ValidateException("Wrong tag id");
+            throw new ValidateException("incorrect.id", new Object[]{id});
         }
         Tag tag;
         try{
@@ -61,7 +61,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag readTagByName(String name) throws ServiceException, ValidateException {
         if(!TagValidator.nameValidation(name)) {
-            throw new ValidateException("Wrong tag name");
+            throw new ValidateException("incorrect.name");
         }
         Tag tag;
         try{
@@ -98,7 +98,7 @@ public class TagServiceImpl implements TagService {
         try {
             repository.deleteTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e, "resource.not.found", new Object[]{id});
         }
     }
 }

@@ -22,14 +22,14 @@ import java.util.Map;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+    public static final String RESOURCE_NOT_FOUND = "resource.not.found";
+    public static final String INCORRECT_ID = "incorrect.id";
     private final GiftCertificateRepository repository;
     private final TagServiceImpl tagService;
-    private final MessageSource source;
 
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagServiceImpl tagService, MessageSource source) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagServiceImpl tagService) {
         this.repository = repository;
         this.tagService = tagService;
-        this.source = source;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificates = repository.readGiftCertificate(id);
 
             if (giftCertificates.isEmpty()) {
-                throw new ServiceException(source.getMessage("message", new Object[] {id}, LocaleContextHolder.getLocale()));
+                throw new ServiceException(RESOURCE_NOT_FOUND, new Object[]{id});
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
@@ -65,14 +65,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
-        GiftCertificateValidator.idValidation(id);
+        if(!GiftCertificateValidator.idValidation(id)){
+            throw new ValidateException(INCORRECT_ID, new Object[]{id});
+        }
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
             giftCertificates = repository.readGiftCertificate(id);
 
             if (giftCertificates.isEmpty()) {
-                throw new ServiceException(String.format("Requested id resource not found (id = %d)", id));
+                throw new ServiceException(RESOURCE_NOT_FOUND, new Object[]{id});
             }
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {

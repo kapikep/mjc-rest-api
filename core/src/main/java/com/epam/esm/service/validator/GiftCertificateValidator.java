@@ -126,10 +126,10 @@ public class GiftCertificateValidator {
         boolean res = true;
 
         if (g.getId() == 0) {
-            throw new ValidateException("No Id");
+            throw new ValidateException("No Id", null);
         }
         if (res && g.getName() == null) {
-            return false; //TODO
+            res = false;
         }
         if(res && g.getDescription() == null){
             res = false;

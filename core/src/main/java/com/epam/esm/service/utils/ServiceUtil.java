@@ -29,18 +29,8 @@ public class ServiceUtil {
         if (str != null && Pattern.matches("\\d+", str)) {
             i = Integer.parseInt(str);
         } else {
-            throw new ValidateException(String.format("Incorrect parameter (%s)", str));
+            throw new ValidateException("incorrect.parameter", new Object[] {str});
         }
         return i;
-    }
-
-    public static double parseDouble(String str) throws ValidateException {
-        double d = 0;
-        if (str != null) {
-            d = Double.parseDouble(str);
-        } else {
-            throw new ValidateException(String.format("Incorrect parameter (%s)", str));
-        }
-        return d;
     }
 }
