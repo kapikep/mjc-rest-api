@@ -1,10 +1,6 @@
 package com.epam.esm.config;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 //Instead of web.xml
 public class SpringWebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {

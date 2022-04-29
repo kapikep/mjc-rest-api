@@ -28,10 +28,10 @@ public class ApiConfig implements WebMvcConfigurer {
         return new SessionLocaleResolver();
     }
 
-    @Bean("messageSource")
+    @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("languages/messages");
+        messageSource.setBasenames("localization/validatorMessages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

@@ -3,11 +3,6 @@ package com.epam.esm.service.validator;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.ValidateException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.servlet.LocaleResolver;
 
 public class TagValidator {
 

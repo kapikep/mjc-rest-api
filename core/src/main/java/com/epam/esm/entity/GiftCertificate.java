@@ -1,10 +1,7 @@
 package com.epam.esm.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 public class GiftCertificate implements Serializable {
@@ -15,9 +12,7 @@ public class GiftCertificate implements Serializable {
     private String description;
     private Double price;
     private Integer duration;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime createDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime lastUpdateDate;
     private Tag tag;
 
