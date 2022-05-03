@@ -1,7 +1,6 @@
 package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.time.LocalDateTime;

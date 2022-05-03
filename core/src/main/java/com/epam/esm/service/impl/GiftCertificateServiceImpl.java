@@ -9,15 +9,12 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.utils.GiftCertificateUtil;
-import com.epam.esm.service.validator.GiftCertificateValidator;
 import com.epam.esm.service.utils.ServiceUtil;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+import com.epam.esm.service.validator.GiftCertificateValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @Service

@@ -8,7 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.io.BufferedReader;
 import java.util.Iterator;
@@ -21,8 +26,7 @@ public class ApiExceptionHandler {
     public ApiExceptionHandler(MessageSource source) {
         this.source = source;
     }
-
-    //TODO 404 error
+    
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(HttpMessageNotReadableException e) {
         String code;
@@ -33,6 +37,15 @@ public class ApiExceptionHandler {
         apiException.setErrorCode(code);
         apiException.setErrorMessage(e.getMessage());
 
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleExceptionNotFound(NoHandlerFoundException e) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ApiException apiException = new ApiException();
+        apiException.setErrorMessage(source.getMessage("incorrect.path", new Object[] {e.getMessage()}, LocaleContextHolder.getLocale()));
+        apiException.setErrorCode(codeDefinition(e, httpStatus));
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
@@ -130,7 +143,6 @@ public class ApiExceptionHandler {
         if (className.contains("Tag")) {
             res = "02";
         }
-
         res = httpStatusCode + res;
 
         return res;
