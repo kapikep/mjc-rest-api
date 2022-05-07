@@ -33,6 +33,8 @@ public class TagController {
         return tag;
     }
 
+    //todo get by name
+
     @PutMapping
     public Tag updateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         service.updateTag(tag);

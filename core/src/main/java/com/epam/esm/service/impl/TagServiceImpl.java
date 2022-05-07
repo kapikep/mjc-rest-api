@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
         try{
             tag = repository.readTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "resource.not.found", new Object[]{id});
+            throw new ServiceException(e.getMessage(), e, "resource.not.found", id);
         }
         return tag;
     }
@@ -47,7 +47,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
         if(!TagValidator.idValidation(id)){
-            throw new ValidateException("incorrect.id", new Object[]{id});
+            throw new ValidateException("incorrect.id", id);
         }
         Tag tag;
         try{
@@ -65,11 +65,28 @@ public class TagServiceImpl implements TagService {
         }
         Tag tag;
         try{
-            tag = repository.readTag(name);
+            tag = repository.readTagByName(name);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
         return tag;
+    }
+
+    @Override
+    public int getTagIdOrCreateNewTag(Tag tag) throws ServiceException, ValidateException{
+        TagValidator.tagFieldValidator(tag);
+        int id;
+        try{
+            id = repository.readTagByName(tag.getName()).getId();
+        } catch (RepositoryException e){
+            try {
+                repository.createTag(tag);
+                id = repository.readTagByName(tag.getName()).getId();
+            } catch (RepositoryException ex) {
+                throw new ServiceException(e.getMessage(), e);
+            }
+        }
+        return id;
     }
 
     @Override
@@ -86,6 +103,9 @@ public class TagServiceImpl implements TagService {
     public void updateTag(Tag tag) throws ServiceException, ValidateException {
         TagValidator.tagFieldValidator(tag);
         try {
+            if(tag.getId() == 0){
+                throw new ValidateException("incorrect.id", tag.getId());
+            }
             repository.updateTag(tag);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -98,7 +118,7 @@ public class TagServiceImpl implements TagService {
         try {
             repository.deleteTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "resource.not.found", new Object[]{id});
+            throw new ServiceException(e.getMessage(), e, "resource.not.found", id);
         }
     }
 }

@@ -26,7 +26,7 @@ public class ApiExceptionHandler {
     public ApiExceptionHandler(MessageSource source) {
         this.source = source;
     }
-    
+
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(HttpMessageNotReadableException e) {
         String code;
@@ -41,7 +41,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleExceptionNotFound(NoHandlerFoundException e) {
+    public ResponseEntity<ApiException> handleException(NoHandlerFoundException e) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         ApiException apiException = new ApiException();
         apiException.setErrorMessage(source.getMessage("incorrect.path", new Object[] {e.getMessage()}, LocaleContextHolder.getLocale()));
@@ -58,7 +58,7 @@ public class ApiExceptionHandler {
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        if(!e.getResourceBundleCodeList().isEmpty()){
+        if(e.getResourceBundleCodeList() != null){
             StringBuilder builder = new StringBuilder();
             List<String> strings = e.getResourceBundleCodeList();
             Iterator<String> iter = strings.iterator();
@@ -97,13 +97,6 @@ public class ApiExceptionHandler {
 //        return new ResponseEntity<>(apiException, httpStatus);
 //    }
 
-//    private String setErrorMessage(Exception e, String getResourceBundleCode, Object[] args) {
-//        if (getResourceBundleCode != null) {
-//            return source.getMessage(getResourceBundleCode, args, LocaleContextHolder.getLocale());
-//        } else {
-//            return e.getMessage();
-//        }
-//    }
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ServiceException e) {
         String code;

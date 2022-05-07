@@ -8,6 +8,7 @@ import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
+import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.utils.GiftCertificateUtil;
 import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.validator.GiftCertificateValidator;
@@ -22,9 +23,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "resource.not.found";
     public static final String INCORRECT_ID = "incorrect.id";
     private final GiftCertificateRepository repository;
-    private final TagServiceImpl tagService;
+    private final TagService tagService;
 
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagServiceImpl tagService) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
         this.repository = repository;
         this.tagService = tagService;
     }
@@ -45,19 +46,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificateDto readGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
-        List<GiftCertificate> giftCertificates;
-        List<GiftCertificateDto> giftCertificateDtoList;
-        try {
-            giftCertificates = repository.readGiftCertificate(id);
-
-            if (giftCertificates.isEmpty()) {
-                throw new ServiceException(RESOURCE_NOT_FOUND, id);
-            }
-            giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-        return giftCertificateDtoList.get(0);
+        return getGiftCertificateDto(id);
     }
 
     @Override
@@ -65,6 +54,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if(!GiftCertificateValidator.idValidation(id)){
             throw new ValidateException(INCORRECT_ID, id);
         }
+        return getGiftCertificateDto(id);
+    }
+
+    private GiftCertificateDto getGiftCertificateDto(int id) throws ServiceException {
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
@@ -94,14 +87,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             List<Tag> tags = giftDto.getTags();
             for (Tag tag : tags) {
-                int id;
-                try {
-                    id = tagService.readTagByName(tag.getName()).getId();
-                } catch (ServiceException e) {
-                    tagService.createTag(tag);
-                    id = tagService.readTagByName(tag.getName()).getId();
-                }
-                tag.setId(id);
+                tag.setId(tagService.getTagIdOrCreateNewTag(tag));
             }
             repository.createGiftCertificate(gift, tags);
         } catch (RepositoryException e) {
@@ -123,14 +109,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
             List<Tag> tags = giftDto.getTags();
             for (Tag tag : tags) {
-                int id;
-                try {
-                    id = tagService.readTagByName(tag.getName()).getId();
-                } catch (ServiceException e) {
-                    tagService.createTag(tag);
-                    id = tagService.readTagByName(tag.getName()).getId();
-                }
-                tag.setId(id);
+                tag.setId(tagService.getTagIdOrCreateNewTag(tag));
             }
             repository.updateGiftCertificate(gift, tags);
         } catch (RepositoryException e) {

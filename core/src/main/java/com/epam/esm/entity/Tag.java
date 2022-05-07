@@ -9,6 +9,9 @@ public class Tag implements Serializable {
     int id;
     private String name;
 
+    public Tag() {
+    }
+
     public Tag(int id, String name) {
         this.id = id;
         this.name = name;
@@ -16,9 +19,6 @@ public class Tag implements Serializable {
 
     public Tag(String name) {
         this.name = name;
-    }
-
-    public Tag() {
     }
 
     public int getId() {

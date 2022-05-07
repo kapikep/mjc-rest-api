@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.config.CoreConfig;
 import com.epam.esm.config.DevConfig;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.exception.RepositoryException;
@@ -16,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
@@ -36,7 +36,7 @@ class MySQLTagRepositoryTest {
     void readTagById() throws RepositoryException {
         Tag expectedTag = new Tag(6, "Romantic");
         Tag actualTag = repository.readTag(6);
-        RepositoryException e = Assertions.assertThrows(RepositoryException.class, () -> {
+        RepositoryException e = assertThrows(RepositoryException.class, () -> {
             repository.readTag(-1);
         });
 
@@ -48,9 +48,9 @@ class MySQLTagRepositoryTest {
     void readTagByName() throws RepositoryException {
         Tag actualTag;
         Tag expectedTag = new Tag(2, "Water");
-        actualTag = repository.readTag("Water");
-        RepositoryException e = Assertions.assertThrows(RepositoryException.class, () -> {
-            repository.readTag("abcd");
+        actualTag = repository.readTagByName("Water");
+        RepositoryException e = assertThrows(RepositoryException.class, () -> {
+            repository.readTagByName("abcd");
         });
 
         assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
@@ -61,7 +61,7 @@ class MySQLTagRepositoryTest {
     void createTag() throws RepositoryException {
         Tag expectedTag = new Tag("Tag1");
         repository.createTag(expectedTag);
-        Tag actualTag = repository.readTag("Tag1");
+        Tag actualTag = repository.readTagByName("Tag1");
         assertEquals(expectedTag.getName(), actualTag.getName());
     }
 
@@ -78,11 +78,11 @@ class MySQLTagRepositoryTest {
     void deleteTag() throws RepositoryException {
         Tag tag = new Tag("Tag3");
         repository.createTag(tag);
-        tag.setId(repository.readTag(tag.getName()).getId());
+        tag.setId(repository.readTagByName(tag.getName()).getId());
         repository.deleteTag(tag.getId());
 
-        RepositoryException e = Assertions.assertThrows(RepositoryException.class, () -> {
-            repository.readTag("Tag3");
+        RepositoryException e = assertThrows(RepositoryException.class, () -> {
+            repository.readTagByName("Tag3");
         });
 
         assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());

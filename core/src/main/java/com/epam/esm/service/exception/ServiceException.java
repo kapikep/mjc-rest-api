@@ -1,7 +1,6 @@
 package com.epam.esm.service.exception;
 
 public class ServiceException extends Exception{
-
     private String resourceBundleCode;
     private Object[] args;
 

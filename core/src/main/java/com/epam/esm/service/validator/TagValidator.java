@@ -4,22 +4,30 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.ValidateException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TagValidator {
 
     private static final int MAX_ID = 1_000_000;
     private static final int MAX_NAME_LENGHT = 45;
 
     public static void tagFieldValidator(Tag tag) throws ValidateException {
-        StringBuilder resMes = new StringBuilder();
-        if (!idValidation(tag.getId())) {
-            resMes.append("Wrong tag id ");
-        }
-        if (!nameValidation(tag.getName())) {
-            resMes.append("Wrong tag name ");
+        List<String> resList = new ArrayList<>();
+
+        if(tag == null){
+            throw new ValidateException("tag.is.null");
         }
 
-        if (resMes.length() != 0) {
-            throw new ValidateException(resMes.toString());
+        if (!idValidation(tag.getId())) {
+            resList.add("incorrect.tag.id");
+        }
+        if (!nameValidation(tag.getName())) {
+            resList.add("incorrect.tag.name");
+        }
+
+        if (!resList.isEmpty()) {
+            throw new ValidateException(resList);
         }
     }
 
@@ -45,7 +53,7 @@ public class TagValidator {
         return res;
     }
 
-    public static boolean allNotNullFieldValidation(GiftCertificate g) throws ValidateException {
+    public static boolean allNotNullFieldValidation(Tag g) throws ValidateException {
         boolean res = true;
 
         if (g.getId() == 0) {

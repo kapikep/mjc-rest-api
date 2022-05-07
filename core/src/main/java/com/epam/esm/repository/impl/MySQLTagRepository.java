@@ -48,7 +48,7 @@ public class MySQLTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag readTag(String name) throws RepositoryException {
+    public Tag readTagByName(String name) throws RepositoryException {
         Tag tag;
         try {
             tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_NAME, new TagMapper(), name);
