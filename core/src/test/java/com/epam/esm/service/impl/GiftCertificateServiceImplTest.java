@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.service.exception.ServiceException;
@@ -252,9 +253,9 @@ class GiftCertificateServiceImplTest {
     @Test
     void findGiftCertificatesAllOk() throws RepositoryException, ValidateException, ServiceException {
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put("tag.name", "tag");
-        criteriaMap.put("name", "name");
-        criteriaMap.put("description", "description");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "tag");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "name");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "description");
         String sorting = "name_desc";
 
         when(repository.findGiftCertificate(criteriaMap, sorting)).thenReturn(entityList);
@@ -265,8 +266,8 @@ class GiftCertificateServiceImplTest {
     @Test
     void findGiftCertificatesIncorrectParam() throws RepositoryException, ValidateException, ServiceException {
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put("tag.name", "tag");
-        criteriaMap.put("name", "name");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "tag");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "name");
         criteriaMap.put("qqeqe", "description");
 
         try (MockedStatic<GiftCertificateValidator> validator = Mockito.mockStatic(GiftCertificateValidator.class)) {

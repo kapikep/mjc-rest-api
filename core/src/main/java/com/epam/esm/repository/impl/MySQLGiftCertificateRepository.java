@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
@@ -27,8 +28,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             "LEFT OUTER JOIN tag tag ON (gcht.tag_id = tag.id)";
     private static final String READ_ONE = READ_ALL + " WHERE gc.id=?";
     private static final String SEARCH_BY_NAME = READ_ALL + " WHERE gc.name=?";
-    private static final List<String> SEARCH_CERTIFICATE_PARAM = Arrays.asList("name", "description");
-    private static final List<String> SORT_PARAM = Arrays.asList("create_date", "last_update_date", "name", "description");
 
     private final JdbcTemplate jdbcTemplate;
     private final MySQLTagRepository tagRepository;
@@ -72,7 +71,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             Iterator<String> iter = criteriaMap.keySet().iterator();
             while (iter.hasNext()) {
                 String s = iter.next();
-                if (SEARCH_CERTIFICATE_PARAM.contains(s)) {
+                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(s)) {
                     findQuery.append("gc.");
                 }
                 findQuery.append(s).append(" LIKE '%")
@@ -92,9 +91,9 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             if(sorting.endsWith("asc") || sorting.endsWith("ASC")){
                 sorting = sorting.substring(0, sorting.length() - 4);
             }
-            if (SORT_PARAM.contains(sorting)) {
+            if (GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
                 findQuery.append(" ORDER BY ");
-                if(SEARCH_CERTIFICATE_PARAM.contains(sorting)){
+                if(GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(sorting)){
                     findQuery.append("gc.");
                 }
                 findQuery.append(sorting);

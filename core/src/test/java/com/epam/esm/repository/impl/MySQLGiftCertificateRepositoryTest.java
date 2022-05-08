@@ -3,6 +3,7 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.config.DevConfig;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.junit.jupiter.api.Assertions;
@@ -62,14 +63,14 @@ class MySQLGiftCertificateRepositoryTest {
                 "Complex for cars with washing and body treatment from KlinArt", 100.0, 180, LocalDateTime.parse("2022-04-27T04:43:55.000"),
                 LocalDateTime.parse("2022-04-27T04:43:55.000"), new Tag(5, "Auto"));
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put("name", "Car");
-        criteriaMap.put("description", "washing");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "Car");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "washing");
         List<GiftCertificate> actualGifts = repository.findGiftCertificate(criteriaMap, "name_desc");
 
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
 
-        criteriaMap.put("tag.name", "Спорт");
+        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "Спорт");
         actualGifts = repository.findGiftCertificate(criteriaMap, null);
 
         assertEquals(0, actualGifts.size());

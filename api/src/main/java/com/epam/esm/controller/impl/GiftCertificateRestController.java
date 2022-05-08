@@ -4,6 +4,7 @@ import com.epam.esm.controller.interf.GiftCertificateController;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
@@ -52,13 +53,13 @@ public class GiftCertificateRestController implements GiftCertificateController 
             @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
         Map<String, String> criteriaMap = new HashMap<>();
         if(tagName != null){
-            criteriaMap.put("tag.name", tagName);
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, tagName);
         }
         if(name != null){
-            criteriaMap.put("name", name);
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, name);
         }
         if(description != null){
-            criteriaMap.put("description", description);
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, description);
         }
         return service.findGiftCertificates(criteriaMap, sort);
     }

@@ -2,7 +2,7 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.constant.SearchParam;
+import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.time.LocalDateTime;
@@ -27,17 +27,17 @@ public class GiftCertificateValidator {
             criteriaMap.forEach((k, v) -> {
 
                 switch (k){
-                    case "tag.name":
+                    case GiftCertificateSearchParam.SEARCH_TAG_NAME:
                         if (v.length() > CRITERIA_TAG_LENGHT) {
                             resList.add("incorrect.param.tag");
                         }
                         break;
-                    case "name":
+                    case GiftCertificateSearchParam.SEARCH_NAME:
                         if (v.length() > MAX_NAME_LENGHT) {
                             resList.add("incorrect.param.name");
                         }
                         break;
-                    case "description":
+                    case GiftCertificateSearchParam.SEARCH_DESCRIPTION:
                         if (v.length() > MAX_DESCRIPTION_LENGHT) {
                             resList.add("incorrect.param.description");
                         }
@@ -56,11 +56,10 @@ public class GiftCertificateValidator {
                     sorting = sorting.substring(0, sorting.length() - 4);
                 }
 
-                if (!SearchParam.SORT_PARAM.contains(sorting)) {
+                if (!GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
                     resList.add("incorrect.param.sorting");
                 }
             }
-
             if (!resList.isEmpty()) {
                 throw new ValidateException(resList);
             }
@@ -103,7 +102,6 @@ public class GiftCertificateValidator {
     private static boolean tagsValidation(List<Tag> tags) {
         return true;
     }
-
 
     public static boolean idValidation(int id) {
         boolean res = true;
