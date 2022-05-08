@@ -129,7 +129,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException {
-        //TODO Criteria validation
+        GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {

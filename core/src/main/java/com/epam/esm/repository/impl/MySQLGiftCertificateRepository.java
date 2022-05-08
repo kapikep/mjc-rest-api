@@ -85,9 +85,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
 
         if(sorting != null){
             boolean desc = false;
-            if(sorting.endsWith("desc")){
+            if(sorting.endsWith("desc") || sorting.endsWith("DESC")){
                 desc = true;
                 sorting = sorting.substring(0, sorting.length() - 5);
+            }
+            if(sorting.endsWith("asc") || sorting.endsWith("ASC")){
+                sorting = sorting.substring(0, sorting.length() - 4);
             }
             if (SORT_PARAM.contains(sorting)) {
                 findQuery.append(" ORDER BY ");

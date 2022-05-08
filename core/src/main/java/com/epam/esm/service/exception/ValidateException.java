@@ -30,18 +30,6 @@ public class ValidateException extends Exception{
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public ValidateException(Throwable cause, String resourceBundleCode, Object[] args){
-        this(cause);
-        this.resourceBundleCode = resourceBundleCode;
-        this.args = args;
-    }
-
-    public ValidateException(String message, Throwable cause, String resourceBundleCode, @Nullable Object...args){
-        this(cause, message);
-        this.resourceBundleCode = resourceBundleCode;
-        this.args = args;
-    }
-
     public ValidateException(String resourceBundleCode, @Nullable Object...args){
         this.resourceBundleCode = resourceBundleCode;
         this.args = args;

@@ -19,9 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
@@ -66,15 +64,13 @@ class MySQLGiftCertificateRepositoryTest {
         Map<String, String> criteriaMap = new HashMap<>();
         criteriaMap.put("name", "Car");
         criteriaMap.put("description", "washing");
-        List<GiftCertificate> actualGifts =
-                repository.findGiftCertificate(criteriaMap, "name_desc");
+        List<GiftCertificate> actualGifts = repository.findGiftCertificate(criteriaMap, "name_desc");
 
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
 
         criteriaMap.put("tag.name", "Спорт");
-        actualGifts =
-                repository.findGiftCertificate(criteriaMap, null);
+        actualGifts = repository.findGiftCertificate(criteriaMap, null);
 
         assertEquals(0, actualGifts.size());
         assertFalse(actualGifts.contains(expectedGift));
@@ -86,19 +82,16 @@ class MySQLGiftCertificateRepositoryTest {
                 "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
                 LocalDateTime.parse("2022-04-27T04:43:55.000"), new Tag(7, "Health"));
         GiftCertificate expectedFirstGift = new GiftCertificate(4, "Bowling for the company",
-                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), new Tag(5, "Auto"));
-        List<GiftCertificate> actualGifts =
-                repository.findGiftCertificate(null, null);
-        actualGifts =
-                repository.findGiftCertificate(null, "name");
+                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60,
+                LocalDateTime.parse("2022-04-27T04:43:55.000"), LocalDateTime.parse("2022-04-27T04:43:55.000"), new Tag(5, "Auto"));
+        List<GiftCertificate> actualGifts = repository.findGiftCertificate(null, null);
+        actualGifts = repository.findGiftCertificate(null, "name");
 
         assertEquals(8, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(7));
 
-        actualGifts =
-                repository.findGiftCertificate(null, "name_desc");
+        actualGifts = repository.findGiftCertificate(null, "name_desc");
 
         expectedLastGift.setTag(new Tag(1, "Sport"));
         expectedFirstGift.setTag(new Tag(7, "Health"));
@@ -106,6 +99,8 @@ class MySQLGiftCertificateRepositoryTest {
         assertEquals(8, actualGifts.size());
         assertEquals(expectedLastGift, actualGifts.get(0));
         assertEquals(expectedFirstGift, actualGifts.get(7));
+
+        assertDoesNotThrow(() -> repository.findGiftCertificate(null, "name_asc"));
     }
 
     @Test
@@ -113,7 +108,7 @@ class MySQLGiftCertificateRepositoryTest {
         GiftCertificate expectedLastGift = new GiftCertificate(6, "Name", "Description", 45.0, 60,
                 LocalDateTime.parse("2020-04-27T04:43:55.000"), LocalDateTime.parse("2021-04-27T04:43:55.000"), new Tag(1, "Sport"));
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1,"Sport"));
+        tags.add(new Tag(1, "Sport"));
 
         repository.createGiftCertificate(expectedLastGift, tags);
 
@@ -129,7 +124,7 @@ class MySQLGiftCertificateRepositoryTest {
                 "New description", 20.0, 50, LocalDateTime.parse("2010-04-27T04:43:55.000"),
                 LocalDateTime.parse("2010-04-27T04:43:55.000"), new Tag(4, "Cafe"));
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(4,"Cafe"));
+        tags.add(new Tag(4, "Cafe"));
         repository.updateGiftCertificate(expectedLastGift, tags);
         List<GiftCertificate> actualGifts = repository.readGiftCertificate(5);
         //        tags.add(new Tag("New tag"));

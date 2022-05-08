@@ -3,12 +3,16 @@ package com.epam.esm.service.utils;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.ValidateException;
+import com.epam.esm.service.validator.GiftCertificateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.epam.esm.service.utils.GiftCertificateUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -114,5 +118,56 @@ class GiftCertificateUtilTest {
 
         updateFields(newGift, oldGift);
         assertEquals(oldGift, newGift);
+    }
+
+    @Test
+    void giftCertificateCriteriaValidationAllOk() throws ValidateException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tag1");
+        criteriaMap.put("name", "name");
+        criteriaMap.put("description", "description");
+        String sorting = "name_desc";
+
+        GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
+    }
+
+    @Test
+    void giftCertificateCriteriaWrongTagName() throws ValidateException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1");
+        criteriaMap.put("name", "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
+        criteriaMap.put("description", "description");
+        String sorting = "name_asc";
+
+        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
+        assertEquals("incorrect.param.tag", e.getResourceBundleCodeList().get(1));
+        assertEquals("incorrect.param.name", e.getResourceBundleCodeList().get(0));
+        assertEquals(2, e.getResourceBundleCodeList().size());
+    }
+
+    @Test
+    void giftCertificateCriteriaWrongSortingName() throws ValidateException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tag");
+        criteriaMap.put("name", "name");
+        criteriaMap.put("description", "description");
+        String sorting = "name_DssESC";
+
+        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
+        assertEquals("incorrect.param.sorting", e.getResourceBundleCodeList().get(0));
+        assertEquals(1, e.getResourceBundleCodeList().size());
+    }
+
+    @Test
+    void giftCertificateCriteriaWrongParam() throws ValidateException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tag");
+        criteriaMap.put("name", "name");
+        criteriaMap.put("description", "description");
+        criteriaMap.put("incorrect", "description");
+
+        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, null));
+        assertEquals("incorrect.param", e.getResourceBundleCodeList().get(0));
+        assertEquals(1, e.getResourceBundleCodeList().size());
     }
 }

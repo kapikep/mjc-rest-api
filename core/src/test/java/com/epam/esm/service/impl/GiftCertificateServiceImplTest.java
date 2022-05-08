@@ -22,7 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -99,7 +101,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void testReadGiftCertificate() throws RepositoryException, ValidateException, ServiceException {
+    void testReadGiftCertificateStr() throws RepositoryException, ValidateException, ServiceException {
         when(repository.readGiftCertificate(anyInt())).thenReturn(entityList).thenReturn(new ArrayList<>())
                 .thenThrow(new RepositoryException());
 
@@ -116,7 +118,34 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void testReadGiftCertificateThrowValidateException() throws RepositoryException, ValidateException, ServiceException {
+    void testReadGiftCertificateInt() throws RepositoryException, ValidateException, ServiceException {
+        when(repository.readGiftCertificate(anyInt())).thenReturn(entityList).thenReturn(new ArrayList<>())
+                .thenThrow(new RepositoryException());
+
+        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
+             MockedStatic<GiftCertificateValidator> validator = Mockito.mockStatic(GiftCertificateValidator.class)) {
+            validator.when(() -> GiftCertificateValidator.idValidation(1)).thenReturn(true);
+            util.when(() -> GiftCertificateUtil.giftCertificateEntityListToDtoConverting(entityList))
+                    .thenReturn(dtoList);
+            GiftCertificateDto actualDto = service.readGiftCertificate(1);
+            assertEquals(dtoList.get(0), actualDto);
+        }
+        assertThrows(ServiceException.class, () -> service.readGiftCertificate(2));
+        assertThrows(ServiceException.class, () -> service.readGiftCertificate(2));
+    }
+
+    @Test
+    void testReadGiftCertificateIntWrongId(){
+
+        try (MockedStatic<GiftCertificateValidator> validator = Mockito.mockStatic(GiftCertificateValidator.class)) {
+            validator.when(() -> GiftCertificateValidator.idValidation(-1)).thenReturn(false);
+
+            assertThrows(ValidateException.class, () -> service.readGiftCertificate(-1));
+        }
+    }
+
+    @Test
+    void testReadGiftCertificateThrowValidateException(){
         try (MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
             servUtil.when(() -> ServiceUtil.parseInt(anyString())).thenThrow(new ValidateException());
 
@@ -221,6 +250,31 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void findGiftCertificates() throws RepositoryException, ValidateException, ServiceException {
+    void findGiftCertificatesAllOk() throws RepositoryException, ValidateException, ServiceException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tag");
+        criteriaMap.put("name", "name");
+        criteriaMap.put("description", "description");
+        String sorting = "name_desc";
+
+        when(repository.findGiftCertificate(criteriaMap, sorting)).thenReturn(entityList);
+        service.findGiftCertificates(criteriaMap, sorting);
+        verify(repository, times(1)).findGiftCertificate(criteriaMap, sorting);
+    }
+
+    @Test
+    void findGiftCertificatesIncorrectParam() throws RepositoryException, ValidateException, ServiceException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put("tag.name", "tag");
+        criteriaMap.put("name", "name");
+        criteriaMap.put("qqeqe", "description");
+
+        try (MockedStatic<GiftCertificateValidator> validator = Mockito.mockStatic(GiftCertificateValidator.class)) {
+            validator.when(() -> GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, null))
+                    .thenThrow(ValidateException.class);
+        }
+
+        verify(repository, never()).findGiftCertificate(criteriaMap, null);
+        assertThrows(ValidateException.class, () -> service.findGiftCertificates(criteriaMap, null));
     }
 }

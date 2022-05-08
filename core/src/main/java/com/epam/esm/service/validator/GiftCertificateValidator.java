@@ -2,11 +2,13 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GiftCertificateValidator {
     private static final int MAX_ID = 1_000_000;
@@ -16,6 +18,54 @@ public class GiftCertificateValidator {
     private static final int MAX_PRICE = 100_000;
     private static final int MIN_DURATION = 1;
     private static final int MAX_DURATION = 10_000;
+    public static final int CRITERIA_TAG_LENGHT = 20;
+
+    public static void giftCertificateCriteriaValidation(Map<String, String> criteriaMap, String sorting) throws ValidateException {
+        List<String> resList = new ArrayList<>();
+
+        if (criteriaMap != null) {
+            criteriaMap.forEach((k, v) -> {
+
+                switch (k){
+                    case "tag.name":
+                        if (v.length() > CRITERIA_TAG_LENGHT) {
+                            resList.add("incorrect.param.tag");
+                        }
+                        break;
+                    case "name":
+                        if (v.length() > MAX_NAME_LENGHT) {
+                            resList.add("incorrect.param.name");
+                        }
+                        break;
+                    case "description":
+                        if (v.length() > MAX_DESCRIPTION_LENGHT) {
+                            resList.add("incorrect.param.description");
+                        }
+                        break;
+                    default:
+                        resList.add("incorrect.param");
+                }
+            });
+
+            if(sorting != null){
+                if(sorting.endsWith("desc") || sorting.endsWith("DESC")){
+                    sorting = sorting.substring(0, sorting.length() - 5);
+                }
+
+                if(sorting.endsWith("asc") || sorting.endsWith("ASC")){
+                    sorting = sorting.substring(0, sorting.length() - 4);
+                }
+
+                if (!SearchParam.SORT_PARAM.contains(sorting)) {
+                    resList.add("incorrect.param.sorting");
+                }
+            }
+
+            if (!resList.isEmpty()) {
+                throw new ValidateException(resList);
+            }
+        }
+    }
 
     public static void giftCertificateFieldValidation(GiftCertificateDto dto) throws ValidateException {
         List<String> resList = new ArrayList<>();
@@ -39,9 +89,10 @@ public class GiftCertificateValidator {
             resList.add("incorrect.create.date");
         }
         if (!lastUpdateDateValidation(dto.getCreateDate(), dto.getLastUpdateDate())) {
-            resList.add("incorrect.update.date");        }
+            resList.add("incorrect.update.date");
+        }
 
-        if(!tagsValidation(dto.getTags())) {
+        if (!tagsValidation(dto.getTags())) {
         }
 
         if (!resList.isEmpty()) {
@@ -92,7 +143,7 @@ public class GiftCertificateValidator {
     public static boolean priceValidation(Double price) {
         boolean res = true;
 
-        if(price != null){
+        if (price != null) {
             if (price < MIN_PRICE || price > MAX_PRICE) {
                 res = false;
             }
@@ -105,11 +156,11 @@ public class GiftCertificateValidator {
     public static boolean durationValidation(Integer duration) {
         boolean res = true;
 
-        if(duration != null) {
+        if (duration != null) {
             if (duration < MIN_DURATION || duration > MAX_DURATION) {
                 res = false;
             }
-        }else {
+        } else {
             res = false;
         }
         return res;
@@ -120,8 +171,8 @@ public class GiftCertificateValidator {
 
         if (createDate == null) {
             res = false;
-        }else {
-            if(createDate.isAfter(LocalDateTime.now())){
+        } else {
+            if (createDate.isAfter(LocalDateTime.now())) {
                 res = false;
             }
         }
@@ -135,10 +186,10 @@ public class GiftCertificateValidator {
         if (lastUpdateDate == null) {
             res = false;
         } else {
-            if(lastUpdateDate.isAfter(LocalDateTime.now())){
+            if (lastUpdateDate.isAfter(LocalDateTime.now())) {
                 res = false;
             }
-            if(createDate != null){
+            if (createDate != null) {
                 if (lastUpdateDate.isBefore(createDate)) {
                     res = false;
                 }
@@ -156,7 +207,7 @@ public class GiftCertificateValidator {
         if (res && g.getName() == null) {
             res = false;
         }
-        if(res && g.getDescription() == null){
+        if (res && g.getDescription() == null) {
             res = false;
         }
         if (res && g.getPrice() == null) {
