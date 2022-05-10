@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
 import java.io.BufferedReader;
 import java.util.Iterator;
@@ -48,6 +49,13 @@ public class ApiExceptionHandler {
         apiException.setErrorCode(codeDefinition(e, httpStatus));
         return new ResponseEntity<>(apiException, httpStatus);
     }
+
+//    @ExceptionHandler
+//    public ResponseEntity<ApiException> handleException(AbstractHandlerExceptionResolver e) {
+//        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+//        ApiException apiException = new ApiException();
+//        return new ResponseEntity<>(apiException, httpStatus);
+//    }
 
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {

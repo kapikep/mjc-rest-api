@@ -9,7 +9,6 @@
 </head>
 <body>
 <h1>Hello world</h1>
-<th><spring:message code="message" text="message" /></th>
 <a href="${pageContext.request.contextPath}/gifts">Gifts</a>
 <a href="${pageContext.request.contextPath}/test">Test</a>
 <a href="${pageContext.request.contextPath}/gift">Gift</a>

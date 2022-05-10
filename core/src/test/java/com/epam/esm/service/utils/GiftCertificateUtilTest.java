@@ -136,7 +136,7 @@ class GiftCertificateUtilTest {
     @Test
     void giftCertificateCriteriaWrongTagName() throws ValidateException {
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SEARCH_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1");
+        criteriaMap.put(SEARCH_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1daaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         criteriaMap.put(SEARCH_NAME, "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
         criteriaMap.put(SEARCH_DESCRIPTION, "description");
         String sorting = "name_asc";
