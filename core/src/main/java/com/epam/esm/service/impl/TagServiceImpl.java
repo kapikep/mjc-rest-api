@@ -24,7 +24,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<Tag> readAllTags() throws ServiceException, ValidateException {
         List<Tag> tags;
-        try{
+        try {
             tags = repository.readAllTags();
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -36,7 +36,7 @@ public class TagServiceImpl implements TagService {
     public Tag readTag(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
         Tag tag;
-        try{
+        try {
             tag = repository.readTag(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, "resource.not.found", id);
@@ -46,11 +46,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
-        if(!TagValidator.idValidation(id)){
+        if (!TagValidator.idValidation(id)) {
             throw new ValidateException("incorrect.id", id);
         }
         Tag tag;
-        try{
+        try {
             tag = repository.readTag(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -60,11 +60,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag readTagByName(String name) throws ServiceException, ValidateException {
-        if(!TagValidator.nameValidation(name)) {
+        if (!TagValidator.nameValidation(name)) {
             throw new ValidateException("incorrect.name");
         }
         Tag tag;
-        try{
+        try {
             tag = repository.readTagByName(name);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -73,37 +73,42 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public int getTagIdOrCreateNewTag(Tag tag) throws ServiceException, ValidateException{
-        TagValidator.tagFieldValidator(tag);
-        int id;
-        try{
-            id = repository.readTagByName(tag.getName()).getId();
-        } catch (RepositoryException e){
-            try {
-                repository.createTag(tag);
-                id = repository.readTagByName(tag.getName()).getId();
-            } catch (RepositoryException ex) {
-                throw new ServiceException(e.getMessage(), e);
+    public void getIdOrCreateTagsInList(List<Tag> tags) throws ServiceException, ValidateException {
+        if(tags != null) {
+            for (Tag tag : tags) {
+                TagValidator.tagFieldValidator(tag);
+                int id;
+                try {
+                    id = repository.readTagByName(tag.getName()).getId();
+                } catch (RepositoryException e) {
+                    try {
+                        id = repository.createTag(tag);
+                    } catch (RepositoryException ex) {
+                        throw new ServiceException(e.getMessage(), e);
+                    }
+                }
+                tag.setId(id);
             }
         }
-        return id;
     }
 
     @Override
-    public void createTag(Tag tag) throws ServiceException, ValidateException {
+    public int createTag(Tag tag) throws ServiceException, ValidateException {
+        int id;
         TagValidator.tagFieldValidator(tag);
         try {
-            repository.createTag(tag);
+            id = repository.createTag(tag);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
+        return id;
     }
 
     @Override
     public void updateTag(Tag tag) throws ServiceException, ValidateException {
         TagValidator.tagFieldValidator(tag);
         try {
-            if(tag.getId() == 0){
+            if (tag.getId() == 0) {
                 throw new ValidateException("incorrect.id", tag.getId());
             }
             repository.updateTag(tag);

@@ -14,7 +14,9 @@ public interface GiftCertificateRepository {
 
     List<GiftCertificate> findGiftCertificate(Map<String, String> criteriaMap, String sorting) throws RepositoryException;
 
-    void createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException;
+    int createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException;
+
+    void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags);
 
     void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags)  throws RepositoryException;
 

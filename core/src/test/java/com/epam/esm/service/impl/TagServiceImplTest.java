@@ -5,7 +5,6 @@ import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
-import com.epam.esm.service.interf.TagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("dev")
@@ -33,20 +31,22 @@ class TagServiceImplTest {
     TagServiceImpl service;
 
     Tag expectedTag;
+    List<Tag> tags;
 
     @BeforeEach
     void init() {
         expectedTag = new Tag(1, "name");
+
+        tags = new ArrayList<>();
+        tags.add(expectedTag);
+        tags.add(new Tag(2, "New tag1"));
     }
 
     @Test
     void readAllTags() throws RepositoryException, ValidateException, ServiceException {
-        List<Tag> expectedTags = Arrays.asList(new Tag(1, "tag1"),
-                new Tag(2, "tag2"));
-
-        when(repository.readAllTags()).thenReturn(expectedTags).thenThrow(new RepositoryException());
+        when(repository.readAllTags()).thenReturn(tags).thenThrow(new RepositoryException());
         List<Tag> actualTags = service.readAllTags();
-        assertIterableEquals(expectedTags, actualTags);
+        assertIterableEquals(tags, actualTags);
 
         assertThrows(ServiceException.class, () -> service.readAllTags());
     }
@@ -61,10 +61,6 @@ class TagServiceImplTest {
 
         ValidateException e = assertThrows(ValidateException.class, () -> service.readTag(-2));
         assertThrows(ServiceException.class, () -> service.readTag(1));
-
-//        System.out.println(e);
-//        System.out.println(e.getMessage());
-//        assertEquals("incorrect.id", e.getMessage());
     }
 
     @Test
@@ -82,22 +78,33 @@ class TagServiceImplTest {
 
     @Test
     void getTagIdOrCreateNewTagIsExist() throws ServiceException, ValidateException, RepositoryException {
-        when(repository.readTagByName(expectedTag.getName())).thenReturn(expectedTag);
-        assertEquals(1, service.getTagIdOrCreateNewTag(expectedTag));
+        when(repository.readTagByName(tags.get(0).getName())).thenReturn(tags.get(0));
+        when(repository.readTagByName(tags.get(1).getName())).thenReturn(tags.get(1));
+
+        service.getIdOrCreateTagsInList(tags);
+        assertEquals(1, tags.get(0).getId());
+        assertEquals(2, tags.get(1).getId());
     }
 
     @Test
     void getTagIdOrCreateNewTagNotExist() throws ServiceException, ValidateException, RepositoryException {
-        Tag newTag = new Tag(2, expectedTag.getName());
-        when(repository.readTagByName(expectedTag.getName())).thenThrow(RepositoryException.class)
-                .thenReturn(newTag);
+        when(repository.readTagByName(tags.get(0).getName())).thenReturn(tags.get(0));
+        when(repository.readTagByName(tags.get(1).getName())).thenThrow(RepositoryException.class);
+        when(repository.createTag(tags.get(1))).thenReturn(2);
 
-        assertEquals(2, service.getTagIdOrCreateNewTag(expectedTag));
+        service.getIdOrCreateTagsInList(tags);
+        assertEquals(1, tags.get(0).getId());
+        assertEquals(2, tags.get(1).getId());
     }
 
     @Test
-    void getTagIdOrCreateNewTagInputNull() throws ServiceException, ValidateException, RepositoryException {
-        assertThrows(ValidateException.class, () -> service.getTagIdOrCreateNewTag(null));
+    void getTagIdOrCreateNewTagInputNull() {
+        assertDoesNotThrow(() -> service.getIdOrCreateTagsInList(null));
+    }
+
+    @Test
+    void getTagIdOrCreateNewTagIsEmpty() {
+        assertDoesNotThrow(() -> service.getIdOrCreateTagsInList(new ArrayList<>()));
     }
 
     @Test
@@ -149,7 +156,6 @@ class TagServiceImplTest {
         assertThrows(ValidateException.class, () -> service.deleteTag("abc"));
         assertThrows(ValidateException.class, () -> service.deleteTag("-1"));
     }
-
 
 //    @Test
 //    public void iterator_will_return_hello_world() {

@@ -29,7 +29,8 @@ public class GiftCertificateRestController implements GiftCertificateController 
 
     @PostMapping
     public GiftCertificateDto createGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
-        service.createGiftCertificate(giftCertificateDto);
+        int id = service.createGiftCertificate(giftCertificateDto);
+        giftCertificateDto.setId(id);
         return giftCertificateDto;
     }
 

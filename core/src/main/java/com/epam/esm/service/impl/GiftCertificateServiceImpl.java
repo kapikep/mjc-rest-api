@@ -51,7 +51,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
-        if(!GiftCertificateValidator.idValidation(id)){
+        if (!GiftCertificateValidator.idValidation(id)) {
             throw new ValidateException(INCORRECT_ID, id);
         }
         return getGiftCertificateDto(id);
@@ -74,7 +74,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+    public int createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+        int id;
         if (giftDto.getCreateDate() == null) {
             giftDto.setCreateDate(LocalDateTime.now());
         }
@@ -86,13 +87,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         try {
             List<Tag> tags = giftDto.getTags();
-            for (Tag tag : tags) {
-                tag.setId(tagService.getTagIdOrCreateNewTag(tag));
-            }
-            repository.createGiftCertificate(gift, tags);
+
+            tagService.getIdOrCreateTagsInList(tags);
+
+            id = repository.createGiftCertificate(gift, tags);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
         }
+        return id;
     }
 
     @Override
@@ -108,9 +110,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
             GiftCertificate gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
             List<Tag> tags = giftDto.getTags();
-            for (Tag tag : tags) {
-                tag.setId(tagService.getTagIdOrCreateNewTag(tag));
-            }
+
+            tagService.getIdOrCreateTagsInList(giftDto.getTags());
+
             repository.updateGiftCertificate(gift, tags);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);

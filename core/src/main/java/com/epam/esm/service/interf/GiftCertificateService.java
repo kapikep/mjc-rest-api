@@ -15,7 +15,7 @@ public interface GiftCertificateService {
 
     GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException;
 
-    void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    int createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
     void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;;
 

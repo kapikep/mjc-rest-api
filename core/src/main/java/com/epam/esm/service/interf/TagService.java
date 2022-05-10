@@ -15,9 +15,9 @@ public interface TagService {
 
     Tag readTagByName(String name) throws ServiceException, ValidateException;
 
-    int getTagIdOrCreateNewTag(Tag tag) throws ServiceException, ValidateException;
+    void getIdOrCreateTagsInList(List<Tag> tags) throws ServiceException, ValidateException;
 
-    void createTag(Tag tag) throws ServiceException, ValidateException;
+    int createTag(Tag tag) throws ServiceException, ValidateException;
 
     void updateTag(Tag tag) throws ServiceException, ValidateException;
 

@@ -59,8 +59,10 @@ class MySQLTagRepositoryTest {
     @Test
     void createTag() throws RepositoryException {
         Tag expectedTag = new Tag("Tag1");
-        repository.createTag(expectedTag);
+        int id = repository.createTag(expectedTag);
         Tag actualTag = repository.readTagByName("Tag1");
+        assertEquals(expectedTag.getName(), actualTag.getName());
+        actualTag = repository.readTag(id);
         assertEquals(expectedTag.getName(), actualTag.getName());
     }
 

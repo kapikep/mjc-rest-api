@@ -6,8 +6,11 @@ import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.repository.mapper.TagMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
@@ -59,12 +62,18 @@ public class MySQLTagRepository implements TagRepository {
     }
 
     @Override
-    public void createTag(Tag tag) throws RepositoryException {
+    public int createTag(Tag tag) throws RepositoryException {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.update(INSERT, tag.getName());
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(INSERT, new String[]{"id"});
+                ps.setString(1, tag.getName());
+                return ps;
+            }, keyHolder);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
+        return keyHolder.getKey().intValue();
     }
 
     @Override

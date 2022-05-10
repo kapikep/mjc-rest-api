@@ -111,16 +111,17 @@ class MySQLGiftCertificateRepositoryTest {
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(1, "Sport"));
 
-        repository.createGiftCertificate(expectedLastGift, tags);
+        int id = repository.createGiftCertificate(expectedLastGift, tags);
 
-        List<GiftCertificate> actualGifts = repository.readGiftCertificate(6);
-        repository.deleteGiftCertificate(6);
+        List<GiftCertificate> actualGifts = repository.readGiftCertificate(id);
+        repository.deleteGiftCertificate(id);
 
+        assertEquals(6, id);
         assertEquals(expectedLastGift, actualGifts.get(0));
     }
 
     @Test
-    void updateGiftCertificate() throws RepositoryException {
+    void updateGiftCertificateWithOneTag() throws RepositoryException {
         GiftCertificate expectedLastGift = new GiftCertificate(5, "New name",
                 "New description", 20.0, 50, LocalDateTime.parse("2010-04-27T04:43:55.000"),
                 LocalDateTime.parse("2010-04-27T04:43:55.000"), new Tag(4, "Cafe"));
@@ -128,7 +129,23 @@ class MySQLGiftCertificateRepositoryTest {
         tags.add(new Tag(4, "Cafe"));
         repository.updateGiftCertificate(expectedLastGift, tags);
         List<GiftCertificate> actualGifts = repository.readGiftCertificate(5);
-        //        tags.add(new Tag("New tag"));
         assertEquals(expectedLastGift, actualGifts.get(0));
+    }
+
+    @Test
+    void updateGiftCertificateWithTwoTags() throws RepositoryException {
+        List<GiftCertificate> list = new ArrayList<>();
+        list.add(new GiftCertificate(5, "New name",
+                "New description", 20.0, 50, LocalDateTime.parse("2010-04-27T04:43:55.000"),
+                LocalDateTime.parse("2010-04-27T04:43:55.000"), new Tag(4, "Cafe")));
+        list.add(new GiftCertificate(5, "New name",
+                "New description", 20.0, 50, LocalDateTime.parse("2010-04-27T04:43:55.000"),
+                LocalDateTime.parse("2010-04-27T04:43:55.000"), new Tag(5, "Auto")));
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag(4, "Cafe"));
+        tags.add(new Tag(5, "Auto"));
+        repository.updateGiftCertificate(list.get(0), tags);
+        List<GiftCertificate> actualGifts = repository.readGiftCertificate(5);
+        assertEquals(list, actualGifts);
     }
 }

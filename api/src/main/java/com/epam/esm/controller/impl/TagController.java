@@ -29,7 +29,8 @@ public class TagController {
 
     @PostMapping
     public Tag crateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
-        service.createTag(tag);
+        int id = service.createTag(tag);
+        tag.setId(id);
         return tag;
     }
 

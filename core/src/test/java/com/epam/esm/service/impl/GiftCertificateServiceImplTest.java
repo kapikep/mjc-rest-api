@@ -12,8 +12,6 @@ import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.utils.GiftCertificateUtil;
 import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.validator.GiftCertificateValidator;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -162,9 +160,6 @@ class GiftCertificateServiceImplTest {
             util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
                     .thenReturn(gift1);
 
-            for (Tag tag : tagListGift1) {
-                when(tagService.getTagIdOrCreateNewTag(tag)).thenReturn(tag.getId());
-            }
             service.createGiftCertificate(dtoList.get(0));
 
             verify(repository, times(1)).createGiftCertificate(gift1, tagListGift1);
@@ -180,10 +175,6 @@ class GiftCertificateServiceImplTest {
         LocalDateTime timeNow = LocalDateTime.now();
         GiftCertificate entity;
         GiftCertificateUtil util = spy(new GiftCertificateUtil());
-
-        for (Tag tag : tagListGift1) {
-            when(tagService.getTagIdOrCreateNewTag(tag)).thenReturn(tag.getId());
-        }
 
         service.createGiftCertificate(dto);
         entity = util.giftCertificateDtoToEntityTransfer(dto);
@@ -204,10 +195,6 @@ class GiftCertificateServiceImplTest {
 
             util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
                     .thenReturn(gift1);
-
-            for (Tag tag : tagListGift1) {
-                when(tagService.getTagIdOrCreateNewTag(tag)).thenReturn(tag.getId());
-            }
 
             service.updateGiftCertificate(dtoList.get(0));
 

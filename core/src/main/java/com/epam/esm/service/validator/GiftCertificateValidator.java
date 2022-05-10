@@ -18,7 +18,7 @@ public class GiftCertificateValidator {
     private static final int MAX_PRICE = 100_000;
     private static final int MIN_DURATION = 1;
     private static final int MAX_DURATION = 10_000;
-    public static final int CRITERIA_TAG_LENGHT = 20;
+    public static final int CRITERIA_TAG_LENGHT = 45;
 
     public static void giftCertificateCriteriaValidation(Map<String, String> criteriaMap, String sorting) throws ValidateException {
         List<String> resList = new ArrayList<>();

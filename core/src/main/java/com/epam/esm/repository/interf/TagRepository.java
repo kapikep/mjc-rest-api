@@ -12,7 +12,7 @@ public interface TagRepository {
 
     Tag readTagByName(String name) throws RepositoryException;
 
-    void createTag(Tag tag) throws RepositoryException;
+    int createTag(Tag tag) throws RepositoryException;
 
     void updateTag(Tag tag) throws RepositoryException;
 

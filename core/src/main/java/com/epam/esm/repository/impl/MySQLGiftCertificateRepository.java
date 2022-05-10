@@ -8,9 +8,12 @@ import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +22,7 @@ import java.util.Map;
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
     public static final String CREATE = "INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)" +
             " VALUES(?, ?, ?, ?, ?, ?)";
-    public static final String INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG = "INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES (?, ?)";
+    public static final String INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG = "INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES";
     public static final String UPDATE = "UPDATE gift_certificate SET name=?, description=?, price=?, duration=?, create_date=?, last_update_date=?" +
             " WHERE id=?";
     public static final String DELETE = "DELETE FROM gift_certificate WHERE id=?";
@@ -64,7 +67,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         List<GiftCertificate> giftCertificates;
         StringBuilder findQuery = new StringBuilder(READ_ALL);
 
-        if(criteriaMap != null) {
+        if (criteriaMap != null) {
             if (!criteriaMap.isEmpty()) {
                 findQuery.append(" WHERE ");
             }
@@ -82,22 +85,22 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             }
         }
 
-        if(sorting != null){
+        if (sorting != null) {
             boolean desc = false;
-            if(sorting.endsWith("desc") || sorting.endsWith("DESC")){
+            if (sorting.endsWith("desc") || sorting.endsWith("DESC")) {
                 desc = true;
                 sorting = sorting.substring(0, sorting.length() - 5);
             }
-            if(sorting.endsWith("asc") || sorting.endsWith("ASC")){
+            if (sorting.endsWith("asc") || sorting.endsWith("ASC")) {
                 sorting = sorting.substring(0, sorting.length() - 4);
             }
             if (GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
                 findQuery.append(" ORDER BY ");
-                if(GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(sorting)){
+                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(sorting)) {
                     findQuery.append("gc.");
                 }
                 findQuery.append(sorting);
-                if(desc){
+                if (desc) {
                     findQuery.append(" DESC");
                 }
             }
@@ -112,15 +115,42 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
+    public int createGiftCertificate(GiftCertificate certificate, List<Tag> tags) throws RepositoryException {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.update(CREATE, giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
-                    giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate());
-            GiftCertificate giftCertificate1 = jdbcTemplate.queryForObject(SEARCH_BY_NAME, new GiftCertificateMapper(), giftCertificate.getName());
-            tags.forEach(tag -> jdbcTemplate.update(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG,
-                    giftCertificate1.getId(), tag.getId()));
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(CREATE, new String[]{"id"});
+                ps.setString(1, certificate.getName());
+                ps.setString(2, certificate.getDescription());
+                ps.setDouble(3, certificate.getPrice());
+                ps.setInt(4, certificate.getDuration());
+                ps.setTimestamp(5, Timestamp.valueOf(certificate.getCreateDate()));
+                ps.setTimestamp(6, Timestamp.valueOf(certificate.getLastUpdateDate()));
+                return ps;
+            }, keyHolder);
+
+            insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
+
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
+        }
+        return keyHolder.getKey().intValue();
+    }
+
+    @Override
+    public void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags) {
+        StringBuilder builder;
+        if (!tags.isEmpty()) {
+            builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);
+            Iterator<Tag> iter = tags.iterator();
+            while (iter.hasNext()) {
+                builder.append(" (").append(giftId).append(",")
+                        .append(iter.next().getId()).append(")");
+                if (iter.hasNext()) {
+                    builder.append(",");
+                }
+            }
+            jdbcTemplate.execute(builder.toString());
         }
     }
 
@@ -130,8 +160,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             jdbcTemplate.update(UPDATE, giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate(), giftCertificate.getId());
             jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, giftCertificate.getId());
-            tags.forEach(tag -> jdbcTemplate.update(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG,
-                    giftCertificate.getId(), tag.getId()));
+            insertIntoGiftCertificateHasTag(giftCertificate.getId(), tags);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
