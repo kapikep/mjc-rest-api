@@ -14,8 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
@@ -75,7 +74,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
-    void deleteTag() throws RepositoryException {
+    void deleteNotLinkedTag() throws RepositoryException {
         Tag tag = new Tag("Tag3");
         repository.createTag(tag);
         tag.setId(repository.readTagByName(tag.getName()).getId());
@@ -83,6 +82,17 @@ class MySQLTagRepositoryTest {
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> {
             repository.readTagByName("Tag3");
+        });
+
+        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+    }
+
+    @Test
+    void deleteLinkedTag(){
+        assertDoesNotThrow(() -> repository.deleteTag(7));
+
+        RepositoryException e = assertThrows(RepositoryException.class, () -> {
+            repository.readTag(7);
         });
 
         assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
