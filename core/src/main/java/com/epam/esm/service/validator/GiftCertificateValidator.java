@@ -72,6 +72,9 @@ public class GiftCertificateValidator {
         }
     }
 
+    /**
+     * Gift Certificate Field Validation
+     */
     public static void giftCertificateFieldValidation(GiftCertificateDto dto) throws ValidateException {
         List<String> resList = new ArrayList<>();
 
