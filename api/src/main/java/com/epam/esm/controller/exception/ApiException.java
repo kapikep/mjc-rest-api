@@ -1,5 +1,11 @@
 package com.epam.esm.controller.exception;
 
+/**
+ * Throws by Api layer
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class ApiException {
     private String errorMessage;
     private String errorCode;

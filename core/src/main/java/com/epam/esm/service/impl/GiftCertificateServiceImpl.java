@@ -17,7 +17,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Service for gift certificates
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "resource.not.found";
@@ -30,8 +35,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.tagService = tagService;
     }
 
+    /**
+     * Reads all gift certificates from repository
+     *
+     * @return list with all GiftCertificateDto
+     */
     @Override
-    public List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException, ValidateException {
+    public List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException {
         List<GiftCertificate> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
@@ -43,12 +53,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateDtoList;
     }
 
+    /**
+     * Validates id, parse to int and reads gift certificates by id from repository
+     *
+     * @return gift certificate from repository
+     */
     @Override
     public GiftCertificateDto readGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
         return getGiftCertificateDto(id);
     }
 
+    /**
+     * Validates id and reads gift certificates by id from repository
+     *
+     * @return gift certificate from repository
+     */
     @Override
     public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
         if (!GiftCertificateValidator.idValidation(id)) {
@@ -73,6 +93,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateDtoList.get(0);
     }
 
+    /**
+     * Validates gift certificate fields. Sets create date and last update date to now unless otherwise specified in the field.
+     * Creates gift certificate in repository
+     *
+     * @return id for created tag
+     */
     @Override
     public int createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         int id;
@@ -97,6 +123,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return id;
     }
 
+    /**
+     * Validates gift certificate fields. Sets last update date to now unless otherwise specified in the field.
+     * Updates gift certificate in repository
+     */
     @Override
     public void updateGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         if (giftDto.getLastUpdateDate() == null) {
@@ -119,6 +149,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
+    /**
+     * Validates id and deletes gift certificate
+     *
+     * @param idStr id gift certificate to delete
+     */
     @Override
     public void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
@@ -129,6 +164,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
+    /**
+     * Validate parameters. Finds gift certificate in repository by parameters
+     *
+     * @param criteriaMap search parameters
+     * @param sorting sorting rules
+     */
     @Override
     public List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException {
         GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);

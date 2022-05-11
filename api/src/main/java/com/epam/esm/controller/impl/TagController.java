@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Handles requests to /tags url
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/tags")
 public class TagController {
@@ -17,16 +23,33 @@ public class TagController {
         this.service = service;
     }
 
+    /**
+     * Read all tags
+     *
+     * @return all tags
+     */
     @GetMapping
     public List<Tag> readAllTags() throws ValidateException, ServiceException {
         return service.readAllTags();
     }
 
+    /**
+     * Read tag by id
+     *
+     * @param id id tag for search
+     * @return tag by id
+     */
     @GetMapping("/{id}")
     public Tag readTag(@PathVariable String id)  throws ValidateException, ServiceException {
         return service.readTag(id);
     }
 
+    /**
+     * Create new tag
+     *
+     * @param tag tag for create
+     * @return Created tag
+     */
     @PostMapping
     public Tag crateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         int id = service.createTag(tag);
@@ -34,12 +57,24 @@ public class TagController {
         return tag;
     }
 
+    /**
+     * Update tag
+     *
+     * @param tag tag for update
+     * @return Updated tag
+     */
     @PutMapping
     public Tag updateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         service.updateTag(tag);
         return tag;
     }
 
+    /**
+     * Delete tag
+     *
+     * @param id id tag for delete
+     * @return Updated tag
+     */
     @DeleteMapping("/{id}")
     public String deleteTag(@PathVariable String id)  throws ValidateException, ServiceException {
         service.deleteTag(id);

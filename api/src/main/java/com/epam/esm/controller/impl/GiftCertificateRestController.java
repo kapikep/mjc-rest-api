@@ -13,20 +13,39 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * Handles requests to /gift-certificates url
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/gift-certificates")
 public class GiftCertificateRestController implements GiftCertificateController {
     private final GiftCertificateService service;
 
+
     public GiftCertificateRestController(GiftCertificateService service) {
         this.service = service;
     }
 
+    /**
+     * Gets gift certificate by id
+     *
+     * @param id id for search
+     * @return gift certificate by id
+     */
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
             return service.readGiftCertificate(id);
     }
 
+    /**
+     * Creates gift certificate
+     *
+     * @param giftCertificateDto gift certificate to create
+     * @return id created gift certificate
+     */
     @PostMapping
     public GiftCertificateDto createGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         int id = service.createGiftCertificate(giftCertificateDto);
@@ -34,20 +53,36 @@ public class GiftCertificateRestController implements GiftCertificateController 
         return giftCertificateDto;
     }
 
+    /**
+     * Updates gift certificate
+     *
+     * @param giftCertificateDto gift certificate to update
+     * @return id created gift certificate
+     */
     @PutMapping
     public GiftCertificateDto updateGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         service.updateGiftCertificate(giftCertificateDto);
         return giftCertificateDto;
     }
 
+    /**
+     * Deletes gift certificate
+     *
+     * @param id id gift certificate to delete
+     * @return id deleted gift certificate
+     */
     @DeleteMapping("/{id}")
-    public GiftCertificate deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
+    public String deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
         service.deleteGiftCertificate(id);
-        return new GiftCertificate();
+        return id;
     }
 
+
+    /**
+     * Finds gift certificate by parameters
+     */
     @GetMapping
-    public List<GiftCertificateDto> findByParams(
+    public List<GiftCertificateDto> findGiftCertificateByParams(
             @RequestParam(required = false, name = "tag") String tagName,
             @RequestParam(required = false, name = "name") String name,
             @RequestParam(required = false, name = "description") String description,

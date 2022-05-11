@@ -2,7 +2,12 @@ package com.epam.esm.repository.constant;
 
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * Constants for search param for Gift Certificate
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public final class GiftCertificateSearchParam {
     public static final String SEARCH_NAME = "name";
     public static final String SEARCH_DESCRIPTION = "description";

@@ -12,7 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-
+/**
+ * MySQL repository for tags
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Repository
 public class MySQLTagRepository implements TagRepository {
     public static final String INSERT = "INSERT INTO tag (name) VALUES(?)";
@@ -28,6 +33,11 @@ public class MySQLTagRepository implements TagRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Reads all tags from database
+     *
+     * @return list with all tagsEntities from database
+     */
     @Override
     public List<Tag> readAllTags() throws RepositoryException {
         List<Tag> tags;
@@ -39,6 +49,11 @@ public class MySQLTagRepository implements TagRepository {
         return tags;
     }
 
+    /**
+     * Reads tag by id from database
+     *
+     * @return tagEntity  from database
+     */
     @Override
     public Tag readTag(int id) throws RepositoryException {
         Tag tag;
@@ -50,6 +65,11 @@ public class MySQLTagRepository implements TagRepository {
         return tag;
     }
 
+    /**
+     * Reads tag by name from database
+     *
+     * @return tagEntity from database
+     */
     @Override
     public Tag readTagByName(String name) throws RepositoryException {
         Tag tag;
@@ -61,6 +81,12 @@ public class MySQLTagRepository implements TagRepository {
         return tag;
     }
 
+    /**
+     * Creates tag in database
+     *
+     * @param tag tagEntity to create in db
+     * @return id for created tag
+     */
     @Override
     public int createTag(Tag tag) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -76,6 +102,11 @@ public class MySQLTagRepository implements TagRepository {
         return keyHolder.getKey().intValue();
     }
 
+    /**
+     * Updates tag in database
+     *
+     * @param tag tag to create in db
+     */
     @Override
     public void updateTag(Tag tag) throws RepositoryException {
         try {
@@ -85,6 +116,11 @@ public class MySQLTagRepository implements TagRepository {
         }
     }
 
+    /**
+     * Deletes tag in database
+     *
+     * @param id  id to create in db
+     */
     @Override
     public void deleteTag(int id) throws RepositoryException {
         try {

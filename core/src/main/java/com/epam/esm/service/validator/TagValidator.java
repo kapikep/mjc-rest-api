@@ -1,12 +1,16 @@
 package com.epam.esm.service.validator;
 
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Validator for tag
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class TagValidator {
 
     private static final int MAX_ID = 1_000_000;

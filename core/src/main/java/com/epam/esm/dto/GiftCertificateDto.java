@@ -6,7 +6,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
+/**
+ * Gift certificate data transfer object
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class GiftCertificateDto {
     private int id;
     private String name;
@@ -96,7 +101,7 @@ public class GiftCertificateDto {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
-//TODO equals TagList
+    //TODO equals TagList
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

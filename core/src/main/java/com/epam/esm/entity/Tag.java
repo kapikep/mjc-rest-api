@@ -2,7 +2,12 @@ package com.epam.esm.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
-
+/**
+ * Tag entity object
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class Tag implements Serializable {
     private static final long serialVersionUID = 1L;
 

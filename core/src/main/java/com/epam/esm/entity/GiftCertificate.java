@@ -3,7 +3,12 @@ package com.epam.esm.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+/**
+ * Gift certificate entity object
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class GiftCertificate implements Serializable {
     private static final long serialVersionUID = 1L;
 

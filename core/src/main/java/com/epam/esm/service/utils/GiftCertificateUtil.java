@@ -8,8 +8,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Utils for gift certificate
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class GiftCertificateUtil {
 
+    /**
+     * Converting giftCertificateEntity to giftCertificateListDto
+     */
     public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificate> giftCertificateList) {
         List<GiftCertificateDto> giftCertificateDtoList = new ArrayList<>();
 
@@ -50,6 +59,9 @@ public class GiftCertificateUtil {
         return giftDto;
     }
 
+    /**
+     * Updates fields in old GiftCertificate if it's null from new GiftCertificate
+     */
     public static void updateFields(GiftCertificateDto newGiftCertificate, GiftCertificateDto oldGiftCertificate) {
 
         if (newGiftCertificate.getName() == null) {

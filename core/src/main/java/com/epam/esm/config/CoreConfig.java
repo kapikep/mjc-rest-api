@@ -8,6 +8,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
+/**
+ * Spring configuration for Core module (prod config)
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Profile("prod")
 @Configuration
 @PropertySource("classpath:MySQLdb.properties")

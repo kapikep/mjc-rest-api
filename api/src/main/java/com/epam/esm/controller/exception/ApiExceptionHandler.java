@@ -8,18 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
-import java.io.BufferedReader;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Handles application exceptions
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @RestControllerAdvice
 public class ApiExceptionHandler {
     private final MessageSource source;
@@ -132,6 +132,10 @@ public class ApiExceptionHandler {
 //        return new ResponseEntity<>(apiException, httpStatus);
 //    }
 
+    /**
+     * Create custom error code
+     * @return custom error code
+     */
     private String codeDefinition(Exception e, HttpStatus httpStatus) {
         String res = "00";
         String className = e.getStackTrace()[1].getClassName();

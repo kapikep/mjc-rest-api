@@ -1,7 +1,22 @@
 package com.epam.esm.service.exception;
-
+/**
+ * Throws by service layer
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class ServiceException extends Exception{
+
+    /**
+     * the message code for i18n to look up, e.g. 'calculator.noRateSet'.
+     * MessageSource users are encouraged to base message names on qualified class or package names,
+     * avoiding potential conflicts and ensuring maximum clarity.
+     */
     private String resourceBundleCode;
+    /**
+     *  an array of arguments that will be filled in for params within the message
+     *  (params look like "{0}", "{1,date}", "{2,time}" within a message), or null if none
+     */
     private Object[] args;
 
     public ServiceException() {

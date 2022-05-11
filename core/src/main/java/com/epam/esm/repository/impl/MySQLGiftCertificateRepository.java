@@ -17,7 +17,12 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * MySQL repository for gift certificates
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Repository
 public class MySQLGiftCertificateRepository implements GiftCertificateRepository {
     public static final String CREATE = "INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)" +
@@ -30,16 +35,18 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     private static final String READ_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) " +
             "LEFT OUTER JOIN tag tag ON (gcht.tag_id = tag.id)";
     private static final String READ_ONE = READ_ALL + " WHERE gc.id=?";
-    private static final String SEARCH_BY_NAME = READ_ALL + " WHERE gc.name=?";
 
     private final JdbcTemplate jdbcTemplate;
-    private final MySQLTagRepository tagRepository;
 
-    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate, MySQLTagRepository tagRepository) {
+    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tagRepository = tagRepository;
     }
 
+    /**
+     * Reads all gift certificates from database
+     *
+     * @return list with all GiftCertificateEntity
+     */
     @Override
     public List<GiftCertificate> readAllGiftCertificates() throws RepositoryException {
         List<GiftCertificate> giftCertificates;
@@ -51,6 +58,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return giftCertificates;
     }
 
+    /**
+     * Reads gift certificate by id from database
+     *
+     * @param id
+     * @return list with gift GiftCertificateEntity
+     */
     @Override
     public List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException {
         List<GiftCertificate> giftCertificates;
@@ -62,6 +75,13 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return giftCertificates;
     }
 
+    /**
+     * Finds gift certificates by criteria map and sorted by sorting param from database
+     *
+     * @param criteriaMap search parameters
+     * @param sorting sorting for the result
+     * @return list with GiftCertificateEntity
+     */
     @Override
     public List<GiftCertificate> findGiftCertificate(Map<String, String> criteriaMap, String sorting) throws RepositoryException {
         List<GiftCertificate> giftCertificates;
@@ -114,6 +134,13 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return giftCertificates;
     }
 
+    /**
+     * Creates new gift certificate in database
+     *
+     * @param certificate gift certificate entity to create in db, excluding tag field
+     * @param tags related with gift certificate tags for recording in many to many table
+     * @return id for created gift certificate
+     */
     @Override
     public int createGiftCertificate(GiftCertificate certificate, List<Tag> tags) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -137,6 +164,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return keyHolder.getKey().intValue();
     }
 
+    /**
+     * Overwrites tags id for gift certificates id in many to many table
+     *
+     * @param giftId gift certificates id
+     * @param tags tags id
+     */
     @Override
     public void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags) {
         StringBuilder builder;
@@ -154,6 +187,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         }
     }
 
+    /**
+     * Updates new gift certificate
+     *
+     * @param giftCertificate gift certificate entity to update in db, excluding tag field
+     * @param tags related with gift certificate tags for recording in many to many table
+     */
     @Override
     public void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
         try {
@@ -166,6 +205,9 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         }
     }
 
+    /**
+     * Delete gift certificate by id from database
+     */
     @Override
     public void deleteGiftCertificate(int id) throws RepositoryException {
         try {

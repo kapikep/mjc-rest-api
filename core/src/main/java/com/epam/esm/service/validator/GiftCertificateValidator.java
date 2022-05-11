@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Validator for gift certificate
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class GiftCertificateValidator {
     private static final int MAX_ID = 1_000_000;
     private static final int MAX_NAME_LENGHT = 45;

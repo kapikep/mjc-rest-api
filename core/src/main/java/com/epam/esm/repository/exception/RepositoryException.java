@@ -1,5 +1,10 @@
 package com.epam.esm.repository.exception;
-
+/**
+ * Throws by repository layer
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class RepositoryException extends Exception{
     public RepositoryException() {
         super();

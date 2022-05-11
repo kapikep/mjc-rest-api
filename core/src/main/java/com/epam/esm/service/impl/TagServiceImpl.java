@@ -11,7 +11,12 @@ import com.epam.esm.service.validator.TagValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+/**
+ * Service for tags
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Service
 public class TagServiceImpl implements TagService {
 
@@ -20,9 +25,13 @@ public class TagServiceImpl implements TagService {
     public TagServiceImpl(TagRepository repository) {
         this.repository = repository;
     }
-
+    /**
+     * Reads all tags from repository
+     *
+     * @return list with all tags from repository
+     */
     @Override
-    public List<Tag> readAllTags() throws ServiceException, ValidateException {
+    public List<Tag> readAllTags() throws ServiceException{
         List<Tag> tags;
         try {
             tags = repository.readAllTags();
@@ -32,6 +41,11 @@ public class TagServiceImpl implements TagService {
         return tags;
     }
 
+    /**
+     * Validates id and reads tag by id from repository
+     *
+     * @return tag from repository
+     */
     @Override
     public Tag readTag(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
@@ -44,6 +58,11 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    /**
+     * Validates id and reads tag by id from repository
+     *
+     * @return tag from repository
+     */
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
         if (!TagValidator.idValidation(id)) {
@@ -58,6 +77,11 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    /**
+     * Validates name and reads tag by name from repository
+     *
+     * @return tag from repository
+     */
     @Override
     public Tag readTagByName(String name) throws ServiceException, ValidateException {
         if (!TagValidator.nameValidation(name)) {
@@ -72,6 +96,12 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    /**
+     * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
+     * write id in list
+     *
+     * @param tags list for get ids
+     */
     @Override
     public void getIdOrCreateTagsInList(List<Tag> tags) throws ServiceException, ValidateException {
         if(tags != null) {
@@ -92,6 +122,11 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    /**
+     * Validates tag fields and creates tag in repository
+     *
+     * @return id for created tag
+     */
     @Override
     public int createTag(Tag tag) throws ServiceException, ValidateException {
         int id;
@@ -104,6 +139,9 @@ public class TagServiceImpl implements TagService {
         return id;
     }
 
+    /**
+     * Validates tag fields and updates tag in repository
+     */
     @Override
     public void updateTag(Tag tag) throws ServiceException, ValidateException {
         TagValidator.tagFieldValidator(tag);
@@ -117,6 +155,9 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    /**
+     * Validates id and deletes tag by id in repository
+     */
     @Override
     public void deleteTag(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);

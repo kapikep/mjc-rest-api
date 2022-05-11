@@ -9,7 +9,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
-
+/**
+ * Spring configuration for Core module (dev config)
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Profile("dev")
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
