@@ -63,7 +63,6 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(Exception e) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
