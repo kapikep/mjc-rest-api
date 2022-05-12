@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -142,6 +143,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @return id for created gift certificate
      */
     @Override
+    @Transactional
     public int createGiftCertificate(GiftCertificate certificate, List<Tag> tags) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
@@ -155,6 +157,8 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
                 ps.setTimestamp(6, Timestamp.valueOf(certificate.getLastUpdateDate()));
                 return ps;
             }, keyHolder);
+
+            //TODO move here creation tag
 
             insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
 
@@ -188,11 +192,13 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @param tags related with gift certificate tags for recording in many to many table
      */
     @Override
+    @Transactional
     public void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
         try {
             jdbcTemplate.update(UPDATE, giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
                     giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate(), giftCertificate.getId());
             jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, giftCertificate.getId());
+            //TODO move here creation tag
             insertIntoGiftCertificateHasTag(giftCertificate.getId(), tags);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
