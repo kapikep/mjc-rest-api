@@ -7,6 +7,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -50,12 +51,27 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-//    @ExceptionHandler
-//    public ResponseEntity<ApiException> handleException(AbstractHandlerExceptionResolver e) {
-//        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-//        ApiException apiException = new ApiException();
-//        return new ResponseEntity<>(apiException, httpStatus);
-//    }
+    /**
+     * Exception thrown when a request handler does not support a specific request method.
+     */
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleException(HttpRequestMethodNotSupportedException e) {
+        HttpStatus httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
+        ApiException apiException = new ApiException();
+        apiException.setErrorMessage(source.getMessage("error.incorrect.method", null, LocaleContextHolder.getLocale()));
+        apiException.setErrorCode(codeDefinition(e, httpStatus));
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleException(Exception e) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ApiException apiException = new ApiException();
+        apiException.setErrorMessage(e.getMessage());
+        apiException.setErrorCode(codeDefinition(e, httpStatus));
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
 
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
@@ -92,19 +108,6 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-//    @ExceptionHandler
-//    public ResponseEntity<ApiException> handleException(ServiceException e) {
-//        String code;
-//        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-//        ApiException apiException = new ApiException();
-//
-//        code = codeDefinition(e, httpStatus);
-//        apiException.setErrorCode(code);
-//        apiException.setErrorMessage(setErrorMessage(e, e.getResourceBundleCode(), e.getArgs()));
-//
-//        return new ResponseEntity<>(apiException, httpStatus);
-//    }
-
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ServiceException e) {
         String code;
@@ -123,14 +126,6 @@ public class ApiExceptionHandler {
 
         return new ResponseEntity<>(apiException, httpStatus);
     }
-//    private ResponseEntity getApiExceptionResponseEntity(HttpStatus httpStatus, Exception e){
-//        String code;
-//        ApiException apiException = new ApiException();
-//        code = codeDefinition(e, httpStatus);
-//        apiException.setErrorCode(code);
-//
-//        return new ResponseEntity<>(apiException, httpStatus);
-//    }
 
     /**
      * Create custom error code

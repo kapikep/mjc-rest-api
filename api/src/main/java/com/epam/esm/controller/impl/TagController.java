@@ -4,6 +4,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public class TagController {
      * @return Created tag
      */
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     public Tag crateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
         int id = service.createTag(tag);
         tag.setId(id);
@@ -76,6 +78,7 @@ public class TagController {
      * @return Updated tag
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public String deleteTag(@PathVariable String id)  throws ValidateException, ServiceException {
         service.deleteTag(id);
         return id;

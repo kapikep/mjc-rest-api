@@ -9,6 +9,7 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -47,6 +48,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
      * @return id created gift certificate
      */
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     public GiftCertificateDto createGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         int id = service.createGiftCertificate(giftCertificateDto);
         giftCertificateDto.setId(id);
@@ -72,6 +74,7 @@ public class GiftCertificateRestController implements GiftCertificateController 
      * @return id deleted gift certificate
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public String deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
         service.deleteGiftCertificate(id);
         return id;

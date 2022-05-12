@@ -48,14 +48,6 @@ public interface GiftCertificateRepository {
     int createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException;
 
     /**
-     * Overwrites tags id for gift certificates id in many to many table
-     *
-     * @param giftId gift certificates id
-     * @param tags tags id
-     */
-    void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags);
-
-    /**
      * Updates new gift certificate
      *
      * @param giftCertificate gift certificate entity to update in db, excluding tag field

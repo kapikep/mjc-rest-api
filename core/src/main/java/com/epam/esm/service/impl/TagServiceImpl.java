@@ -53,7 +53,7 @@ public class TagServiceImpl implements TagService {
         try {
             tag = repository.readTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "resource.not.found", id);
+            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
         }
         return tag;
     }
@@ -164,7 +164,7 @@ public class TagServiceImpl implements TagService {
         try {
             repository.deleteTag(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "resource.not.found", id);
+            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
         }
     }
 }

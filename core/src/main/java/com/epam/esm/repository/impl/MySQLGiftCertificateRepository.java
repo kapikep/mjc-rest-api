@@ -164,14 +164,8 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return keyHolder.getKey().intValue();
     }
 
-    /**
-     * Overwrites tags id for gift certificates id in many to many table
-     *
-     * @param giftId gift certificates id
-     * @param tags tags id
-     */
-    @Override
-    public void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags) {
+    //TODO SQLRepo interf
+    private void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags) {
         StringBuilder builder;
         if (!tags.isEmpty()) {
             builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);

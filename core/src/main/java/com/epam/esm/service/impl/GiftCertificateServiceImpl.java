@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
-    public static final String RESOURCE_NOT_FOUND = "resource.not.found";
+    public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     public static final String INCORRECT_ID = "incorrect.id";
     private final GiftCertificateRepository repository;
     private final TagService tagService;
