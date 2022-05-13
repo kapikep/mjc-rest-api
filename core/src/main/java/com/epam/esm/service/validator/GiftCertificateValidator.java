@@ -54,12 +54,8 @@ public class GiftCertificateValidator {
             });
 
             if(sorting != null){
-                if(sorting.endsWith("desc") || sorting.endsWith("DESC")){
-                    sorting = sorting.substring(0, sorting.length() - 5);
-                }
-
-                if(sorting.endsWith("asc") || sorting.endsWith("ASC")){
-                    sorting = sorting.substring(0, sorting.length() - 4);
+                if(sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")){
+                    sorting = sorting.substring(1);
                 }
 
                 if (!GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
