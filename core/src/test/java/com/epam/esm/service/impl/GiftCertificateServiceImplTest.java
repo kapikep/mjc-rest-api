@@ -243,7 +243,7 @@ class GiftCertificateServiceImplTest {
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "tag");
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "name");
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "description");
-        String sorting = "name_desc";
+        String sorting = "-name";
 
         when(repository.findGiftCertificate(criteriaMap, sorting)).thenReturn(entityList);
         service.findGiftCertificates(criteriaMap, sorting);

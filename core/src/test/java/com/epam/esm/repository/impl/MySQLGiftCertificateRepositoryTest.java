@@ -92,7 +92,13 @@ class MySQLGiftCertificateRepositoryTest {
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(7));
 
-        actualGifts = repository.findGiftCertificate(null, "name_desc");
+        assertDoesNotThrow(() -> repository.findGiftCertificate(null, "+name"));
+
+        assertEquals(8, actualGifts.size());
+        assertEquals(expectedFirstGift, actualGifts.get(0));
+        assertEquals(expectedLastGift, actualGifts.get(7));
+
+        actualGifts = repository.findGiftCertificate(null, "-name");
 
         expectedLastGift.setTag(new Tag(1, "Sport"));
         expectedFirstGift.setTag(new Tag(7, "Health"));
@@ -101,7 +107,6 @@ class MySQLGiftCertificateRepositoryTest {
         assertEquals(expectedLastGift, actualGifts.get(0));
         assertEquals(expectedFirstGift, actualGifts.get(7));
 
-        assertDoesNotThrow(() -> repository.findGiftCertificate(null, "name_asc"));
     }
 
     @Test

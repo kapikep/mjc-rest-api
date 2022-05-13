@@ -20,7 +20,6 @@ import static com.epam.esm.service.utils.GiftCertificateUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GiftCertificateUtilTest {
-
     GiftCertificate gift1;
     GiftCertificate gift2;
     List<GiftCertificate> entityList;
@@ -128,18 +127,18 @@ class GiftCertificateUtilTest {
         criteriaMap.put(SEARCH_TAG_NAME, "tag1");
         criteriaMap.put(SEARCH_NAME, "name");
         criteriaMap.put(SEARCH_DESCRIPTION, "description");
-        String sorting = "name_desc";
+        String sorting = "-name";
 
         GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
     }
 
     @Test
-    void giftCertificateCriteriaWrongTagName() throws ValidateException {
+    void giftCertificateCriteriaWrongTagName(){
         Map<String, String> criteriaMap = new HashMap<>();
         criteriaMap.put(SEARCH_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1daaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         criteriaMap.put(SEARCH_NAME, "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
         criteriaMap.put(SEARCH_DESCRIPTION, "description");
-        String sorting = "name_asc";
+        String sorting = "+name";
 
         ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
         assertEquals("incorrect.param.tag", e.getResourceBundleCodeList().get(1));
@@ -148,12 +147,12 @@ class GiftCertificateUtilTest {
     }
 
     @Test
-    void giftCertificateCriteriaWrongSortingName() throws ValidateException {
+    void giftCertificateCriteriaWrongSortingName(){
         Map<String, String> criteriaMap = new HashMap<>();
         criteriaMap.put(SEARCH_TAG_NAME, "tag");
         criteriaMap.put(SEARCH_NAME, "name");
         criteriaMap.put(SEARCH_DESCRIPTION, "description");
-        String sorting = "name_DssESC";
+        String sorting = "++name";
 
         ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
         assertEquals("incorrect.param.sorting", e.getResourceBundleCodeList().get(0));
@@ -161,7 +160,7 @@ class GiftCertificateUtilTest {
     }
 
     @Test
-    void giftCertificateCriteriaWrongParam() throws ValidateException {
+    void giftCertificateCriteriaWrongParam(){
         Map<String, String> criteriaMap = new HashMap<>();
         criteriaMap.put(SEARCH_TAG_NAME, "tag");
         criteriaMap.put(SEARCH_NAME, "name");
