@@ -1,18 +1,18 @@
 package com.epam.esm.controller.impl;
 
-import com.epam.esm.controller.interf.GiftCertificateController;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles requests to /gift-certificates url
@@ -22,12 +22,14 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/gift-certificates")
-public class GiftCertificateRestController implements GiftCertificateController {
+public class GiftCertificateRestController{
     private final GiftCertificateService service;
+    private final MessageSource source;
 
 
-    public GiftCertificateRestController(GiftCertificateService service) {
+    public GiftCertificateRestController(GiftCertificateService service, MessageSource source) {
         this.service = service;
+        this.source = source;
     }
 
     /**
@@ -39,6 +41,28 @@ public class GiftCertificateRestController implements GiftCertificateController 
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
             return service.readGiftCertificate(id);
+    }
+
+    /**
+     * Finds gift certificate by parameters
+     */
+    @GetMapping
+    public List<GiftCertificateDto> findGiftCertificateByParams(
+            @RequestParam(required = false, name = "tag") String tagName,
+            @RequestParam(required = false, name = "name") String name,
+            @RequestParam(required = false, name = "description") String description,
+            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+        Map<String, String> criteriaMap = new HashMap<>();
+        if(tagName != null){
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, tagName);
+        }
+        if(name != null){
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, name);
+        }
+        if(description != null){
+            criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, description);
+        }
+        return service.findGiftCertificates(criteriaMap, sort);
     }
 
     /**
@@ -73,33 +97,9 @@ public class GiftCertificateRestController implements GiftCertificateController 
      * @param id id gift certificate to delete
      * @return id deleted gift certificate
      */
-    @DeleteMapping("/{id}")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
     public String deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
         service.deleteGiftCertificate(id);
-        return id;
-    }
-
-
-    /**
-     * Finds gift certificate by parameters
-     */
-    @GetMapping
-    public List<GiftCertificateDto> findGiftCertificateByParams(
-            @RequestParam(required = false, name = "tag") String tagName,
-            @RequestParam(required = false, name = "name") String name,
-            @RequestParam(required = false, name = "description") String description,
-            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
-        Map<String, String> criteriaMap = new HashMap<>();
-        if(tagName != null){
-            criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, tagName);
-        }
-        if(name != null){
-            criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, name);
-        }
-        if(description != null){
-            criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, description);
-        }
-        return service.findGiftCertificates(criteriaMap, sort);
+        return  source.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }
 }

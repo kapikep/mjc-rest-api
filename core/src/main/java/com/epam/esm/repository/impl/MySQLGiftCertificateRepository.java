@@ -65,6 +65,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @param id
      * @return list with gift GiftCertificateEntity
      */
+    //TODO
     @Override
     public List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException {
         List<GiftCertificate> giftCertificates;
@@ -158,8 +159,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
                 return ps;
             }, keyHolder);
 
-            //TODO move here creation tag
-
             insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
 
         } catch (DataAccessException e) {
@@ -210,8 +209,12 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      */
     @Override
     public void deleteGiftCertificate(int id) throws RepositoryException {
+        int res;
         try {
-            jdbcTemplate.update(DELETE, id);
+            res = jdbcTemplate.update(DELETE, id);
+            if (res == 0){
+                throw new RepositoryException("Resource to delete not found");
+            }
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
