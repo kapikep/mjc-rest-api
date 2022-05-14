@@ -153,4 +153,18 @@ class MySQLGiftCertificateRepositoryTest {
         List<GiftCertificate> actualGifts = repository.readGiftCertificate(5);
         assertEquals(list, actualGifts);
     }
+
+    @Test
+    void deleteExistingGiftCertificate() throws RepositoryException {
+        assertDoesNotThrow(() -> repository.deleteGiftCertificate(4));
+
+        System.out.println(repository.readGiftCertificate(4));
+
+        assertEquals(0, repository.readGiftCertificate(4).size());
+    }
+
+    @Test
+    void deleteNotExistingGiftCertificate(){
+        assertThrows(RepositoryException.class, () -> repository.deleteGiftCertificate(111));
+    }
 }

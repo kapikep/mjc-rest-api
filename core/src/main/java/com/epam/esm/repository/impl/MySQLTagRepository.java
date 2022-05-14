@@ -123,8 +123,12 @@ public class MySQLTagRepository implements TagRepository {
      */
     @Override
     public void deleteTag(int id) throws RepositoryException {
+        int res;
         try {
-            jdbcTemplate.update(DELETE, id);
+            res = jdbcTemplate.update(DELETE, id);
+            if (res == 0){
+                throw new RepositoryException("Resource to delete not found");
+            }
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }

@@ -19,12 +19,12 @@ import java.util.List;
  */
 @Service
 public class TagServiceImpl implements TagService {
-
     private final TagRepository repository;
 
     public TagServiceImpl(TagRepository repository) {
         this.repository = repository;
     }
+
     /**
      * Reads all tags from repository
      *
@@ -66,7 +66,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag readTag(int id) throws ServiceException, ValidateException {
         if (!TagValidator.idValidation(id)) {
-            throw new ValidateException("incorrect.id", id);
+            throw new ValidateException("incorrect.search.id", id);
         }
         Tag tag;
         try {
@@ -85,7 +85,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag readTagByName(String name) throws ServiceException, ValidateException {
         if (!TagValidator.nameValidation(name)) {
-            throw new ValidateException("incorrect.name");
+            throw new ValidateException("incorrect.search.name");
         }
         Tag tag;
         try {
@@ -134,7 +134,11 @@ public class TagServiceImpl implements TagService {
         try {
             id = repository.createTag(tag);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            String mes = e.getMessage();
+            if (mes != null && mes.contains("Duplicate entry")){
+                throw new ServiceException(e.getMessage(), e, "tag.existing", tag.getName());
+            }
+            throw new ServiceException(mes, e);
         }
         return id;
     }
@@ -147,7 +151,7 @@ public class TagServiceImpl implements TagService {
         TagValidator.tagFieldValidator(tag);
         try {
             if (tag.getId() == 0) {
-                throw new ValidateException("incorrect.id", tag.getId());
+                throw new ValidateException("incorrect.search.id", tag.getId());
             }
             repository.updateTag(tag);
         } catch (RepositoryException e) {

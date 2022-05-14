@@ -26,7 +26,7 @@ import java.util.Map;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
-    public static final String INCORRECT_ID = "incorrect.id";
+    public static final String INCORRECT_ID = "incorrect.search.id";
     private final GiftCertificateRepository repository;
     private final TagService tagService;
 
@@ -91,6 +91,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException(e.getMessage(), e);
         }
         return giftCertificateDtoList.get(0);
+    }
+
+    /**
+     * Validate parameters. Finds gift certificate in repository by parameters
+     *
+     * @param criteriaMap search parameters
+     * @param sorting sorting rules
+     */
+    @Override
+    public List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException {
+        GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
+        List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtoList;
+        try {
+            giftCertificates = repository.findGiftCertificate(criteriaMap, sorting);
+            giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return giftCertificateDtoList;
     }
 
     /**
@@ -160,27 +180,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             repository.deleteGiftCertificate(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
         }
-    }
-
-    /**
-     * Validate parameters. Finds gift certificate in repository by parameters
-     *
-     * @param criteriaMap search parameters
-     * @param sorting sorting rules
-     */
-    @Override
-    public List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException {
-        GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
-        List<GiftCertificate> giftCertificates;
-        List<GiftCertificateDto> giftCertificateDtoList;
-        try {
-            giftCertificates = repository.findGiftCertificate(criteriaMap, sorting);
-            giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-        return giftCertificateDtoList;
     }
 }

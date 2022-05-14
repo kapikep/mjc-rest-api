@@ -28,12 +28,12 @@ class GiftCertificateValidatorTest {
         giftCertificateFieldValidation(dto1);
 
         dto1.setId(-5);
-        messages.add("incorrect.id");
+        messages.add("incorrect.search.id");
         e = assertThrows(ValidateException.class, () -> giftCertificateFieldValidation(dto1));
         assertEquals(messages, e.getResourceBundleCodeList());
 
         dto1.setName("");
-        messages.add("incorrect.name");
+        messages.add("incorrect.search.name");
         e = assertThrows(ValidateException.class, () -> giftCertificateFieldValidation(dto1));
         assertEquals(messages, e.getResourceBundleCodeList());
 

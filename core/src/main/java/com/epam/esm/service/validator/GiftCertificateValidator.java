@@ -205,7 +205,7 @@ public class GiftCertificateValidator {
         boolean res = true;
 
         if (g.getId() == 0) {
-            throw new ValidateException("incorrect.id", null);
+            throw new ValidateException("incorrect.id");
         }
         if (res && g.getName() == null) {
             res = false;

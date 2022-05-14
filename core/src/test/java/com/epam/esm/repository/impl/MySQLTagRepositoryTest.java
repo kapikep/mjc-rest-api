@@ -99,4 +99,9 @@ class MySQLTagRepositoryTest {
 
         assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
     }
+
+    @Test
+    void deleteNotExistTag(){
+        assertThrows(RepositoryException.class, () -> repository.deleteTag(111));
+    }
 }
