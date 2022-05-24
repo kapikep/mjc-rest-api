@@ -6,6 +6,7 @@ import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
+import com.epam.esm.repository.mapper.GiftCertificateResultSetExtractor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -53,24 +54,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         List<GiftCertificate> giftCertificates;
 
         try {
-            //giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateMapper());
-            giftCertificates = jdbcTemplate.query(READ_ALL, (ResultSetExtractor<List<GiftCertificate>>) rs -> {
-                Map<Integer, GiftCertificate> giftCertificateById = new LinkedHashMap<>();
-                GiftCertificate giftCertificate;
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    if (!giftCertificateById.containsKey(id)) {
-                        giftCertificate = new GiftCertificateMapper().mapRow(rs, 0);
-                        giftCertificateById.put(id, giftCertificate);
-                    } else {
-                        giftCertificate = giftCertificateById.get(id);
-                    }
-                    giftCertificate.addTag(new Tag(rs.getInt("tag.id"), rs.getString("tag.name")));
-//                        Collection<GiftCertificate> giftCertificates1= giftCertificateById.values();
-//                        System.out.println(giftCertificates1.getClass());
-                }
-                return new ArrayList<>(giftCertificateById.values());
-            });
+            giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateResultSetExtractor());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -156,23 +140,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         }
 
         try {
-            giftCertificates = jdbcTemplate.query(findQuery.toString(), (ResultSetExtractor<List<GiftCertificate>>) rs -> {
-                Map<Integer, GiftCertificate> giftCertificateById = new LinkedHashMap<>();
-                GiftCertificate giftCertificate;
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    if (!giftCertificateById.containsKey(id)) {
-                        giftCertificate = new GiftCertificateMapper().mapRow(rs, 0);
-                        giftCertificateById.put(id, giftCertificate);
-                    } else {
-                        giftCertificate = giftCertificateById.get(id);
-                    }
-                    giftCertificate.addTag(new Tag(rs.getInt("tag.id"), rs.getString("tag.name")));
-//                        Collection<GiftCertificate> giftCertificates1= giftCertificateById.values();
-//                        System.out.println(giftCertificates1.getClass());
-                }
-                return new ArrayList<>(giftCertificateById.values());
-            });
+            giftCertificates = jdbcTemplate.query(findQuery.toString(), new GiftCertificateResultSetExtractor());
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
