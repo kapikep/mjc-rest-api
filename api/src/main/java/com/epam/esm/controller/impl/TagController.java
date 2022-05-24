@@ -1,6 +1,6 @@
 package com.epam.esm.controller.impl;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
@@ -34,7 +34,7 @@ public class TagController {
      * @return all tags
      */
     @GetMapping
-    public List<Tag> readAllTags() throws ValidateException, ServiceException {
+    public List<TagDto> readAllTags() throws ValidateException, ServiceException {
         return service.readAllTags();
     }
 
@@ -45,7 +45,7 @@ public class TagController {
      * @return tag by id
      */
     @GetMapping("/{id}")
-    public Tag readTag(@PathVariable String id)  throws ValidateException, ServiceException {
+    public TagDto readTag(@PathVariable String id)  throws ValidateException, ServiceException {
         return service.readTag(id);
     }
 
@@ -57,7 +57,7 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Tag crateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
+    public TagDto crateTag (@RequestBody TagDto tag)  throws ValidateException, ServiceException {
         int id = service.createTag(tag);
         tag.setId(id);
         return tag;
@@ -70,7 +70,7 @@ public class TagController {
      * @return Updated tag
      */
     @PutMapping
-    public Tag updateTag (@RequestBody Tag tag)  throws ValidateException, ServiceException {
+    public TagDto updateTag (@RequestBody TagDto tag)  throws ValidateException, ServiceException {
         service.updateTag(tag);
         return tag;
     }
