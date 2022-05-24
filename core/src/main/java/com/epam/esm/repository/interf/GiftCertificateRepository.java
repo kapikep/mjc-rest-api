@@ -1,7 +1,6 @@
 package com.epam.esm.repository.interf;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.exception.RepositoryException;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public interface GiftCertificateRepository {
      *
      * @return list with gift GiftCertificateEntity
      */
-    List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException;
+    GiftCertificate readGiftCertificate(int id) throws RepositoryException;
 
     /**
      * Finds gift certificates by criteria map and sorted by sorting param from database
@@ -42,18 +41,16 @@ public interface GiftCertificateRepository {
      * Creates new gift certificate in database
      *
      * @param giftCertificate gift certificate entity to create in db, excluding tag field
-     * @param tags related with gift certificate tags for recording in many to many table
      * @return id for created gift certificate
      */
-    int createGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException;
+    int createGiftCertificate(GiftCertificate giftCertificate) throws RepositoryException;
 
     /**
      * Updates new gift certificate
      *
      * @param giftCertificate gift certificate entity to update in db, excluding tag field
-     * @param tags related with gift certificate tags for recording in many to many table
      */
-    void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags)  throws RepositoryException;
+    void updateGiftCertificate(GiftCertificate giftCertificate)  throws RepositoryException;
 
     /**
      * Delete gift certificate by id from database

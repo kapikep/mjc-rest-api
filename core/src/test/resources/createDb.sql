@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS gift_certificate (
   duration INT,
   create_date TIMESTAMP(3) NOT NULL,
   last_update_date TIMESTAMP(3) NOT NULL,
-  PRIMARY KEY (id),
-  unique (name)
+  PRIMARY KEY (id)
   );
 
 
