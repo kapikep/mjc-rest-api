@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/gift-certificates")
-public class GiftCertificateRestController{
+public class GiftCertificateRestController {
     private final GiftCertificateService service;
     private final MessageSource source;
 
@@ -40,7 +40,7 @@ public class GiftCertificateRestController{
      */
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
-            return service.readGiftCertificate(id);
+        return service.readGiftCertificate(id);
     }
 
     /**
@@ -53,13 +53,13 @@ public class GiftCertificateRestController{
             @RequestParam(required = false, name = "description") String description,
             @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
         Map<String, String> criteriaMap = new HashMap<>();
-        if(tagName != null){
+        if (tagName != null) {
             criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, tagName);
         }
-        if(name != null){
+        if (name != null) {
             criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, name);
         }
-        if(description != null){
+        if (description != null) {
             criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, description);
         }
         return service.findGiftCertificates(criteriaMap, sort);
@@ -73,7 +73,7 @@ public class GiftCertificateRestController{
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public GiftCertificateDto createGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
+    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         int id = service.createGiftCertificate(giftCertificateDto);
         giftCertificateDto.setId(id);
         return giftCertificateDto;
@@ -86,7 +86,7 @@ public class GiftCertificateRestController{
      * @return id created gift certificate
      */
     @PutMapping
-    public GiftCertificateDto updateGiftCertificate (@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
+    public GiftCertificateDto updateGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         service.updateGiftCertificate(giftCertificateDto);
         return giftCertificateDto;
     }
@@ -100,6 +100,6 @@ public class GiftCertificateRestController{
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
     public String deleteGiftCertificate(@PathVariable String id) throws ValidateException, ServiceException {
         service.deleteGiftCertificate(id);
-        return  source.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
+        return source.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }
 }
