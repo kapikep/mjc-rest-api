@@ -8,6 +8,7 @@ import com.epam.esm.repository.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,9 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 /**
  * MySQL repository for gift certificates
  *
@@ -51,8 +51,26 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     @Override
     public List<GiftCertificate> readAllGiftCertificates() throws RepositoryException {
         List<GiftCertificate> giftCertificates;
+
         try {
-            giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateMapper());
+            //giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateMapper());
+            giftCertificates = jdbcTemplate.query(READ_ALL, (ResultSetExtractor<List<GiftCertificate>>) rs -> {
+                Map<Integer, GiftCertificate> giftCertificateById = new LinkedHashMap<>();
+                GiftCertificate giftCertificate;
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    if (!giftCertificateById.containsKey(id)) {
+                        giftCertificate = new GiftCertificateMapper().mapRow(rs, 0);
+                        giftCertificateById.put(id, giftCertificate);
+                    } else {
+                        giftCertificate = giftCertificateById.get(id);
+                    }
+                    giftCertificate.addTag(new Tag(rs.getInt("tag.id"), rs.getString("tag.name")));
+//                        Collection<GiftCertificate> giftCertificates1= giftCertificateById.values();
+//                        System.out.println(giftCertificates1.getClass());
+                }
+                return new ArrayList<>(giftCertificateById.values());
+            });
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -65,16 +83,25 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @param id
      * @return list with gift GiftCertificateEntity
      */
-    //TODO
     @Override
-    public List<GiftCertificate> readGiftCertificate(int id) throws RepositoryException {
-        List<GiftCertificate> giftCertificates;
+    public GiftCertificate readGiftCertificate(int id) throws RepositoryException {
+        GiftCertificate giftCertificate;
+
         try {
-            giftCertificates = jdbcTemplate.query(READ_ONE, new GiftCertificateMapper(), id);
+            giftCertificate = jdbcTemplate.query(READ_ONE, rs -> {
+                GiftCertificate giftCertificate1;
+                rs.next();
+                giftCertificate1 = new GiftCertificateMapper().mapRow(rs, 0);
+                do {
+                    giftCertificate1.addTag(new Tag(rs.getInt("tag.id"), rs.getString("tag.name")));
+                } while (rs.next());
+                return giftCertificate1;
+            }, id);
+
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
-        return giftCertificates;
+        return giftCertificate;
     }
 
     /**
@@ -129,7 +156,23 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         }
 
         try {
-            giftCertificates = jdbcTemplate.query(findQuery.toString(), new GiftCertificateMapper());
+            giftCertificates = jdbcTemplate.query(findQuery.toString(), (ResultSetExtractor<List<GiftCertificate>>) rs -> {
+                Map<Integer, GiftCertificate> giftCertificateById = new LinkedHashMap<>();
+                GiftCertificate giftCertificate;
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    if (!giftCertificateById.containsKey(id)) {
+                        giftCertificate = new GiftCertificateMapper().mapRow(rs, 0);
+                        giftCertificateById.put(id, giftCertificate);
+                    } else {
+                        giftCertificate = giftCertificateById.get(id);
+                    }
+                    giftCertificate.addTag(new Tag(rs.getInt("tag.id"), rs.getString("tag.name")));
+//                        Collection<GiftCertificate> giftCertificates1= giftCertificateById.values();
+//                        System.out.println(giftCertificates1.getClass());
+                }
+                return new ArrayList<>(giftCertificateById.values());
+            });
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -140,12 +183,11 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * Creates new gift certificate in database
      *
      * @param certificate gift certificate entity to create in db, excluding tag field
-     * @param tags related with gift certificate tags for recording in many to many table
      * @return id for created gift certificate
      */
     @Override
     @Transactional
-    public int createGiftCertificate(GiftCertificate certificate, List<Tag> tags) throws RepositoryException {
+    public int createGiftCertificate(GiftCertificate certificate) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             jdbcTemplate.update(con -> {
@@ -159,8 +201,9 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
                 return ps;
             }, keyHolder);
 
-            insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
+            List<Tag> tags = certificate.getTags();
 
+            insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -170,7 +213,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     //TODO SQLRepo interf
     private void insertIntoGiftCertificateHasTag(Number giftId, List<Tag> tags) {
         StringBuilder builder;
-        if (!tags.isEmpty()) {
+        if (tags != null && !tags.isEmpty()) {
             builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);
             Iterator<Tag> iter = tags.iterator();
             while (iter.hasNext()) {
@@ -187,18 +230,18 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     /**
      * Updates new gift certificate
      *
-     * @param giftCertificate gift certificate entity to update in db, excluding tag field
-     * @param tags related with gift certificate tags for recording in many to many table
+     * @param certificate gift certificate entity to update in db, excluding tag field
      */
     @Override
     @Transactional
-    public void updateGiftCertificate(GiftCertificate giftCertificate, List<Tag> tags) throws RepositoryException {
+    public void updateGiftCertificate(GiftCertificate certificate) throws RepositoryException {
         try {
-            jdbcTemplate.update(UPDATE, giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(),
-                    giftCertificate.getDuration(), giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate(), giftCertificate.getId());
-            jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, giftCertificate.getId());
+            jdbcTemplate.update(UPDATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
+                    certificate.getDuration(), certificate.getCreateDate(), certificate.getLastUpdateDate(), certificate.getId());
+            jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, certificate.getId());
             //TODO move here creation tag
-            insertIntoGiftCertificateHasTag(giftCertificate.getId(), tags);
+            List<Tag> tags = certificate.getTags();
+            insertIntoGiftCertificateHasTag(certificate.getId(), tags);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }

@@ -2,6 +2,8 @@ package com.epam.esm.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 /**
  * Gift certificate entity object
@@ -19,13 +21,13 @@ public class GiftCertificate implements Serializable {
     private Integer duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private Tag tag;
+    private List<Tag> tags = new ArrayList<>();
 
     public GiftCertificate() {
     }
 
     public GiftCertificate(int id, String name, String description, Double price, Integer duration,
-                           LocalDateTime createDate, LocalDateTime lastUpdateDate, Tag tag) {
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -33,7 +35,7 @@ public class GiftCertificate implements Serializable {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tag = tag;
+        this.tags = tags;
     }
 
     public GiftCertificate(int id, String name, String description, Double price, Integer duration,
@@ -104,11 +106,19 @@ public class GiftCertificate implements Serializable {
     }
 
     public Tag getTag() {
-        return tag;
+        return this.tags.get(0);
     }
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     @Override
@@ -116,25 +126,28 @@ public class GiftCertificate implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tag, that.tag);
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description)
+                && Objects.equals(price, that.price) && Objects.equals(duration, that.duration)
+                && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate)
+                && Objects.equals(tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tag);
+        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tags);
     }
 
     @Override
     public String toString() {
         return "GiftCertificate{" +
-                "giftCertificateId=" + id +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", duration=" + duration +
                 ", createDate=" + createDate +
                 ", lastUpdateDate=" + lastUpdateDate +
-                ", tag=" + tag +
+                ", tags=" + tags +
                 '}';
     }
 }
