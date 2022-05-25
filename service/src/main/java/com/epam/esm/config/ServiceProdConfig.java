@@ -13,7 +13,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Profile("prod")
 @Configuration
-@PropertySource("classpath:MySQLdb.properties")
 @PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "com.epam.esm")
 public class ServiceProdConfig {

@@ -32,46 +32,6 @@ class TagServiceImplTest {
     List<TagDto> tagsDtoList = getTagDtoList();
     List<TagEntity> tagsEntityList = getTagEntityList();
 
-    private List<TagEntity> getTagEntityList(){
-        List<TagEntity> tagEntityList = new ArrayList<>();
-        tagEntityList.add(getTagEntityId1());
-        tagEntityList.add(getTagEntityId2());
-        tagEntityList.add(getTagEntityId5());
-        return tagEntityList;
-    }
-
-    private List<TagDto> getTagDtoList(){
-        List<TagDto> tagDtoList = new ArrayList<>();
-        tagDtoList.add(getTagDtoId1());
-        tagDtoList.add(getTagDtoId2());
-        tagDtoList.add(getTagDtoId5());
-        return tagDtoList;
-    }
-
-    private TagEntity getTagEntityId1() {
-        return new TagEntity(1, "Sport");
-    }
-
-    private TagEntity getTagEntityId2() {
-        return new TagEntity(2, "Water");
-    }
-
-    private TagEntity getTagEntityId5() {
-        return new TagEntity(5, "Auto");
-    }
-
-    private TagDto getTagDtoId1() {
-        return new TagDto(1, "Sport");
-    }
-
-    private TagDto getTagDtoId2() {
-        return new TagDto(2, "Water");
-    }
-
-    private TagDto getTagDtoId5() {
-        return new TagDto(5, "Auto");
-    }
-
     @Test
     void readAllTags() throws RepositoryException, ValidateException, ServiceException {
         when(repository.readAllTags()).thenReturn(getTagEntityList()).thenThrow(new RepositoryException());
@@ -191,6 +151,46 @@ class TagServiceImplTest {
 
         assertThrows(ValidateException.class, () -> service.deleteTag("abc"));
         assertThrows(ValidateException.class, () -> service.deleteTag("-1"));
+    }
+
+    private List<TagEntity> getTagEntityList(){
+        List<TagEntity> tagEntityList = new ArrayList<>();
+        tagEntityList.add(getTagEntityId1());
+        tagEntityList.add(getTagEntityId2());
+        tagEntityList.add(getTagEntityId5());
+        return tagEntityList;
+    }
+
+    private List<TagDto> getTagDtoList(){
+        List<TagDto> tagDtoList = new ArrayList<>();
+        tagDtoList.add(getTagDtoId1());
+        tagDtoList.add(getTagDtoId2());
+        tagDtoList.add(getTagDtoId5());
+        return tagDtoList;
+    }
+
+    private TagEntity getTagEntityId1() {
+        return new TagEntity(1, "Sport");
+    }
+
+    private TagEntity getTagEntityId2() {
+        return new TagEntity(2, "Water");
+    }
+
+    private TagEntity getTagEntityId5() {
+        return new TagEntity(5, "Auto");
+    }
+
+    private TagDto getTagDtoId1() {
+        return new TagDto(1, "Sport");
+    }
+
+    private TagDto getTagDtoId2() {
+        return new TagDto(2, "Water");
+    }
+
+    private TagDto getTagDtoId5() {
+        return new TagDto(5, "Auto");
     }
 
 //    @Test
