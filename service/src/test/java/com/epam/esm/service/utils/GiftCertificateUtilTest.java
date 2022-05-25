@@ -18,6 +18,63 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class GiftCertificateUtilTest {
 
+    @Test
+    void giftCertificateEntityListToDtoConvertingTest() {
+        List<GiftCertificateDto> actualList = giftCertificateEntityListToDtoConverting(getEntityList());
+
+        assertEquals(getDtoList(), actualList);
+    }
+
+    @Test
+    void giftCertificateDtoToEntityTransferTest() {
+        GiftCertificateEntity actualEntity = giftCertificateDtoToEntityTransfer(getDtoId1());
+        assertEquals(getEntityId1(), actualEntity);
+    }
+
+    @Test
+    void giftCertificateEntityToDtoTransferTest() {
+        GiftCertificateDto actualDto = giftCertificateEntityToDtoTransfer(getEntityId2());
+        assertEquals(getDtoId2(), actualDto);
+    }
+
+
+    @Test
+    void updateFieldsWithNullTagTest(){
+        GiftCertificateDto oldGift = getDtoId4();
+        GiftCertificateDto newGift = getDtoId4();
+        newGift.setTags(null);
+
+        updateFields(newGift, oldGift);
+        assertEquals(newGift, oldGift);
+        assertEquals(oldGift, getDtoId4());
+    }
+
+    @Test
+    void updateFieldsWithAllNotNullFieldsTest(){
+        GiftCertificateDto oldGift = getDtoId4();
+        GiftCertificateDto newGift = getDtoId1();
+
+        updateFields(newGift, oldGift);
+        assertNotEquals(newGift, oldGift);
+        assertEquals(newGift, getDtoId1());
+        assertEquals(oldGift, getDtoId4());
+    }
+
+    @Test
+    void updateFieldsWithNullFieldsTest(){
+        GiftCertificateDto oldGift = getDtoId2();
+        GiftCertificateDto newGift = getDtoId2();
+        newGift.setName("New name");
+        newGift.setDescription(null);
+        newGift.setCreateDate(null);
+        newGift.setDuration(null);
+        GiftCertificateDto updatedGift = getDtoId2();
+        updatedGift.setName("New name");
+
+        updateFields(newGift, oldGift);
+        assertEquals(updatedGift, newGift);
+    }
+
     private GiftCertificateEntity getEntityId1() {
         return new GiftCertificateEntity(1, "Water skiing",
                 "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
@@ -100,63 +157,5 @@ class GiftCertificateUtilTest {
 
     private TagDto getTagDtoId7() {
         return new TagDto(7, "Health");
-    }
-
-
-    @Test
-    void giftCertificateEntityListToDtoConvertingTest() {
-        List<GiftCertificateDto> actualList = giftCertificateEntityListToDtoConverting(getEntityList());
-
-        assertEquals(getDtoList(), actualList);
-    }
-
-    @Test
-    void giftCertificateDtoToEntityTransferTest() {
-        GiftCertificateEntity actualEntity = giftCertificateDtoToEntityTransfer(getDtoId1());
-        assertEquals(getEntityId1(), actualEntity);
-    }
-
-    @Test
-    void giftCertificateEntityToDtoTransferTest() {
-        GiftCertificateDto actualDto = giftCertificateEntityToDtoTransfer(getEntityId2());
-        assertEquals(getDtoId2(), actualDto);
-    }
-
-
-    @Test
-    void updateFieldsWithNullTagTest(){
-        GiftCertificateDto oldGift = getDtoId4();
-        GiftCertificateDto newGift = getDtoId4();
-        newGift.setTags(null);
-
-        updateFields(newGift, oldGift);
-        assertEquals(newGift, oldGift);
-        assertEquals(oldGift, getDtoId4());
-    }
-
-    @Test
-    void updateFieldsWithAllNotNullFieldsTest(){
-        GiftCertificateDto oldGift = getDtoId4();
-        GiftCertificateDto newGift = getDtoId1();
-
-        updateFields(newGift, oldGift);
-        assertNotEquals(newGift, oldGift);
-        assertEquals(newGift, getDtoId1());
-        assertEquals(oldGift, getDtoId4());
-    }
-
-    @Test
-    void updateFieldsWithNullFieldsTest(){
-        GiftCertificateDto oldGift = getDtoId2();
-        GiftCertificateDto newGift = getDtoId2();
-        newGift.setName("New name");
-        newGift.setDescription(null);
-        newGift.setCreateDate(null);
-        newGift.setDuration(null);
-        GiftCertificateDto updatedGift = getDtoId2();
-        updatedGift.setName("New name");
-
-        updateFields(newGift, oldGift);
-        assertEquals(updatedGift, newGift);
     }
 }

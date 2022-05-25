@@ -11,6 +11,33 @@ import static com.epam.esm.service.utils.TagUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TagUtilTest {
+    @Test
+    void tagEntityListToDtoConvertingTest() {
+        List<TagDto> actualDto = tagEntityListToDtoConverting(getEntityList());
+
+        assertEquals(getDtoList(), actualDto);
+    }
+
+    @Test
+    void tagDtoListToEntityConvertingTest() {
+        List<TagEntity> actualEntity = tagDtoListToEntityConverting(getDtoList());
+
+        assertEquals(getEntityList(), actualEntity);
+    }
+
+    @Test
+    void tagDtoToEntityTransferTest() {
+        TagEntity actualEntity = tagDtoToEntityTransfer(getTagDtoId1());
+
+        assertEquals(getTagEntityId1(), actualEntity);
+    }
+
+    @Test
+    void tagEntityToDtoTransferTest() {
+        TagDto actualTagDto = tagEntityToDtoTransfer(getTagEntityId2());
+
+        assertEquals(getTagDtoId2(), actualTagDto);
+    }
 
     private List<TagEntity> getEntityList(){
         List<TagEntity> tagEntityList = new ArrayList<>();
@@ -60,33 +87,5 @@ class TagUtilTest {
 
     private TagDto getTagDtoId7() {
         return new TagDto(7, "Health");
-    }
-
-    @Test
-    void tagEntityListToDtoConvertingTest() {
-        List<TagDto> actualDto = tagEntityListToDtoConverting(getEntityList());
-
-        assertEquals(getDtoList(), actualDto);
-    }
-
-    @Test
-    void tagDtoListToEntityConvertingTest() {
-        List<TagEntity> actualEntity = tagDtoListToEntityConverting(getDtoList());
-
-        assertEquals(getEntityList(), actualEntity);
-    }
-
-    @Test
-    void tagDtoToEntityTransferTest() {
-        TagEntity actualEntity = tagDtoToEntityTransfer(getTagDtoId1());
-
-        assertEquals(getTagEntityId1(), actualEntity);
-    }
-
-    @Test
-    void tagEntityToDtoTransferTest() {
-        TagDto actualTagDto = tagEntityToDtoTransfer(getTagEntityId2());
-
-        assertEquals(getTagDtoId2(), actualTagDto);
     }
 }

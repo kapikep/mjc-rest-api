@@ -1,7 +1,6 @@
 package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
