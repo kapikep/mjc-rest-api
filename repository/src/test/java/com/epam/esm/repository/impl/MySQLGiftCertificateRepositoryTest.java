@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -27,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = RepositoryDevConfig.class)
+@EnableTransactionManagement
 class MySQLGiftCertificateRepositoryTest {
     @Autowired
     private GiftCertificateRepository repository;
@@ -34,6 +37,7 @@ class MySQLGiftCertificateRepositoryTest {
     @Test
     void readAll() throws RepositoryException {
         List<GiftCertificateEntity> gifts = repository.readAllGiftCertificates();
+
 
         assertEquals(5, gifts.size());
         gifts.forEach(Assertions::assertNotNull);
@@ -94,21 +98,56 @@ class MySQLGiftCertificateRepositoryTest {
     }
 
     @Test
+    @Transactional
     void createGiftCertificate1() throws RepositoryException {
         GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
-        expectedGift.setId(7);
 
         int id = repository.createGiftCertificate(expectedGift);
 
         GiftCertificateEntity actualGift = repository.readGiftCertificate(id);
-        repository.deleteGiftCertificate(id);
 
-        assertEquals(7, id);
+        expectedGift.setId(actualGift.getId());
         assertEquals(expectedGift, actualGift);
     }
 
+    @Test
+    void createGiftCertificateCheckTransactional() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
+        expectedGift.setId(6);
+        expectedGift.setName("Transactional");
+        expectedGift.addTag(getEmptyTag());
+
+        int id = repository.readAllGiftCertificates().size() + 1;
+
+        assertThrows(RepositoryException.class, () -> repository.createGiftCertificate(expectedGift));
+        assertThrows(RepositoryException.class, () -> repository.readGiftCertificate(id));
+    }
 
     @Test
+    void updateGiftCertificateCheckTransactional1() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getGiftCertificateId1();
+        expectedGift.setName("Transactional");
+        expectedGift.addTag(getEmptyTag());
+
+        assertThrows(RepositoryException.class, () -> repository.updateGiftCertificate(expectedGift));
+
+        GiftCertificateEntity actual =  repository.readGiftCertificate(1);
+
+        assertEquals(getGiftCertificateId1(), actual);
+    }
+
+    @Test
+    @Transactional
+    void createGiftCertificateCheckTransactional1() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
+        expectedGift.setName("Transactional1");
+        repository.createGiftCertificate(expectedGift);
+        expectedGift.setName("Transactional2");
+        repository.createGiftCertificate(expectedGift);
+    }
+
+    @Test
+    @Transactional
     void updateGiftCertificate1() throws RepositoryException {
         GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
         expectedGift.setId(5);
@@ -119,6 +158,7 @@ class MySQLGiftCertificateRepositoryTest {
     }
 
     @Test
+    @Transactional
     void updateGiftCertificate2() throws RepositoryException {
         GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
         expectedGift.setId(4);
@@ -131,14 +171,11 @@ class MySQLGiftCertificateRepositoryTest {
     }
 
     @Test
+    @Transactional
     void deleteExistingGiftCertificate() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
+        repository.deleteGiftCertificate(4);
 
-        int id = repository.createGiftCertificate(expectedGift);
-
-        repository.deleteGiftCertificate(id);
-
-        assertThrows(RepositoryException.class, () -> repository.readGiftCertificate(id));
+        assertThrows(RepositoryException.class, () -> repository.readGiftCertificate(4));
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.epam.esm.repository.interf;
 
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ public interface GiftCertificateRepository {
      * @return list with GiftCertificateEntity
      */
     List<GiftCertificateEntity> findGiftCertificate(Map<String, String> criteriaMap, String sorting) throws RepositoryException;
-
 
     /**
      * Creates new gift certificate in database

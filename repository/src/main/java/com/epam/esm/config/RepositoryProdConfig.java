@@ -4,6 +4,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
@@ -19,6 +21,7 @@ import java.beans.PropertyVetoException;
 @PropertySource("classpath:MySQLdb.properties")
 @PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "com.epam.esm")
+@EnableTransactionManagement
 public class RepositoryProdConfig {
 
     @Bean
@@ -39,5 +42,10 @@ public class RepositoryProdConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

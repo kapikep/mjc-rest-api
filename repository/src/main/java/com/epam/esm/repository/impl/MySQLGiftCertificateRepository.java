@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
@@ -153,7 +154,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @return id for created gift certificate
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = RepositoryException.class)
     public int createGiftCertificate(GiftCertificateEntity certificate) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
@@ -177,7 +178,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return keyHolder.getKey().intValue();
     }
 
-    //TODO SQLRepo interf
     private void insertIntoGiftCertificateHasTag(Number giftId, List<TagEntity> tags) {
         StringBuilder builder;
         if (tags != null && !tags.isEmpty()) {
@@ -200,13 +200,13 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
      * @param certificate gift certificate entity to update in db, excluding tag field
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = RepositoryException.class)
     public void updateGiftCertificate(GiftCertificateEntity certificate) throws RepositoryException {
         try {
             jdbcTemplate.update(UPDATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
                     certificate.getDuration(), certificate.getCreateDate(), certificate.getLastUpdateDate(), certificate.getId());
             jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, certificate.getId());
-            //TODO move here creation tag
+
             List<TagEntity> tags = certificate.getTags();
             insertIntoGiftCertificateHasTag(certificate.getId(), tags);
         } catch (DataAccessException e) {
@@ -222,7 +222,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         int res;
         try {
             res = jdbcTemplate.update(DELETE, id);
-            if (res == 0){
+            if (res == 0) {
                 throw new RepositoryException("Resource to delete not found");
             }
         } catch (DataAccessException e) {
