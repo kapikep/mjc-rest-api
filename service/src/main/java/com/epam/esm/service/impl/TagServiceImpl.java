@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
@@ -157,7 +156,14 @@ public class TagServiceImpl implements TagService {
             }
             repository.updateTag(TagUtil.tagDtoToEntityTransfer(tag));
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            String mes = e.getMessage();
+            if (mes != null && mes.contains("Duplicate entry")){
+                throw new ServiceException(e.getMessage(), e, "tag.existing", tag.getName());
+            }
+            if (mes != null && mes.contains("0 updated rows")){
+                throw new ServiceException(e.getMessage(), e, "incorrect.search.id", tag.getId());
+            }
+            throw new ServiceException(mes, e);
         }
     }
 

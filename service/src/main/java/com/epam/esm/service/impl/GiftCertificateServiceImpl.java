@@ -27,6 +27,7 @@ import java.util.Map;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     public static final String INCORRECT_ID = "incorrect.search.id";
+    public static final String CANNOT_ADD_OR_UPDATE_A_CHILD_ROW = "Cannot add or update a child row";
     private final GiftCertificateRepository repository;
     private final TagService tagService;
 
@@ -84,7 +85,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             entity = repository.readGiftCertificate(id);
             dto = GiftCertificateUtil.giftCertificateEntityToDtoTransfer(entity);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
+            throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }
         return dto;
     }
@@ -133,7 +134,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             GiftCertificateEntity gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
             id = repository.createGiftCertificate(gift);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            String mes = e.getMessage();
+
+            if (mes != null && mes.contains(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW)){
+                throw new ServiceException(e.getMessage(), e, "create.problem");
+            }
+            throw new ServiceException(mes, e);
         }
         return id;
     }
@@ -159,7 +165,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             repository.updateGiftCertificate(gift);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            String mes = e.getMessage();
+
+            if (mes != null && mes.contains("0 updated rows")){
+                throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, giftDto.getId());
+            }
+            if (mes != null && mes.contains(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW)){
+                throw new ServiceException(e.getMessage(), e, "update.problem");
+            }
+            throw new ServiceException(mes, e);
         }
     }
 
@@ -174,7 +188,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             repository.deleteGiftCertificate(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
+            throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }
     }
 }
