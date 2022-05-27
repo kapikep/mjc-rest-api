@@ -202,9 +202,13 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     @Override
     @Transactional(rollbackFor = RepositoryException.class)
     public void updateGiftCertificate(GiftCertificateEntity certificate) throws RepositoryException {
+        int updatedRows;
         try {
-            jdbcTemplate.update(UPDATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
+            updatedRows = jdbcTemplate.update(UPDATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
                     certificate.getDuration(), certificate.getCreateDate(), certificate.getLastUpdateDate(), certificate.getId());
+            if(updatedRows == 0) {
+                throw new RepositoryException("0 updated rows");
+            }
             jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, certificate.getId());
 
             List<TagEntity> tags = certificate.getTags();

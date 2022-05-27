@@ -1,11 +1,11 @@
 package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Validator for tag
  *
@@ -13,7 +13,6 @@ import java.util.List;
  * @version 1.0
  */
 public class TagValidator {
-
     private static final int MAX_ID = 1_000_000;
     private static final int MAX_NAME_LENGHT = 45;
 
@@ -23,14 +22,12 @@ public class TagValidator {
         if(tag == null){
             throw new ValidateException("tag.is.null");
         }
-
         if (!idValidation(tag.getId())) {
             resList.add("incorrect.tag.id");
         }
         if (!nameValidation(tag.getName())) {
             resList.add("incorrect.tag.name");
         }
-
         if (!resList.isEmpty()) {
             throw new ValidateException(resList);
         }

@@ -109,8 +109,13 @@ public class MySQLTagRepository implements TagRepository {
      */
     @Override
     public void updateTag(TagEntity tag) throws RepositoryException {
+        int updatedRows;
         try {
-            jdbcTemplate.update(UPDATE, tag.getName(), tag.getId());
+            updatedRows = jdbcTemplate.update(UPDATE, tag.getName(), tag.getId());
+
+            if(updatedRows == 0) {
+                throw new RepositoryException("0 updated rows");
+            }
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
