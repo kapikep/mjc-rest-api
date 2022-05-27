@@ -86,13 +86,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDto readTagByName(String name) throws ServiceException, ValidateException {
         if (!TagValidator.nameValidation(name)) {
-            throw new ValidateException("incorrect.search.name");
+            throw new ValidateException("incorrect.search.name", name);
         }
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readTagByName(name));
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e, "tag.name.not.exist", name);
         }
         return tag;
     }

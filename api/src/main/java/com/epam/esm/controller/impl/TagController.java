@@ -9,6 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,8 +35,13 @@ public class TagController {
      * @return all tags
      */
     @GetMapping
-    public List<TagDto> readAllTags() throws ValidateException, ServiceException {
-        return service.readAllTags();
+    public List<TagDto> findTags(
+            @RequestParam(required = false, name = "name") String name) throws ValidateException, ServiceException {
+        if(name != null){
+            return Collections.singletonList(service.readTagByName(name));
+        }else {
+            return service.readAllTags();
+        }
     }
 
     /**
