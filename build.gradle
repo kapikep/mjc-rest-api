@@ -25,9 +25,9 @@ repositories {
 
 dependencies {
     implementation project(':api')
-    implementation project(':service')
-    implementation project(':repository')
+    implementation project(':core')
 }
 
 test {
+    useJUnitPlatform()
 }
