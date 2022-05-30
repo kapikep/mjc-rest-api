@@ -179,22 +179,6 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         return keyHolder.getKey().intValue();
     }
 
-    private void insertIntoGiftCertificateHasTag(Number giftId, List<TagEntity> tags) {
-        StringBuilder builder;
-        if (tags != null && !tags.isEmpty()) {
-            builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);
-            Iterator<TagEntity> iter = tags.iterator();
-            while (iter.hasNext()) {
-                builder.append(" (").append(giftId).append(",")
-                        .append(iter.next().getId()).append(")");
-                if (iter.hasNext()) {
-                    builder.append(",");
-                }
-            }
-            jdbcTemplate.execute(builder.toString());
-        }
-    }
-
     /**
      * Updates new gift certificate
      *
@@ -232,6 +216,22 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
             }
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    private void insertIntoGiftCertificateHasTag(Number giftId, List<TagEntity> tags) {
+        StringBuilder builder;
+        if (tags != null && !tags.isEmpty()) {
+            builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);
+            Iterator<TagEntity> iter = tags.iterator();
+            while (iter.hasNext()) {
+                builder.append(" (").append(giftId).append(",")
+                        .append(iter.next().getId()).append(")");
+                if (iter.hasNext()) {
+                    builder.append(",");
+                }
+            }
+            jdbcTemplate.execute(builder.toString());
         }
     }
 }
