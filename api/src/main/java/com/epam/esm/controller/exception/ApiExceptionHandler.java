@@ -7,13 +7,17 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles application exceptions
@@ -46,7 +50,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleException(NoHandlerFoundException e) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         ApiException apiException = new ApiException();
-        apiException.setErrorMessage(source.getMessage("incorrect.path", new Object[] {e.getMessage()}, LocaleContextHolder.getLocale()));
+        apiException.setErrorMessage(source.getMessage("incorrect.path", new Object[]{e.getMessage()}, LocaleContextHolder.getLocale()));
         apiException.setErrorCode(codeDefinition(e, httpStatus));
         return new ResponseEntity<>(apiException, httpStatus);
     }
@@ -73,6 +77,18 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
         String message;
         String code;
@@ -81,25 +97,25 @@ public class ApiExceptionHandler {
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        if(e.getResourceBundleCodeList() != null){
+        if (e.getResourceBundleCodeList() != null) {
             StringBuilder builder = new StringBuilder();
             List<String> strings = e.getResourceBundleCodeList();
             Iterator<String> iter = strings.iterator();
-            while (iter.hasNext()){
+            while (iter.hasNext()) {
                 String s = iter.next();
                 s = source.getMessage(s, null, LocaleContextHolder.getLocale());
                 builder.append(s);
-                if(iter.hasNext()){
+                if (iter.hasNext()) {
                     builder.append(" ,");
                 }
             }
             message = builder.toString();
             apiException.setErrorMessage(message);
-        }else {
-            if(e.getResourceBundleCode() != null){
+        } else {
+            if (e.getResourceBundleCode() != null) {
                 message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
                 apiException.setErrorMessage(message);
-            }else {
+            } else {
                 apiException.setErrorMessage(e.getMessage());
             }
         }
@@ -116,10 +132,10 @@ public class ApiExceptionHandler {
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        if(e.getResourceBundleCode() != null){
+        if (e.getResourceBundleCode() != null) {
             message = source.getMessage(e.getResourceBundleCode(), e.getArgs(), LocaleContextHolder.getLocale());
             apiException.setErrorMessage(message);
-        }else {
+        } else {
             apiException.setErrorMessage(e.getMessage());
         }
 
@@ -128,6 +144,7 @@ public class ApiExceptionHandler {
 
     /**
      * Create custom error code
+     *
      * @return custom error code
      */
     private String codeDefinition(Exception e, HttpStatus httpStatus) {

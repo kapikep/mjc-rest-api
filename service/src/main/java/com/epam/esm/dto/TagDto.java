@@ -1,57 +1,31 @@
 package com.epam.esm.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TagDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    int id;
+//    @Digits(integer = 3, fraction = 0, message = "Id null")
+    @Min(value = 1)
+    @Max(value = 3)
+//    @Size(
+//            min = 1,
+//            max = 5,
+//            message = "incorrect id"
+//    )
+    private int id;
+
+    @NotBlank(message = "MESSAGE")
     private String name;
-
-    public TagDto() {}
-
-    public TagDto(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TagDto tagDto = (TagDto) o;
-        return id == tagDto.id && Objects.equals(name, tagDto.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
-
-    @Override
-    public String toString() {
-        return "TagDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }
 
 

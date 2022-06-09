@@ -4,11 +4,13 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
+import com.epam.esm.service.utils.ServiceUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,8 +77,10 @@ public class TagController {
      * @param tag tag for update
      * @return Updated tag
      */
-    @PutMapping
-    public TagDto updateTag (@RequestBody TagDto tag)  throws ValidateException, ServiceException {
+    @PutMapping("/{id}")
+    public TagDto updateTag (@PathVariable String id,
+                             @RequestBody TagDto tag)  throws ValidateException, ServiceException {
+        tag.setId(ServiceUtil.parseInt(id));
         service.updateTag(tag);
         return tag;
     }

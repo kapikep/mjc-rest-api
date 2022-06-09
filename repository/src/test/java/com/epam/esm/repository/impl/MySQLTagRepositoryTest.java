@@ -59,7 +59,7 @@ class MySQLTagRepositoryTest {
 
     @Test
     void createTag() throws RepositoryException {
-        TagEntity expectedTag = new TagEntity("Tag1");
+        TagEntity expectedTag = new TagEntity(22, "Tag1");
         int id = repository.createTag(expectedTag);
         TagEntity actualTag = repository.readTagByName("Tag1");
         assertEquals(expectedTag.getName(), actualTag.getName());
@@ -77,7 +77,7 @@ class MySQLTagRepositoryTest {
 
     @Test
     void deleteNotLinkedTag() throws RepositoryException {
-        TagEntity tag = new TagEntity("Tag3");
+        TagEntity tag = new TagEntity(22, "Tag3");
         repository.createTag(tag);
         tag.setId(repository.readTagByName(tag.getName()).getId());
         repository.deleteTag(tag.getId());
