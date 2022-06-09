@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
 public class ServiceTestConfig {
-
 }
 
 
