@@ -1,4 +1,4 @@
-package com.epam.esm.config;
+package com.epam.esm.service;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Profile;
  * @author Artsemi Kapitula
  * @version 1.0
  */
-@Profile("dev")
+@Profile("test")
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
-public class ServiceDevConfig {
+public class ServiceTestConfig {
 
 }
 

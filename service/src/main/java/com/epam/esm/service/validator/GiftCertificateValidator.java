@@ -2,7 +2,6 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.service.exception.ValidateException;
 

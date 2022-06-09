@@ -1,7 +1,5 @@
-package com.epam.esm.config;
+package com.epam.esm.repository.impl;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,23 +11,24 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+
 /**
  * Spring configuration for Core module (dev config)
  *
  * @author Artsemi Kapitula
  * @version 1.0
  */
-@Profile("dev")
+@Profile("test")
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
 @EnableTransactionManagement
-public class RepositoryDevConfig {
+public class RepositoryTestConfig {
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("createDb.sql")
-                .addScript("insertData.sql")
+                .addScript("schema.sql")
+                .addScript("data.sql")
                 .build();
     }
 

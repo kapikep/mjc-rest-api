@@ -1,5 +1,3 @@
 rootProject.name = 'mjc-rest-api'
-include 'api'
-include 'service'
-include 'repository'
+include 'api', 'service', 'repository'
 

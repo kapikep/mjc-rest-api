@@ -33,8 +33,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
+
 class GiftCertificateServiceImplTest {
 
     @Mock

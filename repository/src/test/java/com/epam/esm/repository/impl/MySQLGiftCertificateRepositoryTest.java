@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.config.RepositoryDevConfig;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
@@ -26,9 +25,9 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = RepositoryDevConfig.class)
+@ContextConfiguration(classes = RepositoryTestConfig.class)
 @EnableTransactionManagement
 class MySQLGiftCertificateRepositoryTest {
     @Autowired
@@ -38,9 +37,9 @@ class MySQLGiftCertificateRepositoryTest {
     void readAll() throws RepositoryException {
         List<GiftCertificateEntity> gifts = repository.readAllGiftCertificates();
 
-
         assertEquals(5, gifts.size());
         gifts.forEach(Assertions::assertNotNull);
+        gifts.forEach(System.out::println);
     }
 
     @Test
