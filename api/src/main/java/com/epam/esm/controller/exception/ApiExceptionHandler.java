@@ -7,6 +7,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,10 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Handles application exceptions
@@ -41,7 +39,7 @@ public class ApiExceptionHandler {
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        apiException.setErrorMessage(e.getMessage());
+        apiException.setErrorMessage(e.getCause().getMessage());
 
         return new ResponseEntity<>(apiException, httpStatus);
     }
@@ -76,15 +74,38 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
+//    @ExceptionHandler
+//    public ResponseEntity<ApiException> handleValidationExceptions(MethodArgumentNotValidException e) {
+//        String code;
+//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+//        ApiException apiException = new ApiException();
+//
+//        code = codeDefinition(e, httpStatus);
+//        apiException.setErrorCode(code);
+//
+//        Map<String, String> errors = new HashMap<>();
+//        e.getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//
+//        apiException.setErrorMessage(errors.toString());
+//        return new ResponseEntity<>(apiException, httpStatus);
+//    }
+
     @ExceptionHandler
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getAllErrors().forEach((error) -> {
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException e) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+        LinkedHashMap<String, String> errors = new LinkedHashMap<>();
+        e.getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+
+        errors.put("errorCode", codeDefinition(e, httpStatus));
         return errors;
     }
 
@@ -151,6 +172,16 @@ public class ApiExceptionHandler {
         String res = "00";
         String className = e.getStackTrace()[1].getClassName();
         int httpStatusCode = httpStatus.value();
+
+//        boolean b = Arrays.stream(e.getStackTrace()).anyMatch(x -> x.getClassName().contains("tag"));
+//        System.out.println(b);
+
+        if(e instanceof BindException){
+            System.out.println("bind");
+            System.out.println(((BindException) e).getBindingResult());
+            className = e.getMessage();
+            System.out.println(e.getMessage());
+        }
 
         if (className.contains("GiftCertificate")) {
             res = "01";

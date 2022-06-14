@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -18,10 +21,17 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GiftCertificateDto {
+    @Min(value = 0)
     private int id;
+    @NotBlank
+    @Size(max = 45)
     private String name;
+    @NotBlank
+    @Size(max = 45)
     private String description;
+    @Min(value = 0)
     private Double price;
+    @Min(value = 0)
     private Integer duration;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime createDate;

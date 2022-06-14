@@ -9,8 +9,12 @@ import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.utils.TagUtil;
 import com.epam.esm.service.validator.TagValidator;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
 /**
  * Service for tags
@@ -36,7 +40,7 @@ public class TagServiceImpl implements TagService {
         List<TagDto> tags;
         try {
             tags = TagUtil.tagEntityListToDtoConverting(repository.readAllTags());
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
         return tags;
@@ -53,7 +57,7 @@ public class TagServiceImpl implements TagService {
         TagDto tag;
         try {
             tag = TagUtil.tagEntityToDtoTransfer(repository.readTag(id));
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
         }
         return tag;
@@ -72,7 +76,7 @@ public class TagServiceImpl implements TagService {
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readTag(id));
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
         return tag;
@@ -91,7 +95,7 @@ public class TagServiceImpl implements TagService {
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readTagByName(name));
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e, "tag.name.not.exist", name);
         }
         return tag;
@@ -111,10 +115,11 @@ public class TagServiceImpl implements TagService {
                 int id;
                 try {
                     id = repository.readTagByName(tag.getName()).getId();
-                } catch (RepositoryException e) {
+                } catch (RepositoryException | DataAccessException e) {
                     try {
+                        tag.setId(0);
                         id = repository.createTag(TagUtil.tagDtoToEntityTransfer(tag));
-                    } catch (RepositoryException ex) {
+                    } catch (RepositoryException | DataAccessException ex) {
                         throw new ServiceException(e.getMessage(), e);
                     }
                 }
@@ -131,12 +136,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public int createTag(TagDto tag) throws ServiceException, ValidateException {
         int id;
+        tag.setId(0);
         TagValidator.tagFieldValidator(tag);
         try {
             id = repository.createTag(TagUtil.tagDtoToEntityTransfer(tag));
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataAccessException e) {
             String mes = e.getMessage();
-            if (mes != null && mes.contains("Duplicate entry")){
+            if (mes != null && mes.contains("[name_UNIQUE]")){
                 throw new ServiceException(e.getMessage(), e, "tag.existing", tag.getName());
             }
             throw new ServiceException(mes, e);

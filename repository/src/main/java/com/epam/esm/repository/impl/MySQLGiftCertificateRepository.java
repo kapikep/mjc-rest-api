@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -40,9 +41,11 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
     private static final String READ_ONE = READ_ALL + " WHERE gc.id=?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final EntityManager entityManager;
 
-    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate) {
+    public MySQLGiftCertificateRepository(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
         this.jdbcTemplate = jdbcTemplate;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -59,6 +62,7 @@ public class MySQLGiftCertificateRepository implements GiftCertificateRepository
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
+//        giftCertificates = entityManager.createQuery("select g from GiftCertificate g").getResultList();
         return giftCertificates;
     }
 

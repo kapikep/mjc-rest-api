@@ -2,7 +2,9 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.exception.ValidateException;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 

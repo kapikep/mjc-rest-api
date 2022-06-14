@@ -10,6 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class GiftCertificateRestController {
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
+    public GiftCertificateDto createGiftCertificate(@RequestBody @Valid GiftCertificateDto giftCertificateDto) throws ValidateException, ServiceException {
         int id = service.createGiftCertificate(giftCertificateDto);
         giftCertificateDto.setId(id);
         return giftCertificateDto;

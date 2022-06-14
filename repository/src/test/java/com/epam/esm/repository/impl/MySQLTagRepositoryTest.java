@@ -5,19 +5,24 @@ import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = RepositoryTestConfig.class)
+@SpringBootTest
+//@ExtendWith(SpringExtension.class)
+//@ContextConfiguration(classes = RepositoryTestConfig.class)
+//@SpringBootTest(classes = RepositoryTestConfig.class)
+//@RunWith(SpringRunner.class)
+//    @DataJpaTest
+//    @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 class MySQLTagRepositoryTest {
 
     @Autowired
@@ -25,10 +30,11 @@ class MySQLTagRepositoryTest {
 
     @Test
     void readAllTags() throws RepositoryException {
-        List<TagEntity>tags;
+        List<TagEntity> tags;
         tags = repository.readAllTags();
-        //assertEquals(7, tags.size());
+        assertTrue(tags.size() > 0);
         tags.forEach(Assertions::assertNotNull);
+        System.out.println("---------------RESULT-------------------");
         tags.forEach(System.out::println);
     }
 
@@ -49,27 +55,34 @@ class MySQLTagRepositoryTest {
         TagEntity actualTag;
         TagEntity expectedTag = new TagEntity(2, "Water");
         actualTag = repository.readTagByName("Water");
-        RepositoryException e = assertThrows(RepositoryException.class, () -> {
+        EmptyResultDataAccessException e = assertThrows(EmptyResultDataAccessException.class, () -> {
             repository.readTagByName("abcd");
         });
 
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
         assertEquals(expectedTag, actualTag);
     }
 
     @Test
     void createTag() throws RepositoryException {
-        TagEntity expectedTag = new TagEntity(22, "Tag1");
+        TagEntity expectedTag = new TagEntity(0,"Tag1");
         int id = repository.createTag(expectedTag);
+        System.out.println("tagId " + id);
         TagEntity actualTag = repository.readTagByName("Tag1");
         assertEquals(expectedTag.getName(), actualTag.getName());
         actualTag = repository.readTag(id);
+        System.out.println(actualTag);
         assertEquals(expectedTag.getName(), actualTag.getName());
     }
 
     @Test
+    void createExistsTag() throws RepositoryException {
+        TagEntity expectedTag = new TagEntity(0,"Sport");
+        DataIntegrityViolationException e = assertThrows(DataIntegrityViolationException.class, () -> repository.createTag(expectedTag));
+    }
+
+    @Test
     void updateTag() throws RepositoryException {
-        TagEntity expectedTag = new TagEntity(7,"Tag2");
+        TagEntity expectedTag = new TagEntity(7, "Tag2");
         repository.updateTag(expectedTag);
         TagEntity actualTag = repository.readTag(7);
         assertEquals(expectedTag, actualTag);
@@ -77,20 +90,21 @@ class MySQLTagRepositoryTest {
 
     @Test
     void deleteNotLinkedTag() throws RepositoryException {
-        TagEntity tag = new TagEntity(22, "Tag3");
+        TagEntity tag = new TagEntity(0, "Tag3");
         repository.createTag(tag);
         tag.setId(repository.readTagByName(tag.getName()).getId());
         repository.deleteTag(tag.getId());
 
-        RepositoryException e = assertThrows(RepositoryException.class, () -> {
+        EmptyResultDataAccessException e = assertThrows(EmptyResultDataAccessException.class, () -> {
             repository.readTagByName("Tag3");
         });
 
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+        assertEquals("No entity found for query; nested exception is javax.persistence.NoResultException: " +
+                "No entity found for query", e.getMessage());
     }
 
     @Test
-    void deleteLinkedTag(){
+    void deleteLinkedTag() {
         assertDoesNotThrow(() -> repository.deleteTag(7));
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> {
@@ -101,7 +115,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
-    void deleteNotExistTag(){
+    void deleteNotExistTag() {
         assertThrows(RepositoryException.class, () -> repository.deleteTag(111));
     }
 }

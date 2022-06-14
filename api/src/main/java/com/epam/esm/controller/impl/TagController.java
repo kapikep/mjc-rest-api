@@ -79,7 +79,7 @@ public class TagController {
      */
     @PutMapping("/{id}")
     public TagDto updateTag (@PathVariable String id,
-                             @RequestBody TagDto tag)  throws ValidateException, ServiceException {
+                             @RequestBody @Valid TagDto tag)  throws ValidateException, ServiceException {
         tag.setId(ServiceUtil.parseInt(id));
         service.updateTag(tag);
         return tag;

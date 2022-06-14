@@ -5,13 +5,23 @@ import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.repository.mapper.TagMapper;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 import java.sql.PreparedStatement;
 import java.util.List;
+
 /**
  * MySQL repository for tags
  *
@@ -28,9 +38,11 @@ public class MySQLTagRepository implements TagRepository {
     public static final String DELETE = "DELETE FROM tag WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final EntityManager entityManager;
 
-    public MySQLTagRepository(JdbcTemplate jdbcTemplate) {
+    public MySQLTagRepository(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
         this.jdbcTemplate = jdbcTemplate;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -41,11 +53,13 @@ public class MySQLTagRepository implements TagRepository {
     @Override
     public List<TagEntity> readAllTags() throws RepositoryException {
         List<TagEntity> tags;
-        try {
-            tags = jdbcTemplate.query(SELECT, new TagMapper());
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
+//        try {
+//            tags = jdbcTemplate.query(SELECT, new TagMapper());
+//        } catch (DataAccessException e) {
+//            throw new RepositoryException(e.getMessage(), e);
+//        }
+        Query query = entityManager.createQuery("from Tag");
+        tags = query.getResultList();
         return tags;
     }
 
@@ -57,11 +71,16 @@ public class MySQLTagRepository implements TagRepository {
     @Override
     public TagEntity readTag(int id) throws RepositoryException {
         TagEntity tag;
-        try {
-            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_ID, new TagMapper(), id);
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
+        tag = entityManager.find(TagEntity.class, id);
+
+        if (tag == null) {
+            throw new RepositoryException("Incorrect result size: expected 1, actual 0");
         }
+//        try {
+//            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_ID, new TagMapper(), id);
+//        } catch (DataAccessException e) {
+//            throw new RepositoryException(e.getMessage(), e);
+//        }
         return tag;
     }
 
@@ -71,13 +90,26 @@ public class MySQLTagRepository implements TagRepository {
      * @return tagEntity from database
      */
     @Override
+    @Transactional
     public TagEntity readTagByName(String name) throws RepositoryException {
         TagEntity tag;
-        try {
-            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_NAME, new TagMapper(), name);
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
+
+        Query query = entityManager.createQuery("select object (t) from Tag t where t.name = :name");
+        query.setParameter("name", name);
+        tag = (TagEntity) query.getSingleResult();
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+//        CriteriaQuery<TagEntity> query = cb.createQuery(TagEntity.class);
+//        Root<TagEntity> root = query.from(TagEntity.class);
+//        ParameterExpression<String> p = cb.parameter(String.class);
+//        query.select(root).where(cb.)
+//        tag = entityManager.find(TagEntity.class, name);
+
+//        try {
+//            tag = jdbcTemplate.queryForObject(SELECT_FROM_TAG_WHERE_NAME, new TagMapper(), name);
+//        } catch (DataAccessException e) {
+//            throw new RepositoryException(e.getMessage(), e);
+//        }
         return tag;
     }
 
@@ -88,18 +120,29 @@ public class MySQLTagRepository implements TagRepository {
      * @return id for created tag
      */
     @Override
+    @Transactional
     public int createTag(TagEntity tag) throws RepositoryException {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int result;
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//        try {
+//            jdbcTemplate.update(con -> {
+//                PreparedStatement ps = con.prepareStatement(INSERT, new String[]{"id"});
+//                ps.setString(1, tag.getName());
+//                return ps;
+//            }, keyHolder);
+//        } catch (DataAccessException e) {
+//            throw new RepositoryException(e.getMessage(), e);
+//        }
+//        result = keyHolder.getKey().intValue();
         try {
-            jdbcTemplate.update(con -> {
-                PreparedStatement ps = con.prepareStatement(INSERT, new String[]{"id"});
-                ps.setString(1, tag.getName());
-                return ps;
-            }, keyHolder);
-        } catch (DataAccessException e) {
+//            result = entityManager.merge(tag).getId();
+            entityManager.persist(tag);
+            entityManager.flush();
+            result = tag.getId();
+        } catch (DataIntegrityViolationException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
-        return keyHolder.getKey().intValue();
+        return result;
     }
 
     /**
@@ -108,14 +151,16 @@ public class MySQLTagRepository implements TagRepository {
      * @param tag tag to create in db
      */
     @Override
+    @Transactional
     public void updateTag(TagEntity tag) throws RepositoryException {
         int updatedRows;
         try {
-            updatedRows = jdbcTemplate.update(UPDATE, tag.getName(), tag.getId());
-
-            if(updatedRows == 0) {
-                throw new RepositoryException("0 updated rows");
-            }
+//            updatedRows = jdbcTemplate.update(UPDATE, tag.getName(), tag.getId());
+//
+//            if (updatedRows == 0) {
+//                throw new RepositoryException("0 updated rows");
+//            }
+            entityManager.merge(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
@@ -124,18 +169,25 @@ public class MySQLTagRepository implements TagRepository {
     /**
      * Deletes tag in database
      *
-     * @param id  id to create in db
+     * @param id id to create in db
      */
     @Override
+    @Transactional
     public void deleteTag(int id) throws RepositoryException {
         int res;
-        try {
-            res = jdbcTemplate.update(DELETE, id);
-            if (res == 0){
-                throw new RepositoryException("Resource to delete not found");
-            }
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
+        Query query = entityManager.createQuery("delete from Tag where id =:id");
+        query.setParameter("id", id);
+        res = query.executeUpdate();
+        if (res == 0) {
+            throw new RepositoryException("Resource to delete not found");
         }
+//        try {
+//            res = jdbcTemplate.update(DELETE, id);
+//            if (res == 0) {
+//                throw new RepositoryException("Resource to delete not found");
+//            }
+//        } catch (DataAccessException e) {
+//            throw new RepositoryException(e.getMessage(), e);
+//        }
     }
 }
