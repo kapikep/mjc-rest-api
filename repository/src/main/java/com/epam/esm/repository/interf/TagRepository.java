@@ -2,6 +2,7 @@ package com.epam.esm.repository.interf;
 
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  * @author Artsemi Kapitula
  * @version 1.0
  */
+@Repository
 public interface TagRepository {
 
     /**

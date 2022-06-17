@@ -28,11 +28,12 @@ import javax.sql.DataSource;
 //@Configuration
 //@EnableTransactionManagement
 
-//@ComponentScan(basePackages = "com.epam.esm")
-//@SpringBootConfiguration
-//@EnableAutoConfiguration
+@ComponentScan(basePackages = "com.epam.esm")
+@SpringBootConfiguration
+@EnableAutoConfiguration
+
 @EntityScan(basePackages = "com.epam.esm.entity")
-@SpringBootApplication
+//@SpringBootApplication
 public class RepositoryTestConfig {
 //    @Bean
 //    public DataSource dataSource() {

@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
@@ -10,9 +11,12 @@ import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.utils.TagUtil;
 import com.epam.esm.service.validator.TagValidator;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.NoResultException;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -39,7 +43,8 @@ public class TagServiceImpl implements TagService {
     public List<TagDto> readAllTags() throws ServiceException{
         List<TagDto> tags;
         try {
-            tags = TagUtil.tagEntityListToDtoConverting(repository.readAllTags());
+            List<TagEntity> tagEntities = repository.readAllTags();
+            tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -56,6 +61,7 @@ public class TagServiceImpl implements TagService {
         int id = ServiceUtil.parseInt(idStr);
         TagDto tag;
         try {
+//            System.out.println(repository.readTag(id));
             tag = TagUtil.tagEntityToDtoTransfer(repository.readTag(id));
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);

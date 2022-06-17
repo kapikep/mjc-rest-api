@@ -53,7 +53,9 @@ public class GiftCertificateRestController {
             @RequestParam(required = false, name = "name") String name,
             @RequestParam(required = false, name = "description") String description,
             @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+        System.out.println(tagName);
         Map<String, String> criteriaMap = new HashMap<>();
+
         if (tagName != null) {
             criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, tagName);
         }

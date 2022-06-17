@@ -17,10 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,12 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@EnableTransactionManagement
-class MySQLGiftCertificateRepositoryTest {
+class GiftCertificateMySQLRepositoryTest {
     @Autowired
     private GiftCertificateRepository repository;
 
     @Test
+    @Transactional
     void readAll() throws RepositoryException {
         List<GiftCertificateEntity> gifts = repository.readAllGiftCertificates();
 
@@ -61,7 +58,7 @@ class MySQLGiftCertificateRepositoryTest {
         Map<String, String> criteriaMap = new HashMap<>();
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "Car");
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "washing");
-        List<GiftCertificateEntity> actualGifts = repository.findGiftCertificate(criteriaMap, "name_desc");
+        List<GiftCertificateEntity> actualGifts = repository.findGiftCertificate(criteriaMap, "name");
 
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
@@ -71,6 +68,14 @@ class MySQLGiftCertificateRepositoryTest {
 
         assertEquals(0, actualGifts.size());
         assertFalse(actualGifts.contains(expectedGift));
+    }
+
+    @Test
+    void sranyiHibernate() throws RepositoryException {
+        List<GiftCertificateEntity> actualGifts = repository.findGiftCertificate(null,"name");
+        if(actualGifts != null){
+            actualGifts.forEach(System.out::println);
+        }
     }
 
     @Test
@@ -165,7 +170,7 @@ class MySQLGiftCertificateRepositoryTest {
 
         repository.updateGiftCertificate(expectedGift);
         GiftCertificateEntity actualGifts = repository.readGiftCertificate(4);
-        expectedGift.setTags(Arrays.asList(getEmptyTag()));
+        expectedGift.setTags(new ArrayList<>());
         assertEquals(expectedGift, actualGifts);
     }
 

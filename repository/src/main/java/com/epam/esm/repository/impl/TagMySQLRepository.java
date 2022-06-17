@@ -3,23 +3,14 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
-import com.epam.esm.repository.mapper.TagMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
-import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -29,7 +20,7 @@ import java.util.List;
  * @version 1.0
  */
 @Repository
-public class MySQLTagRepository implements TagRepository {
+public class TagMySQLRepository implements TagRepository {
     public static final String INSERT = "INSERT INTO tag (name) VALUES(?)";
     public static final String SELECT = "SELECT * FROM tag";
     public static final String SELECT_FROM_TAG_WHERE_ID = "SELECT * FROM tag WHERE id=?";
@@ -40,7 +31,7 @@ public class MySQLTagRepository implements TagRepository {
     private final JdbcTemplate jdbcTemplate;
     private final EntityManager entityManager;
 
-    public MySQLTagRepository(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
+    public TagMySQLRepository(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
         this.jdbcTemplate = jdbcTemplate;
         this.entityManager = entityManager;
     }
@@ -51,6 +42,7 @@ public class MySQLTagRepository implements TagRepository {
      * @return list with all tagsEntities from database
      */
     @Override
+    @Transactional
     public List<TagEntity> readAllTags() throws RepositoryException {
         List<TagEntity> tags;
 //        try {
@@ -58,7 +50,7 @@ public class MySQLTagRepository implements TagRepository {
 //        } catch (DataAccessException e) {
 //            throw new RepositoryException(e.getMessage(), e);
 //        }
-        Query query = entityManager.createQuery("from Tag");
+        Query query = entityManager.createQuery("select t from TagEntity t");
         tags = query.getResultList();
         return tags;
     }
@@ -90,11 +82,10 @@ public class MySQLTagRepository implements TagRepository {
      * @return tagEntity from database
      */
     @Override
-    @Transactional
     public TagEntity readTagByName(String name) throws RepositoryException {
         TagEntity tag;
 
-        Query query = entityManager.createQuery("select object (t) from Tag t where t.name = :name");
+        Query query = entityManager.createQuery("select object (t) from TagEntity t where t.name = :name");
         query.setParameter("name", name);
         tag = (TagEntity) query.getSingleResult();
 //        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -175,7 +166,7 @@ public class MySQLTagRepository implements TagRepository {
     @Transactional
     public void deleteTag(int id) throws RepositoryException {
         int res;
-        Query query = entityManager.createQuery("delete from Tag where id =:id");
+        Query query = entityManager.createQuery("delete from TagEntity where id =:id");
         query.setParameter("id", id);
         res = query.executeUpdate();
         if (res == 0) {

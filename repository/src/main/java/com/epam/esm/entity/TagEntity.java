@@ -1,14 +1,12 @@
 package com.epam.esm.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Tag entity object
  *
@@ -17,13 +15,27 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
+@ToString(exclude = "giftCertificates")
+@EqualsAndHashCode(exclude = "giftCertificates")
+//@RequiredArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Tag")
+@Entity
+@Table(name = "tag")
 public class TagEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @NonNull
     private int id;
+//    @NonNull
     private String name;
+
+    public TagEntity(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private List<GiftCertificateEntity> giftCertificates = new ArrayList<>();
 }

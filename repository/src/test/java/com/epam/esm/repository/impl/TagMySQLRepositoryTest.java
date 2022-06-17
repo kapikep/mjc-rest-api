@@ -5,11 +5,16 @@ import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,16 +24,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 //@ExtendWith(SpringExtension.class)
 //@ContextConfiguration(classes = RepositoryTestConfig.class)
-//@SpringBootTest(classes = RepositoryTestConfig.class)
+
 //@RunWith(SpringRunner.class)
-//    @DataJpaTest
+//@DataJpaTest
+
 //    @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
-class MySQLTagRepositoryTest {
+class TagMySQLRepositoryTest {
 
     @Autowired
     private TagRepository repository;
 
     @Test
+//    @Transactional
     void readAllTags() throws RepositoryException {
         List<TagEntity> tags;
         tags = repository.readAllTags();
@@ -39,6 +46,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+//    @Transactional
     void readTagById() throws RepositoryException {
         TagEntity expectedTag = new TagEntity(6, "Romantic");
         TagEntity actualTag = repository.readTag(6);
@@ -51,6 +59,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+//    @Transactional
     void readTagByName() throws RepositoryException {
         TagEntity actualTag;
         TagEntity expectedTag = new TagEntity(2, "Water");
@@ -63,6 +72,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+    @Transactional
     void createTag() throws RepositoryException {
         TagEntity expectedTag = new TagEntity(0,"Tag1");
         int id = repository.createTag(expectedTag);
@@ -70,17 +80,18 @@ class MySQLTagRepositoryTest {
         TagEntity actualTag = repository.readTagByName("Tag1");
         assertEquals(expectedTag.getName(), actualTag.getName());
         actualTag = repository.readTag(id);
-        System.out.println(actualTag);
         assertEquals(expectedTag.getName(), actualTag.getName());
     }
 
     @Test
+    @Transactional
     void createExistsTag() throws RepositoryException {
         TagEntity expectedTag = new TagEntity(0,"Sport");
         DataIntegrityViolationException e = assertThrows(DataIntegrityViolationException.class, () -> repository.createTag(expectedTag));
     }
 
     @Test
+    @Transactional
     void updateTag() throws RepositoryException {
         TagEntity expectedTag = new TagEntity(7, "Tag2");
         repository.updateTag(expectedTag);
@@ -89,6 +100,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+    @Transactional
     void deleteNotLinkedTag() throws RepositoryException {
         TagEntity tag = new TagEntity(0, "Tag3");
         repository.createTag(tag);
@@ -104,6 +116,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+    @Transactional
     void deleteLinkedTag() {
         assertDoesNotThrow(() -> repository.deleteTag(7));
 
@@ -115,6 +128,7 @@ class MySQLTagRepositoryTest {
     }
 
     @Test
+    @Transactional
     void deleteNotExistTag() {
         assertThrows(RepositoryException.class, () -> repository.deleteTag(111));
     }
