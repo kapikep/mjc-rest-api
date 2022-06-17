@@ -66,8 +66,7 @@ public class TagController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public TagDto crateTag (@RequestBody TagDto tag)  throws ValidateException, ServiceException {
-        int id = service.createTag(tag);
-        tag.setId(id);
+        service.createTag(tag);
         return tag;
     }
 

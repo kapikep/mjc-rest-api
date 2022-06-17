@@ -41,4 +41,10 @@ public class TagUtil {
         dto.setName(entity.getName());
         return dto;
     }
+
+    public static TagDto updateFieldsInDtoFromEntity(TagEntity entity, TagDto dto){
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        return dto;
+    }
 }

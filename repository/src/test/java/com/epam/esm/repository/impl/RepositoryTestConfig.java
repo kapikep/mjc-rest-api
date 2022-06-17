@@ -35,24 +35,7 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "com.epam.esm.entity")
 //@SpringBootApplication
 public class RepositoryTestConfig {
-//    @Bean
-//    public DataSource dataSource() {
-//        return new EmbeddedDatabaseBuilder()
-//                .setType(EmbeddedDatabaseType.H2)
-//                .addScript("schema.sql")
-//                .addScript("data.sql")
-//                .build();
-//    }
-//
-//    @Bean
-//    public JdbcTemplate jdbcTemplate() {
-//        return new JdbcTemplate(dataSource());
-//    }
-//
-//    @Bean
-//    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
-//        return new DataSourceTransactionManager(dataSource);
-//    }
+
 }
 
 

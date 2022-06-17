@@ -15,4 +15,14 @@ public class ServiceUtil {
         }
         return i;
     }
+
+    public static long parseLong(String str) throws ValidateException {
+        long i = 0;
+        if (str != null && Pattern.matches("\\d+", str)) {
+            i = Long.parseLong(str);
+        } else {
+            throw new ValidateException("incorrect.parameter", new Object[] {str});
+        }
+        return i;
+    }
 }

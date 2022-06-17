@@ -1,7 +1,6 @@
 package com.epam.esm.service.interf;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 
@@ -33,7 +32,7 @@ public interface TagService {
      *
      * @return tag from repository
      */
-    TagDto readTag(int id) throws ServiceException, ValidateException;
+    TagDto readTag(long id) throws ServiceException, ValidateException;
 
     /**
      * Validates name and reads tag by name from repository
@@ -55,7 +54,7 @@ public interface TagService {
      *
      * @return id for created tag
      */
-    int createTag(TagDto tag) throws ServiceException, ValidateException;
+    void createTag(TagDto tag) throws ServiceException, ValidateException;
 
     /**
      * Updates tag in repository

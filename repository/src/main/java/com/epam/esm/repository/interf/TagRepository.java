@@ -14,26 +14,21 @@ import java.util.List;
 @Repository
 public interface TagRepository {
 
-    /**
-     * Reads all tags from database
-     *
-     * @return list with all tagsEntities from database
-     */
-    List<TagEntity> readAllTags() throws RepositoryException;
+    List<TagEntity> readAll() throws RepositoryException;
 
     /**
      * Reads tag by id from database
      *
      * @return tagEntity  from database
      */
-    TagEntity readTag(int id) throws RepositoryException;
+    TagEntity readOne(long id) throws RepositoryException;
 
     /**
      * Reads tag by name from database
      *
      * @return tagEntity from database
      */
-    TagEntity readTagByName(String name) throws RepositoryException;
+    TagEntity readByName(String name) throws RepositoryException;
 
     /**
      * Creates tag in database
@@ -41,19 +36,19 @@ public interface TagRepository {
      * @param tag tagEntity to create in db
      * @return id for created tag
      */
-    int createTag(TagEntity tag) throws RepositoryException;
+    void create(TagEntity tag) throws RepositoryException;
 
     /**
      * Updates tag in database
      *
      * @param tag tag to create in db
      */
-    void updateTag(TagEntity tag) throws RepositoryException;
+    TagEntity update(TagEntity tag) throws RepositoryException;
 
     /**
      * Deletes tag in database
      *
      * @param id  id to create in db
      */
-    void deleteTag(int id) throws RepositoryException;
+    void deleteById(long id) throws RepositoryException;
 }

@@ -16,7 +16,7 @@ public class TagDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Min(value = 0)
-    private int id;
+    private long id;
 
     @NotBlank
     @Size(max = 3)

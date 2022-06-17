@@ -34,7 +34,7 @@ class TagServiceImplTest {
 
     @Test
     void readAllTags() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readAllTags()).thenReturn(getTagEntityList()).thenThrow(new RepositoryException());
+        when(repository.readAll()).thenReturn(getTagEntityList()).thenThrow(new RepositoryException());
 
         List<TagDto> actualTags = service.readAllTags();
         assertEquals(getTagDtoList(), actualTags);
@@ -44,11 +44,11 @@ class TagServiceImplTest {
 
     @Test
     void readTagInt() throws ValidateException, ServiceException, RepositoryException {
-        when(repository.readTag(1)).thenReturn(getTagEntityId1()).thenThrow(new RepositoryException());
+        when(repository.readOne(1)).thenReturn(getTagEntityId1()).thenThrow(new RepositoryException());
 
         TagDto actualTag = service.readTag(1);
         assertEquals(getTagDtoId1(), actualTag);
-        verify(repository, times(1)).readTag(1);
+        verify(repository, times(1)).readOne(1);
 
         ValidateException e = assertThrows(ValidateException.class, () -> service.readTag(-2));
         assertThrows(ServiceException.class, () -> service.readTag(1));
@@ -56,12 +56,12 @@ class TagServiceImplTest {
 
     @Test
     void readTagString() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readTag(1)).thenReturn(getTagEntityId1()).thenThrow(new RepositoryException());
+        when(repository.readOne(1)).thenReturn(getTagEntityId1()).thenThrow(new RepositoryException());
 
         TagDto actualTag = service.readTag("1");
         assertEquals(getTagDtoId1(), actualTag);
 
-        verify(repository, times(1)).readTag(1);
+        verify(repository, times(1)).readOne(1);
 
         ValidateException e = assertThrows(ValidateException.class, () -> service.readTag("abc"));
         assertThrows(ServiceException.class, () -> service.readTag("1"));
@@ -69,9 +69,9 @@ class TagServiceImplTest {
 
     @Test
     void getTagIdOrCreateNewTagIsExist() throws ServiceException, ValidateException, RepositoryException {
-        when(repository.readTagByName(getTagDtoId1().getName())).thenReturn(getTagEntityId1());
-        when(repository.readTagByName(getTagDtoId2().getName())).thenReturn(getTagEntityId2());
-        when(repository.readTagByName(getTagDtoId5().getName())).thenReturn(getTagEntityId5());
+        when(repository.readByName(getTagDtoId1().getName())).thenReturn(getTagEntityId1());
+        when(repository.readByName(getTagDtoId2().getName())).thenReturn(getTagEntityId2());
+        when(repository.readByName(getTagDtoId5().getName())).thenReturn(getTagEntityId5());
 
         service.getIdOrCreateTagsInList(tagsDtoList);
         assertEquals(1, tagsDtoList.get(0).getId());
@@ -81,11 +81,11 @@ class TagServiceImplTest {
 
     @Test
     void getTagIdOrCreateNewTagNotExist() throws ServiceException, ValidateException, RepositoryException {
-        when(repository.readTagByName(tagsEntityList.get(0).getName())).thenReturn(tagsEntityList.get(0));
-        when(repository.readTagByName(tagsEntityList.get(1).getName())).thenThrow(RepositoryException.class);
-        when(repository.readTagByName(tagsEntityList.get(2).getName())).thenThrow(RepositoryException.class);
-        when(repository.createTag(tagsEntityList.get(1))).thenReturn(6);
-        when(repository.createTag(tagsEntityList.get(2))).thenReturn(7);
+        when(repository.readByName(tagsEntityList.get(0).getName())).thenReturn(tagsEntityList.get(0));
+        when(repository.readByName(tagsEntityList.get(1).getName())).thenThrow(RepositoryException.class);
+        when(repository.readByName(tagsEntityList.get(2).getName())).thenThrow(RepositoryException.class);
+//        when(repository.create(tagsEntityList.get(1))).thenReturn(6);
+//        when(repository.create(tagsEntityList.get(2))).thenReturn(7);
 
         service.getIdOrCreateTagsInList(tagsDtoList);
         assertEquals(1, tagsDtoList.get(0).getId());
@@ -105,12 +105,12 @@ class TagServiceImplTest {
 
     @Test
     void readTagByName() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readTagByName("Auto")).thenReturn(getTagEntityId5()).thenThrow(new RepositoryException());
-        when(repository.readTagByName("noSuchName")).thenThrow(new RepositoryException());
+        when(repository.readByName("Auto")).thenReturn(getTagEntityId5()).thenThrow(new RepositoryException());
+        when(repository.readByName("noSuchName")).thenThrow(new RepositoryException());
         TagDto actualTag = service.readTagByName("Auto");
         assertEquals(getTagDtoId5(), actualTag);
 
-        verify(repository, times(1)).readTagByName("Auto");
+        verify(repository, times(1)).readByName("Auto");
 
         assertThrows(ValidateException.class, () -> service.readTagByName(""));
         assertThrows(ValidateException.class, () -> service.readTagByName(null));
@@ -121,9 +121,9 @@ class TagServiceImplTest {
     @Test
     void createTag() throws RepositoryException, ValidateException, ServiceException {
         service.createTag(getTagDtoId1());
-        verify(repository, times(1)).createTag(getTagEntityId1());
+        verify(repository, times(1)).create(getTagEntityId1());
 
-        doThrow(new RepositoryException()).when(repository).createTag(getTagEntityId1());
+        doThrow(new RepositoryException()).when(repository).create(getTagEntityId1());
         assertThrows(ServiceException.class, () -> service.createTag(getTagDtoId1()));
 
         assertThrows(ValidateException.class, () -> service.createTag(new TagDto(1, null)));
@@ -132,9 +132,9 @@ class TagServiceImplTest {
     @Test
     void updateTag() throws RepositoryException, ValidateException, ServiceException {
         service.updateTag(getTagDtoId1());
-        verify(repository, times(1)).updateTag(getTagEntityId1());
+        verify(repository, times(1)).update(getTagEntityId1());
 
-        doThrow(new RepositoryException()).when(repository).updateTag(getTagEntityId1());
+        doThrow(new RepositoryException()).when(repository).update(getTagEntityId1());
         assertThrows(ServiceException.class, () -> service.updateTag(getTagDtoId1()));
 
         assertThrows(ValidateException.class, () -> service.updateTag(new TagDto(-1, null)));
@@ -144,9 +144,9 @@ class TagServiceImplTest {
     @Test
     void deleteTag() throws RepositoryException, ValidateException, ServiceException {
         service.deleteTag("1");
-        verify(repository, times(1)).deleteTag(1);
+        verify(repository, times(1)).deleteById(1);
 
-        doThrow(new RepositoryException()).when(repository).deleteTag(anyInt());
+        doThrow(new RepositoryException()).when(repository).deleteById(anyInt());
         assertThrows(ServiceException.class, () -> service.deleteTag("1"));
 
         assertThrows(ValidateException.class, () -> service.deleteTag("abc"));
