@@ -18,7 +18,6 @@ import javax.persistence.Query;
 public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository{
 
     public TagMySQLRepository() {
-        super();
         setClazz(TagEntity.class);
     }
 

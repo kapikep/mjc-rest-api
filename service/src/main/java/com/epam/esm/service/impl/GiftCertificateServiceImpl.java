@@ -46,7 +46,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificateEntity> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
-            giftCertificates = repository.readAllGiftCertificates();
+            giftCertificates = repository.readAll();
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -71,18 +71,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @return gift certificate from repository
      */
     @Override
-    public GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException {
+    public GiftCertificateDto readGiftCertificate(long id) throws ServiceException, ValidateException {
         if (!GiftCertificateValidator.idValidation(id)) {
             throw new ValidateException(INCORRECT_ID, id);
         }
         return getGiftCertificateDto(id);
     }
 
-    private GiftCertificateDto getGiftCertificateDto(int id) throws ServiceException {
+    private GiftCertificateDto getGiftCertificateDto(long id) throws ServiceException {
         GiftCertificateEntity entity;
         GiftCertificateDto dto;
         try {
-            entity = repository.readGiftCertificate(id);
+            entity = repository.readOne(id);
             dto = GiftCertificateUtil.giftCertificateEntityToDtoTransfer(entity);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
@@ -102,7 +102,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificateEntity> giftCertificates;
         List<GiftCertificateDto> giftCertificateDtoList;
         try {
-            giftCertificates = repository.findGiftCertificate(criteriaMap, sorting);
+            giftCertificates = repository.findByCriteria(criteriaMap, sorting);
             giftCertificateDtoList = GiftCertificateUtil.giftCertificateEntityListToDtoConverting(giftCertificates);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -113,12 +113,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     /**
      * Validates gift certificate fields. Sets create date and last update date to now unless otherwise specified in the field.
      * Creates gift certificate in repository
-     *
-     * @return id for created tag
      */
     @Override
-    public int createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
-        int id;
+    public void createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
+        giftDto.setId(0);
         if (giftDto.getCreateDate() == null) {
             giftDto.setCreateDate(LocalDateTime.now());
         }
@@ -132,7 +130,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             List<TagDto> tags = giftDto.getTags();
             tagService.getIdOrCreateTagsInList(tags);
             GiftCertificateEntity gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
-            id = repository.createGiftCertificate(gift);
+            repository.create(gift);
+            GiftCertificateUtil.updateFieldsInDtoFromEntity(gift, giftDto);
         } catch (RepositoryException e) {
             String mes = e.getMessage();
 
@@ -141,7 +140,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
             throw new ServiceException(mes, e);
         }
-        return id;
     }
 
     /**
@@ -163,7 +161,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             GiftCertificateEntity gift = GiftCertificateUtil.giftCertificateDtoToEntityTransfer(giftDto);
 
-            repository.updateGiftCertificate(gift);
+            repository.update(gift);
         } catch (RepositoryException e) {
             String mes = e.getMessage();
 
@@ -186,7 +184,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException {
         int id = ServiceUtil.parseInt(idStr);
         try {
-            repository.deleteGiftCertificate(id);
+            repository.deleteById(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }

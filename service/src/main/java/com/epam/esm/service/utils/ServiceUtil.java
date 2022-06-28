@@ -8,7 +8,7 @@ public class ServiceUtil {
 
     public static int parseInt(String str) throws ValidateException {
         int i = 0;
-        if (str != null && Pattern.matches("\\d+", str)) {
+        if (str != null) {
             i = Integer.parseInt(str);
         } else {
             throw new ValidateException("incorrect.parameter", new Object[] {str});
@@ -18,7 +18,7 @@ public class ServiceUtil {
 
     public static long parseLong(String str) throws ValidateException {
         long i = 0;
-        if (str != null && Pattern.matches("\\d+", str)) {
+        if (str != null) {
             i = Long.parseLong(str);
         } else {
             throw new ValidateException("incorrect.parameter", new Object[] {str});

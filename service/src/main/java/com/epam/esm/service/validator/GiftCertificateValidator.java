@@ -108,7 +108,7 @@ public class GiftCertificateValidator {
         return true;
     }
 
-    public static boolean idValidation(int id) {
+    public static boolean idValidation(long id) {
         boolean res = true;
 
         if (id < 0 || id > MAX_ID) {

@@ -66,7 +66,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void readAllGiftCertificates() throws RepositoryException, ServiceException {
-        when(repository.readAllGiftCertificates()).thenReturn(entityList).thenThrow(new RepositoryException());
+        when(repository.readAll()).thenReturn(entityList).thenThrow(new RepositoryException());
         try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class)) {
             util.when(() -> GiftCertificateUtil.giftCertificateEntityListToDtoConverting(entityList))
                     .thenReturn(dtoList);
@@ -78,7 +78,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void testReadGiftCertificateStr() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readGiftCertificate(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
+        when(repository.readOne(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
 
         try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
              MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
@@ -94,7 +94,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void testReadGiftCertificateInt() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readGiftCertificate(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
+        when(repository.readOne(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
 
         try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
              MockedStatic<GiftCertificateValidator> validator = Mockito.mockStatic(GiftCertificateValidator.class)) {
@@ -137,7 +137,7 @@ class GiftCertificateServiceImplTest {
 
             service.createGiftCertificate(dtoList.get(0));
 
-            verify(repository, times(1)).createGiftCertificate(gift1);
+            verify(repository, times(1)).create(gift1);
         }
     }
 
@@ -156,7 +156,7 @@ class GiftCertificateServiceImplTest {
         assertEquals(timeNow.getMonthValue(), entity.getCreateDate().getMonthValue());
         assertEquals(timeNow.getMonthValue(), entity.getLastUpdateDate().getMonthValue());
 
-        verify(repository, times(1)).createGiftCertificate(entity);
+        verify(repository, times(1)).create(entity);
     }
 
 
@@ -173,7 +173,7 @@ class GiftCertificateServiceImplTest {
 
             service.updateGiftCertificate(dtoList.get(0));
 
-            verify(repository, times(1)).updateGiftCertificate(gift1);
+            verify(repository, times(1)).update(gift1);
         }
     }
 
@@ -204,7 +204,7 @@ class GiftCertificateServiceImplTest {
         try (MockedStatic<ServiceUtil> util = Mockito.mockStatic(ServiceUtil.class)){
             util.when(() -> ServiceUtil.parseInt("1")).thenReturn(1);
             service.deleteGiftCertificate("1");
-            verify(repository, times(1)).deleteGiftCertificate(1);
+            verify(repository, times(1)).deleteById(1);
         }
     }
 
@@ -216,9 +216,9 @@ class GiftCertificateServiceImplTest {
         criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "description");
         String sorting = "-name";
 
-        when(repository.findGiftCertificate(criteriaMap, sorting)).thenReturn(entityList);
+        when(repository.findByCriteria(criteriaMap, sorting)).thenReturn(entityList);
         service.findGiftCertificates(criteriaMap, sorting);
-        verify(repository, times(1)).findGiftCertificate(criteriaMap, sorting);
+        verify(repository, times(1)).findByCriteria(criteriaMap, sorting);
     }
 
     @Test
@@ -233,7 +233,7 @@ class GiftCertificateServiceImplTest {
                     .thenThrow(ValidateException.class);
         }
 
-        verify(repository, never()).findGiftCertificate(criteriaMap, null);
+        verify(repository, never()).findByCriteria(criteriaMap, null);
         assertThrows(ValidateException.class, () -> service.findGiftCertificates(criteriaMap, null));
     }
 

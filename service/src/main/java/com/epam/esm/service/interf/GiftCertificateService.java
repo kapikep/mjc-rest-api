@@ -33,9 +33,9 @@ public interface GiftCertificateService {
      *
      * @return gift certificate from repository
      */
-    GiftCertificateDto readGiftCertificate(int id) throws ServiceException, ValidateException;
+    GiftCertificateDto readGiftCertificate(long id) throws ServiceException, ValidateException;
 
-    int createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
     void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 

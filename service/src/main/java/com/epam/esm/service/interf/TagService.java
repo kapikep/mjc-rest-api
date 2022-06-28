@@ -1,6 +1,8 @@
 package com.epam.esm.service.interf;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 
@@ -19,6 +21,8 @@ public interface TagService {
      * @return list with all tags from repository
      */
     List<TagDto> readAllTags() throws ServiceException, ValidateException;
+
+    List<TagDto> readPage(CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository

@@ -11,7 +11,7 @@ import java.util.List;
 public final class GiftCertificateSearchParam {
     public static final String SEARCH_NAME = "name";
     public static final String SEARCH_DESCRIPTION = "description";
-    public static final String SEARCH_TAG_NAME = "tag.name";
+    public static final String SEARCH_TAG_NAME = "t.name";
 
     public static final String SORT_CREATE_DATE = "create_date";
     public static final String SORT_LAST_UPDATE_DATE = "last_update_date";

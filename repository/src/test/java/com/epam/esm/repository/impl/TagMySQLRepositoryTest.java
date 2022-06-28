@@ -1,5 +1,6 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
@@ -9,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 @SpringBootTest
 //@ExtendWith(SpringExtension.class)
 //@ContextConfiguration(classes = RepositoryTestConfig.class)
@@ -31,7 +31,7 @@ class TagMySQLRepositoryTest {
     private TagRepository repository;
 
     @Test
-    @Transactional
+//    @Transactional
     void readAllTags() throws RepositoryException {
         List<TagEntity> tags;
         tags = repository.readAll();
@@ -39,7 +39,42 @@ class TagMySQLRepositoryTest {
         tags.forEach(Assertions::assertNotNull);
         System.out.println("---------------RESULT-------------------");
         tags.forEach(System.out::println);
+        System.out.println(tags.size());
     }
+
+    @Test
+    void getCount() {
+        long size;
+        size = repository.totalSize();
+        System.out.println(size);
+    }
+
+    @Test
+    void readPage() throws RepositoryException {
+        List<TagEntity> tags;
+
+        CriteriaEntity cr = new CriteriaEntity();
+        cr.setPage(1);
+        cr.setLimit(20);
+        cr.setSorting("-id");
+
+        tags = repository.readPage(cr);
+
+        tags.forEach(System.out::println);
+        System.out.println(tags.size());
+    }
+
+//    @Test
+//    void put1000tags() throws RepositoryException {
+//
+//        for (int i = 0; i < 1000; i++) {
+//            try {
+//                repository.create(new TagEntity(0, "Tag" + i));
+//            }catch (Exception e){
+//                System.out.println(e);
+//            }
+//        }
+//    }
 
     @Test
 //    @Transactional

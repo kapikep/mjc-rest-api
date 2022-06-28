@@ -39,6 +39,14 @@ public class GiftCertificateUtil {
 
     public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificateEntity entity) {
         GiftCertificateDto dto = new GiftCertificateDto();
+        return getGiftCertificateDto(entity, dto);
+    }
+
+    public static GiftCertificateDto updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) {
+        return getGiftCertificateDto(entity, dto);
+    }
+
+    private static GiftCertificateDto getGiftCertificateDto(GiftCertificateEntity entity, GiftCertificateDto dto) {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());

@@ -1,12 +1,15 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
+import com.epam.esm.service.utils.CriteriaUtil;
 import com.epam.esm.service.utils.ServiceUtil;
 import com.epam.esm.service.utils.TagUtil;
 import com.epam.esm.service.validator.TagValidator;
@@ -38,6 +41,20 @@ public class TagServiceImpl implements TagService {
         List<TagDto> tags;
         try {
             List<TagEntity> tagEntities = repository.readAll();
+            tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
+        } catch (RepositoryException | DataAccessException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return tags;
+    }
+
+    @Override
+    public List<TagDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
+        //TODO validate cr
+        CriteriaEntity cr = CriteriaUtil.criteriaDtoToEntityConverting(crDto);
+        List<TagDto> tags;
+        try {
+            List<TagEntity> tagEntities = repository.readPage(cr);
             tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -100,6 +117,8 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+
+
     /**
      * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
      * write id in list
@@ -140,7 +159,7 @@ public class TagServiceImpl implements TagService {
         try {
             TagEntity entity = TagUtil.tagDtoToEntityTransfer(tag);
             repository.create(entity);
-            tag.setId(entity.getId());
+            TagUtil.updateFieldsInDtoFromEntity(entity, tag);
         } catch (RepositoryException | DataAccessException e) {
             String mes = e.getMessage();
             if (mes != null && mes.contains("[name_UNIQUE]")){

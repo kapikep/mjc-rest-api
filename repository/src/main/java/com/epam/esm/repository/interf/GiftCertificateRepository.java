@@ -18,14 +18,14 @@ public interface GiftCertificateRepository {
      *
      * @return list with all GiftCertificateEntity
      */
-    List<GiftCertificateEntity> readAllGiftCertificates() throws RepositoryException;
+    List<GiftCertificateEntity> readAll() throws RepositoryException;
 
     /**
      * Reads gift certificate by id from database
      *
      * @return list with gift GiftCertificateEntity
      */
-    GiftCertificateEntity readGiftCertificate(int id) throws RepositoryException;
+    GiftCertificateEntity readOne(long id) throws RepositoryException;
 
     /**
      * Finds gift certificates by criteria map and sorted by sorting param from database
@@ -34,26 +34,25 @@ public interface GiftCertificateRepository {
      * @param sorting sorting for the result
      * @return list with GiftCertificateEntity
      */
-    List<GiftCertificateEntity> findGiftCertificate(Map<String, String> criteriaMap, String sorting) throws RepositoryException;
+    List<GiftCertificateEntity> findByCriteria(Map<String, String> criteriaMap, String sorting) throws RepositoryException;
 
     /**
      * Creates new gift certificate in database
      *
      * @param giftCertificate gift certificate entity to create in db, excluding tag field
-     * @return id for created gift certificate
      */
-    int createGiftCertificate(GiftCertificateEntity giftCertificate) throws RepositoryException;
+    void create(GiftCertificateEntity giftCertificate) throws RepositoryException;
 
     /**
      * Updates new gift certificate
      *
      * @param giftCertificate gift certificate entity to update in db, excluding tag field
      */
-    void updateGiftCertificate(GiftCertificateEntity giftCertificate)  throws RepositoryException;
+    GiftCertificateEntity update(GiftCertificateEntity giftCertificate)  throws RepositoryException;
 
     /**
      * Delete gift certificate by id from database
      *
      */
-    void deleteGiftCertificate(int id)  throws RepositoryException;
+    void deleteById(long id)  throws RepositoryException;
 }

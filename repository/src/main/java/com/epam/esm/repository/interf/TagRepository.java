@@ -1,5 +1,6 @@
 package com.epam.esm.repository.interf;
 
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.exception.RepositoryException;
 import org.springframework.stereotype.Repository;
@@ -21,8 +22,12 @@ public interface TagRepository {
      *
      * @return tagEntity  from database
      */
+
+    long totalSize();
+
     TagEntity readOne(long id) throws RepositoryException;
 
+    List<TagEntity> readPage(CriteriaEntity criteria) throws RepositoryException;
     /**
      * Reads tag by name from database
      *

@@ -3,7 +3,10 @@ package com.epam.esm.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +14,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
 /**
  * Gift certificate data transfer object
  *
@@ -20,14 +24,16 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiftCertificateDto {
+@EqualsAndHashCode(callSuper = false)
+@Relation(collectionRelation = "gift certificates")
+public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
     @Min(value = 0)
-    private int id;
+    private long id;
     @NotBlank
     @Size(max = 45)
     private String name;
     @NotBlank
-    @Size(max = 45)
+    @Size(max = 300)
     private String description;
     @Min(value = 0)
     private Double price;
@@ -39,3 +45,4 @@ public class GiftCertificateDto {
     private LocalDateTime lastUpdateDate;
     List<TagDto> tags;
 }
+

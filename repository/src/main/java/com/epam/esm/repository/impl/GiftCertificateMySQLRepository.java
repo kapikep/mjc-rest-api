@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.repository.AbstractMySQLRepository;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
@@ -14,11 +15,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.sound.midi.MetaMessage;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.epam.esm.repository.constant.GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM;
+import static com.epam.esm.repository.constant.GiftCertificateSearchParam.SEARCH_TAG_NAME;
 
 /**
  * MySQL repository for gift certificates
@@ -27,107 +33,58 @@ import java.util.Map;
  * @version 1.0
  */
 @Repository
-public class GiftCertificateMySQLRepository implements GiftCertificateRepository {
-    public static final String CREATE = "INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)" +
-            " VALUES(?, ?, ?, ?, ?, ?)";
-    public static final String INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG = "INSERT INTO gift_certificate_has_tag (gift_certificate_id, tag_id) VALUES";
-    public static final String UPDATE = "UPDATE gift_certificate SET name=?, description=?, price=?, duration=?, create_date=?, last_update_date=?" +
-            " WHERE id=?";
-    public static final String DELETE = "DELETE FROM gift_certificate WHERE id=?";
-    public static final String DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG = "DELETE FROM gift_certificate_has_tag WHERE gift_certificate_id=?";
-    private static final String READ_ALL = "SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) " +
-            "LEFT OUTER JOIN tag tag ON (gcht.tag_id = tag.id)";
-    private static final String READ_ONE = READ_ALL + " WHERE gc.id=?";
+public class GiftCertificateMySQLRepository extends AbstractMySQLRepository<GiftCertificateEntity> implements GiftCertificateRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final EntityManager entityManager;
-
-    public GiftCertificateMySQLRepository(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.entityManager = entityManager;
+    public GiftCertificateMySQLRepository() {
+        setClazz(GiftCertificateEntity.class);
     }
 
-    /**
-     * Reads all gift certificates from database
-     *
-     * @return list with all GiftCertificateEntity
-     */
     @Override
     @Transactional
-    public List<GiftCertificateEntity> readAllGiftCertificates() throws RepositoryException {
+    public List<GiftCertificateEntity> findByCriteria(Map<String, String> criteriaMap, String sorting) throws RepositoryException {
         List<GiftCertificateEntity> giftCertificates;
-
-//        try {
-//            giftCertificates = jdbcTemplate.query(READ_ALL, new GiftCertificateResultSetExtractor());
-//        } catch (DataAccessException e) {
-//            throw new RepositoryException(e.getMessage(), e);
-//        }
-        giftCertificates = entityManager.createQuery("select g from GiftCertificateEntity g").getResultList();
-        return giftCertificates;
-    }
-
-    /**
-     * Reads gift certificate by id from database
-     *
-     * @param id
-     * @return list with gift GiftCertificateEntity
-     */
-    @Override
-    public GiftCertificateEntity readGiftCertificate(int id) throws RepositoryException {
-        GiftCertificateEntity gift;
-
-        gift = entityManager.find(GiftCertificateEntity.class, id);
-
-        if (gift == null) {
-            throw new RepositoryException("Incorrect result size: expected 1, actual 0");
-        }
-
-//        try {
-//            giftCertificate = jdbcTemplate.query(READ_ONE, rs -> {
-//                GiftCertificateEntity giftCertificate1;
-//                rs.next();
-//                giftCertificate1 = new GiftCertificateMapper().mapRow(rs, 0);
-//                do {
-//                    giftCertificate1.addTag(new TagEntity(rs.getInt("tag.id"), rs.getString("tag.name")));
-//                } while (rs.next());
-//                return giftCertificate1;
-//            }, id);
-//
-//        } catch (DataAccessException e) {
-//            throw new RepositoryException(e.getMessage(), e);
-//        }
-        return gift;
-    }
-
-    /**
-     * Finds gift certificates by criteria map and sorted by sorting param from database
-     *
-     * @param criteriaMap search parameters
-     * @param sorting sorting for the result
-     * @return list with GiftCertificateEntity
-     */
-    @Override
-    public List<GiftCertificateEntity> findGiftCertificate(Map<String, String> criteriaMap, String sorting) throws RepositoryException {
-        List giftCertificates;
-
-        StringBuilder findQuery = new StringBuilder(READ_ALL);
+        StringBuilder findQuery = new StringBuilder("select g from GiftCertificateEntity g join g.tags t");
 
         if (criteriaMap != null) {
             if (!criteriaMap.isEmpty()) {
-                findQuery.append(" WHERE ");
+                findQuery.append(" where ");
             }
             Iterator<String> iter = criteriaMap.keySet().iterator();
             while (iter.hasNext()) {
                 String s = iter.next();
-                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(s)) {
-                    findQuery.append("gc.");
+                if (SEARCH_CERTIFICATE_PARAM.contains(s)) {
+                    findQuery.append("g.");
                 }
-                findQuery.append(s).append(" LIKE '%")
-                        .append(criteriaMap.get(s)).append("%'");
+
+                if (SEARCH_TAG_NAME.equals(s)) {
+                    String cr = criteriaMap.get(s);
+                    if (cr.contains(",")) {
+                        String[] tags = cr.split(",");
+
+                        Iterator<String> tagsIt = Arrays.stream(tags).iterator();
+                        while (tagsIt.hasNext()) {
+                            findQuery.append(s).append(" ='");
+                            String tag = tagsIt.next();
+                            findQuery.append(tag);
+                            findQuery.append("'");
+
+                            if (tagsIt.hasNext()) {
+                                findQuery.append(" or ");
+                            }
+                        }
+                    } else {
+                        findQuery.append(s).append(" ='").append(cr).append("'");
+                    }
+                } else {
+                    findQuery.append(s).append(" like '%")
+                            .append(criteriaMap.get(s)).append("%'");
+                }
+
                 if (iter.hasNext()) {
-                    findQuery.append(" AND ");
+                    findQuery.append(" and ");
                 }
             }
+            findQuery.append(" group by g.id");
         }
 
         if (sorting != null) {
@@ -140,124 +97,112 @@ public class GiftCertificateMySQLRepository implements GiftCertificateRepository
                 sorting = sorting.substring(1);
             }
             if (GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
-                findQuery.append(" ORDER BY ");
-                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(sorting)) {
-                    findQuery.append("gc.");
+                findQuery.append(" order by ");
+                if (SEARCH_CERTIFICATE_PARAM.contains(sorting)) {
+                    findQuery.append("g.");
                 }
                 findQuery.append(sorting);
                 if (desc) {
-                    findQuery.append(" DESC");
+                    findQuery.append(" desc");
                 }
             }
         }
-
-        try {
-            giftCertificates = jdbcTemplate.query(findQuery.toString(), new GiftCertificateResultSetExtractor());
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
 //        System.out.println(findQuery);
-//        giftCertificates = entityManager.createNativeQuery(findQuery.toString()).getResultList();
-//        Query query = entityManager.createNativeQuery("SELECT * FROM gift_certificate gc LEFT OUTER JOIN gift_certificate_has_tag gcht on (gc.id = gcht.gift_certificate_id) " +
-//                "LEFT OUTER JOIN tag tag1 ON (gcht.tag_id = tag1.id)");
-//        query.getResultList();
-//        giftCertificates = null;
+//        findQuery = new StringBuilder("select g from GiftCertificateEntity g join g.tags t where t.name like 'Автоспорт' or t.name like 'Автолюбителям' group by g.id");
+//        findQuery = new StringBuilder("select g from GiftCertificateEntity g join g.tags t where g.name like '%new%' or g.price<11");
+        giftCertificates = entityManager.createQuery(findQuery.toString()).getResultList();
+//        EntityType<GiftCertificateEntity> giftCertificateEntity_ = m.entity(GiftCertificateEntity.class);
 
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<GiftCertificateEntity> cq = cb.createQuery(GiftCertificateEntity.class);
+//        Root<GiftCertificateEntity> root = query.from(GiftCertificateEntity.class);
+
+//        Metamodel m = entityManager.getMetamodel();
+//        EntityType<GiftCertificateEntity> gift_ = m.entity(GiftCertificateEntity.class);
+////        EntityType<TagEntity> tag_ = m.entity(TagEntity.class);
+//        Root<GiftCertificateEntity> gift = cq.from(gift_);
+//        Join<GiftCertificateEntity, TagEntity> tag = gift.join(gift_.getList("tags", TagEntity.class));
+
+//        Subquery<TagEntity> subquery = query.subquery(TagEntity.class);
+//        Root<TagEntity> tagEntityRoot = subquery.from(TagEntity.class);
+//        subquery.select(tagEntityRoot).where(cb.like(tagEntityRoot.get("name"), "%Автолюбителям%"));
+
+
+//        Path<String> path = root.get("name");
+//        List<Predicate> predicates = new ArrayList<>();
+//        predicates.add(cb.like(path, "Ночной"));
+//        query.select(root).where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+
+//        Predicate greaterThanPrice = cb.lt(root.get("price"), 11);
+//        Predicate chairItems = cb.like(root.get("Tag.name"), "%Автолюбителям%");
+//        query.select(root).where(cb.or(greaterThanPrice, chairItems));
+
+//        query.select(root).where(cb.in()).;
+
+//        Predicate predicate = cb.in(tag.get("name")).value("Автоспорт");
+//        Predicate predicate1 = cb.in(tag.get("name")).value("Автолюбителям");
+//        cq.where(cb.and(predicate, predicate1));
+
+//        Predicate predicate = cb.in(tag.get("name")).value("Автоспорт").value("Автолюбителям");
 //
-//        Root gift = criteriaQuery.from(GiftCertificateEntity.class);
-//        criteriaQuery.select(criteriaBuilder.max(gift.get("price")));
-//
-//        giftCertificates = entityManager.createQuery(criteriaQuery).getResultList();
-//        giftCertificates = entityManager.createQuery("select g from GiftCertificateEntity g where g.name='wrong'").getResultList();
+//        cq.where(predicate);
+//        cq.groupBy(gift.get("id"));
+//        cq.having(predicate);
+
+//        cq.having(cb.in(tag.get("name")).value("Автоспорт").value("Автолюбителям"));
+
+
+//        cq.where(cb.like(tag.get("name"), "%Автоспорт%"));
+
+//        giftCertificates = entityManager.createQuery(cq).getResultList();
+
         return giftCertificates;
     }
 
-    /**
-     * Creates new gift certificate in database
-     *
-     * @param certificate gift certificate entity to create in db, excluding tag field
-     * @return id for created gift certificate
-     */
-    @Override
-    @Transactional(rollbackFor = RepositoryException.class)
-    public int createGiftCertificate(GiftCertificateEntity certificate) throws RepositoryException {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        try {
-            jdbcTemplate.update(con -> {
-                PreparedStatement ps = con.prepareStatement(CREATE, new String[]{"id"});
-                ps.setString(1, certificate.getName());
-                ps.setString(2, certificate.getDescription());
-                ps.setDouble(3, certificate.getPrice());
-                ps.setInt(4, certificate.getDuration());
-                ps.setTimestamp(5, Timestamp.valueOf(certificate.getCreateDate()));
-                ps.setTimestamp(6, Timestamp.valueOf(certificate.getLastUpdateDate()));
-                return ps;
-            }, keyHolder);
 
-            List<TagEntity> tags = certificate.getTags();
-
-            insertIntoGiftCertificateHasTag(keyHolder.getKey(), tags);
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-        return keyHolder.getKey().intValue();
-    }
-
-    /**
-     * Updates new gift certificate
-     *
-     * @param certificate gift certificate entity to update in db, excluding tag field
-     */
-    @Override
-    @Transactional(rollbackFor = RepositoryException.class)
-    public void updateGiftCertificate(GiftCertificateEntity certificate) throws RepositoryException {
-        int updatedRows;
-        try {
-            updatedRows = jdbcTemplate.update(UPDATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
-                    certificate.getDuration(), certificate.getCreateDate(), certificate.getLastUpdateDate(), certificate.getId());
-            if(updatedRows == 0) {
-                throw new RepositoryException("0 updated rows");
-            }
-            jdbcTemplate.update(DELETE_FROM_GIFT_CERTIFICATE_HAS_TAG, certificate.getId());
-
-            List<TagEntity> tags = certificate.getTags();
-            insertIntoGiftCertificateHasTag(certificate.getId(), tags);
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Delete gift certificate by id from database
-     */
-    @Override
-    public void deleteGiftCertificate(int id) throws RepositoryException {
-        int res;
-        try {
-            res = jdbcTemplate.update(DELETE, id);
-            if (res == 0) {
-                throw new RepositoryException("Resource to delete not found");
-            }
-        } catch (DataAccessException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-    }
-
-    private void insertIntoGiftCertificateHasTag(Number giftId, List<TagEntity> tags) {
-        StringBuilder builder;
-        if (tags != null && !tags.isEmpty()) {
-            builder = new StringBuilder(INSERT_INTO_GIFT_CERTIFICATE_HAS_TAG);
-            Iterator<TagEntity> iter = tags.iterator();
-            while (iter.hasNext()) {
-                builder.append(" (").append(giftId).append(",")
-                        .append(iter.next().getId()).append(")");
-                if (iter.hasNext()) {
-                    builder.append(",");
-                }
-            }
-            jdbcTemplate.execute(builder.toString());
-        }
-    }
+//    @Override
+//    public List<GiftCertificateEntity> findByCriteria(Map<String, String> criteriaMap, String sorting) throws RepositoryException {
+//        List giftCertificates;
+//
+//        StringBuilder findQuery = new StringBuilder(READ_ALL);
+//
+//        if (criteriaMap != null) {
+//            if (!criteriaMap.isEmpty()) {
+//                findQuery.append(" WHERE ");
+//            }
+//            Iterator<String> iter = criteriaMap.keySet().iterator();
+//            while (iter.hasNext()) {
+//                String s = iter.next();
+//                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(s)) {
+//                    findQuery.append("gc.");
+//                }
+//                findQuery.append(s).append(" LIKE '%")
+//                        .append(criteriaMap.get(s)).append("%'");
+//                if (iter.hasNext()) {
+//                    findQuery.append(" AND ");
+//                }
+//            }
+//        }
+//
+//        if (sorting != null) {
+//            boolean desc = false;
+//            if (sorting.startsWith("-")) {
+//                desc = true;
+//                sorting = sorting.substring(1);
+//            }
+//            if (sorting.startsWith("+") || sorting.startsWith(" ")) {
+//                sorting = sorting.substring(1);
+//            }
+//            if (GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
+//                findQuery.append(" ORDER BY ");
+//                if (GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM.contains(sorting)) {
+//                    findQuery.append("gc.");
+//                }
+//                findQuery.append(sorting);
+//                if (desc) {
+//                    findQuery.append(" DESC");
+//                }
+//            }
+//        }
+//
 }
