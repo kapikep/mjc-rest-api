@@ -1,15 +1,15 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.service.validator.groups.OnCreate;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,14 +35,15 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
     @NotBlank
     @Size(max = 300)
     private String description;
-    @Min(value = 0)
+//    @NotNull(groups = OnCreate.class)
+    @Min(value = 1)
     private Double price;
-    @Min(value = 0)
+    @Min(value = 1)
     private Integer duration;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime lastUpdateDate;
-    List<TagDto> tags;
+    List<@Valid TagDto> tags;
 }
 

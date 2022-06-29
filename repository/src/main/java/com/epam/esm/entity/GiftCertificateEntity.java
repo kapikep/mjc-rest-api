@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +35,10 @@ public class GiftCertificateEntity implements Serializable {
     @Column(name = "description")
     private String description;
     @Column(name = "price")
+    @Min(value = 0)
     private Double price;
     @Column(name = "duration")
+    @Min(value = 0, message = "{incorrect.duration}")
     private Integer duration;
     @Column(name = "create_date")
     private LocalDateTime createDate;

@@ -1,27 +1,17 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.AbstractMySQLRepository;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
-import com.epam.esm.repository.mapper.GiftCertificateResultSetExtractor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import javax.sound.midi.MetaMessage;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static com.epam.esm.repository.constant.GiftCertificateSearchParam.SEARCH_CERTIFICATE_PARAM;
 import static com.epam.esm.repository.constant.GiftCertificateSearchParam.SEARCH_TAG_NAME;

@@ -45,7 +45,7 @@ class TagMySQLRepositoryTest {
     @Test
     void getCount() {
         long size;
-        size = repository.totalSize();
+        size = repository.getTotalSize();
         System.out.println(size);
     }
 
@@ -55,7 +55,7 @@ class TagMySQLRepositoryTest {
 
         CriteriaEntity cr = new CriteriaEntity();
         cr.setPage(1);
-        cr.setLimit(20);
+        cr.setSize(20);
         cr.setSorting("-id");
 
         tags = repository.readPage(cr);

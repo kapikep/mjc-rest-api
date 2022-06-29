@@ -12,7 +12,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.util.List;
-
 public abstract class AbstractMySQLRepository<T extends Serializable> {
     private Class<T> clazz;
 
@@ -67,13 +66,14 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
             }
 
         TypedQuery<T> query = entityManager.createQuery(cq);
-        query.setFirstResult((cr.getPage()) * cr.getLimit()); //-1
-        query.setMaxResults(cr.getLimit());
+        query.setFirstResult((cr.getPage() - 1) * cr.getSize()); //-1
+        query.setMaxResults(cr.getSize());
+        cr.setTotalSize(getTotalSize());
 
         return query.getResultList();
     }
 
-    public long totalSize() {
+    public long getTotalSize() {
         return (long) entityManager.createQuery("select count (*) from " + clazz.getName())
                 .getSingleResult();
     }

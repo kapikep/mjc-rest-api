@@ -5,7 +5,10 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 /**
  * Service for tags
@@ -13,6 +16,7 @@ import java.util.List;
  * @author Artsemi Kapitula
  * @version 1.0
  */
+@Validated
 public interface TagService {
 
     /**
@@ -22,7 +26,7 @@ public interface TagService {
      */
     List<TagDto> readAllTags() throws ServiceException, ValidateException;
 
-    List<TagDto> readPage(CriteriaDto cr) throws ServiceException, ValidateException;
+    List<TagDto> readPage(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository
@@ -36,7 +40,7 @@ public interface TagService {
      *
      * @return tag from repository
      */
-    TagDto readTag(long id) throws ServiceException, ValidateException;
+    TagDto readTag(@Min(1) long id) throws ServiceException, ValidateException;
 
     /**
      * Validates name and reads tag by name from repository

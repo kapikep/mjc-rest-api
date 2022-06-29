@@ -9,9 +9,9 @@ import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
-import com.epam.esm.service.utils.CriteriaUtil;
-import com.epam.esm.service.utils.ServiceUtil;
-import com.epam.esm.service.utils.TagUtil;
+import com.epam.esm.service.util.CriteriaUtil;
+import com.epam.esm.service.util.ServiceUtil;
+import com.epam.esm.service.util.TagUtil;
 import com.epam.esm.service.validator.TagValidator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -50,12 +50,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
-        //TODO validate cr
+        CriteriaUtil.setDefaultPageValIfEmpty(crDto);
         CriteriaEntity cr = CriteriaUtil.criteriaDtoToEntityConverting(crDto);
         List<TagDto> tags;
         try {
             List<TagEntity> tagEntities = repository.readPage(cr);
             tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
+            crDto.setTotalSize(cr.getTotalSize());
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -86,14 +87,11 @@ public class TagServiceImpl implements TagService {
      */
     @Override
     public TagDto readTag(long id) throws ServiceException, ValidateException {
-        if (!TagValidator.idValidation(id)) {
-            throw new ValidateException("incorrect.search.id", id);
-        }
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readOne(id));
         } catch (RepositoryException | DataAccessException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
         }
         return tag;
     }

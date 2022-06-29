@@ -3,7 +3,9 @@ package com.epam.esm.service.interf;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 /**
@@ -12,6 +14,7 @@ import java.util.Map;
  * @author Artsemi Kapitula
  * @version 1.0
  */
+@Validated
 public interface GiftCertificateService {
 
     /**
@@ -35,9 +38,9 @@ public interface GiftCertificateService {
      */
     GiftCertificateDto readGiftCertificate(long id) throws ServiceException, ValidateException;
 
-    void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    void createGiftCertificate(@Valid GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
-    void updateGiftCertificate(GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    void updateGiftCertificate(@Valid GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
 
     void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;
 

@@ -4,7 +4,10 @@ import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.repository.constant.GiftCertificateSearchParam;
 import com.epam.esm.service.exception.ValidateException;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.Map;
  * @author Artsemi Kapitula
  * @version 1.0
  */
+@Validated
+@Component
 public class GiftCertificateValidator {
     private static final int MAX_ID = 1_000_000;
     private static final int MAX_NAME_LENGHT = 45;
@@ -71,7 +76,10 @@ public class GiftCertificateValidator {
     /**
      * Gift Certificate Field Validation
      */
-    public static void giftCertificateFieldValidation(GiftCertificateDto dto) throws ValidateException {
+    public void giftCertificateFieldValid(@Valid GiftCertificateDto dto){
+
+    }
+    public static void giftCertificateFieldValidation(@Valid GiftCertificateDto dto) throws ValidateException {
         List<String> resList = new ArrayList<>();
 
         if (!idValidation(dto.getId())) {

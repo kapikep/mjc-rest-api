@@ -23,7 +23,7 @@ public interface TagRepository {
      * @return tagEntity  from database
      */
 
-    long totalSize();
+    long getTotalSize();
 
     TagEntity readOne(long id) throws RepositoryException;
 

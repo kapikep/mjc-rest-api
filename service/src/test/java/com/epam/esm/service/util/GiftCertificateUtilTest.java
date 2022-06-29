@@ -1,4 +1,4 @@
-package com.epam.esm.service.utils;
+package com.epam.esm.service.util;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.esm.service.utils.GiftCertificateUtil.*;
+import static com.epam.esm.service.util.GiftCertificateUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

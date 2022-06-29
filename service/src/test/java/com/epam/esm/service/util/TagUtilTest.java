@@ -1,4 +1,4 @@
-package com.epam.esm.service.utils;
+package com.epam.esm.service.util;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.TagEntity;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.service.utils.TagUtil.*;
+import static com.epam.esm.service.util.TagUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TagUtilTest {

@@ -9,11 +9,14 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.interf.TagService;
-import com.epam.esm.service.utils.GiftCertificateUtil;
-import com.epam.esm.service.utils.ServiceUtil;
+import com.epam.esm.service.util.GiftCertificateUtil;
+import com.epam.esm.service.util.ServiceUtil;
 import com.epam.esm.service.validator.GiftCertificateValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +27,20 @@ import java.util.Map;
  * @version 1.0
  */
 @Service
+@Validated
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     public static final String INCORRECT_ID = "incorrect.search.id";
     public static final String CANNOT_ADD_OR_UPDATE_A_CHILD_ROW = "Cannot add or update a child row";
+
     private final GiftCertificateRepository repository;
     private final TagService tagService;
+
+    @Autowired
+    private GiftCertificateValidator gfValidator;
+
+    @Autowired
+    private Validator validator;
 
     public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
         this.repository = repository;
@@ -115,6 +126,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Creates gift certificate in repository
      */
     @Override
+//    @Validated(OnCreate.class)
     public void createGiftCertificate(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         giftDto.setId(0);
         if (giftDto.getCreateDate() == null) {
@@ -124,7 +136,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftDto.setLastUpdateDate(LocalDateTime.now());
         }
 
-        GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
+//        System.out.println(validator.validate(giftDto));
+//        gfValidator.giftCertificateFieldValid(giftDto);
+//        GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
 
         try {
             List<TagDto> tags = giftDto.getTags();

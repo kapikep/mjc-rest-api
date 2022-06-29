@@ -24,7 +24,7 @@ public class TagDto extends RepresentationModel<TagDto> implements Serializable 
     private long id;
 
     @NotBlank
-    @Size(max = 3)
+    @Size(max = 25)
     private String name;
 }
 

@@ -1,4 +1,4 @@
-package com.epam.esm.service.utils;
+package com.epam.esm.service.util;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificateEntity;

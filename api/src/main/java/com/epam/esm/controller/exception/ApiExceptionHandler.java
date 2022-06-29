@@ -2,6 +2,9 @@ package com.epam.esm.controller.exception;
 
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -12,10 +15,18 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Handles application exceptions
@@ -36,10 +47,36 @@ public class ApiExceptionHandler {
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
+        Throwable tr = e.getCause();
+        String resMes = e.getCause().getMessage();
+
+        if (tr instanceof InvalidFormatException) {
+            InvalidFormatException inv = (InvalidFormatException) tr;
+            JsonMappingException.Reference ref = inv.getPath().get(0);
+            resMes = ref.getFieldName() + ":" + getMessageForParse(inv.getTargetType());
+        }
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        apiException.setErrorMessage(e.getCause().getMessage());
+        apiException.setErrorMessage(resMes);
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleException(MethodArgumentTypeMismatchException e) {
+        String code;
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ApiException apiException = new ApiException();
+        String resMes = e.getCause().getMessage();
+        Class<?> reqType = e.getRequiredType();
+        if (reqType != null) {
+            resMes = e.getName() + ":" + getMessageForParse(e.getRequiredType());
+        }
+
+        code = codeDefinition(e, httpStatus);
+        apiException.setErrorCode(code);
+        apiException.setErrorMessage(resMes);
 
         return new ResponseEntity<>(apiException, httpStatus);
     }
@@ -74,40 +111,58 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-//    @ExceptionHandler
-//    public ResponseEntity<ApiException> handleValidationExceptions(MethodArgumentNotValidException e) {
-//        String code;
-//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-//        ApiException apiException = new ApiException();
-//
-//        code = codeDefinition(e, httpStatus);
-//        apiException.setErrorCode(code);
-//
-//        Map<String, String> errors = new HashMap<>();
-//        e.getAllErrors().forEach((error) -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
-//
-//        apiException.setErrorMessage(errors.toString());
-//        return new ResponseEntity<>(apiException, httpStatus);
-//    }
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleException(ConstraintViolationException e) {
+        String code;
+        HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        ApiException apiException = new ApiException();
+
+        code = codeDefinition(e, httpStatus);
+        apiException.setErrorCode(code);
+        Set<ConstraintViolation<?>> exceptions = e.getConstraintViolations();
+        Map<String, String> errors = new HashMap<>();
+
+        exceptions.forEach(vio -> errors.put(((PathImpl)vio.getPropertyPath()).getLeafNode().toString(), vio.getMessage()));
+
+        apiException.setErrorMessage(errors.toString());
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
 
     @ExceptionHandler
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiException> handleException(MethodArgumentNotValidException e) {
+        String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ApiException apiException = new ApiException();
 
-        LinkedHashMap<String, String> errors = new LinkedHashMap<>();
+        code = codeDefinition(e, httpStatus);
+        apiException.setErrorCode(code);
+
+        Map<String, String> errors = new HashMap<>();
         e.getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
 
-        errors.put("errorCode", codeDefinition(e, httpStatus));
-        return errors;
+        apiException.setErrorMessage(errors.toString());
+        return new ResponseEntity<>(apiException, httpStatus);
     }
+
+//    @ExceptionHandler
+//    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException e) {
+//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+//
+//        LinkedHashMap<String, String> errors = new LinkedHashMap<>();
+//        e.getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//
+//        errors.put("errorCode", codeDefinition(e, httpStatus));
+//        return errors;
+//    }
 
     @ExceptionHandler
     public ResponseEntity<ApiException> handleException(ValidateException e) {
@@ -170,28 +225,53 @@ public class ApiExceptionHandler {
      */
     private String codeDefinition(Exception e, HttpStatus httpStatus) {
         String res = "00";
-        String className = e.getStackTrace()[1].getClassName();
         int httpStatusCode = httpStatus.value();
 
+//        String mes = e.getStackTrace()[1].getClassName();
 //        boolean b = Arrays.stream(e.getStackTrace()).anyMatch(x -> x.getClassName().contains("tag"));
 //        System.out.println(b);
+//
+//        if (e instanceof BindException || e instanceof HttpMessageNotReadableException) {
+//            mes = e.getMessage();
+//        }
+//
+//        if (mes.contains("GiftCertificate")) {
+//            res = "01";
+//        } else if (mes.contains("Tag")) {
+//            res = "02";
+//        }
 
-        if(e instanceof BindException){
-            System.out.println("bind");
-            System.out.println(((BindException) e).getBindingResult());
-            className = e.getMessage();
-            System.out.println(e.getMessage());
-        }
+//        if (res.equals("00")) {
+//            String path = ServletUriComponentsBuilder.fromCurrentRequest().build().getPath();
+//            assert path != null;
+//            if (path.contains("gift-certificates")) {
+//                res = "01";
+//            } else if (path.contains("tag")) {
+//                res = "02";
+//            }
+//        }
 
-        if (className.contains("GiftCertificate")) {
+        String path = ServletUriComponentsBuilder.fromCurrentRequest().build().getPath();
+        assert path != null;
+        if (path.contains("gift-certificates")) {
             res = "01";
-        }
-
-        if (className.contains("Tag")) {
+        } else if (path.contains("tag")) {
             res = "02";
         }
+
         res = httpStatusCode + res;
 
         return res;
+    }
+
+    private String getMessageForParse(Class<?> clazz) {
+        String lowCaseClassName = clazz.getSimpleName().toLowerCase();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(source.getMessage("must.be.with", null, LocaleContextHolder.getLocale()));
+        sb.append(" ").append(lowCaseClassName).append(" ");
+        sb.append(source.getMessage("word.size", null, LocaleContextHolder.getLocale()));
+
+        return sb.toString();
     }
 }
