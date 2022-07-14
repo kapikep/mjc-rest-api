@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserRestController {
 
     private final TagService service;
     private final MessageSource source;
 
-    public UserController(TagService service, MessageSource source) {
+    public UserRestController(TagService service, MessageSource source) {
         this.service = service;
         this.source = source;
     }

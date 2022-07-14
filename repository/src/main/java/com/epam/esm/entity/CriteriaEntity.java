@@ -1,7 +1,9 @@
 package com.epam.esm.entity;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -11,4 +13,11 @@ public class CriteriaEntity {
     private String sorting;
     private Long totalSize;
     private Map<String, String> searchParam;
+
+    public void addSearchParam(String fieldName, String fieldValue){
+        if(searchParam == null){
+            searchParam = new HashMap<>();
+        }
+        searchParam.put(fieldName, fieldValue);
+    }
 }

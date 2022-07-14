@@ -1,13 +1,17 @@
 package com.epam.esm.service.interf;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import com.epam.esm.service.validator.groups.OnCreate;
+import com.epam.esm.service.validator.groups.OnUpdate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Map;
+
 /**
  * Service for gift certificates
  *
@@ -17,32 +21,30 @@ import java.util.Map;
 @Validated
 public interface GiftCertificateService {
 
-    /**
-     * Reads all gift certificates from repository
-     *
-     * @return list with all GiftCertificateDto
-     */
-    List<GiftCertificateDto> readAllGiftCertificates() throws ServiceException, ValidateException;
+    List<GiftCertificateDto> readPage(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
+
+    List<GiftCertificateDto> find(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads gift certificates by id from repository
      *
      * @return gift certificate from repository
      */
-    GiftCertificateDto readGiftCertificate(String id) throws ServiceException, ValidateException;
+    GiftCertificateDto readOne(String id) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads gift certificates by id from repository
      *
      * @return gift certificate from repository
      */
-    GiftCertificateDto readGiftCertificate(long id) throws ServiceException, ValidateException;
 
-    void createGiftCertificate(@Valid GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    GiftCertificateDto readOne(@Positive long id) throws ServiceException, ValidateException;
 
-    void updateGiftCertificate(@Valid GiftCertificateDto giftCertificateDto) throws ServiceException, ValidateException;
+    @Validated(OnCreate.class)
+    void create(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
 
-    void deleteGiftCertificate(String idStr) throws ServiceException, ValidateException;
+    @Validated(OnUpdate.class)
+    void update(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
 
-    List<GiftCertificateDto> findGiftCertificates(Map<String, String> criteriaMap, String sorting) throws ServiceException, ValidateException;
+    void delete(@Positive long idStr) throws ServiceException, ValidateException;
 }

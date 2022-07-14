@@ -1,7 +1,10 @@
 package com.epam.esm.controller.util;
 
-import com.epam.esm.controller.impl.TagController;
+import com.epam.esm.controller.impl.GiftCertificateRestController;
+import com.epam.esm.controller.impl.TagRestController;
 import com.epam.esm.dto.CriteriaDto;
+import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.dto.TagDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.PagedModel;
@@ -18,36 +21,43 @@ public class PaginationUtil {
         long totalPages = pm.getMetadata().getTotalPages();
 
         pm.add(Link.of(ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("page", "1")
-                .toUriString(), LinkRelation.of("first")));
+                .build().toUriString(), LinkRelation.of("first")));
 
         if (page > 1) {
             pm.add(Link.of(ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("page", page - 1)
-                    .toUriString(), LinkRelation.of("prev")));
+                    .build().toUriString(), LinkRelation.of("prev")));
         }
 
         pm.add(Link.of(ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("page", page)
-                .toUriString(), LinkRelation.of("self")));
+                .build().toUriString(), LinkRelation.of("self")));
 
-        if (page <= totalPages) {
+        if (page < totalPages) {
             pm.add(Link.of(ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("page", page + 1)
-                    .toUriString(), LinkRelation.of("next")));
+                    .build().toUriString(), LinkRelation.of("next")));
         }
 
         pm.add(Link.of(ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("page", totalPages)
-                .toUriString(), LinkRelation.of("last")));
+                .build().toUriString(), LinkRelation.of("last")));
     }
 
     public static <T> PagedModel<T> createPagedModel(Collection<T> col, CriteriaDto cr) {
         return PagedModel.of(col, new PagedModel.PageMetadata(cr.getSize(), cr.getPage(), cr.getTotalSize()));
     }
 
-    public static <T extends RepresentationModel<? extends T>> void addSelfLink(T t){
-        System.out.println(t);
-        System.out.println(t.getClass());
+    public static <T extends RepresentationModel<? extends T>> void addSelfLink(T t) {
         t.add(linkTo(t.getClass()).slash(1).withSelfRel());
     }
 
-    public static Link getSelfLink(Class<?> controller, long id){
+    public static Link getSelfLink(Class<?> controller, long id) {
         return linkTo(controller).slash(id).withSelfRel();
+    }
+
+    public static void addGiftCertificateLink(GiftCertificateDto gift) {
+        gift.add(getSelfLink(GiftCertificateRestController.class, gift.getId()));
+        if (!gift.getTags().isEmpty()) {
+            for (TagDto tag : gift.getTags()) {
+                tag.add(linkTo(TagRestController.class).slash(tag.getId()).withRel("tag"));
+            }
+        }
     }
 }

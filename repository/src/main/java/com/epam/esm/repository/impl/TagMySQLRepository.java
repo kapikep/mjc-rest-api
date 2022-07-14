@@ -7,6 +7,7 @@ import com.epam.esm.repository.interf.TagRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  * MySQL repository for tags
@@ -17,25 +18,17 @@ import javax.persistence.Query;
 @Repository
 public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository{
 
+    private static final String WHERE_T_NAME = "select object (t) from TagEntity t where t.name = :name";
+
     public TagMySQLRepository() {
         setClazz(TagEntity.class);
     }
 
     @Override
-    public TagEntity readByName(String name) throws RepositoryException {
-        TagEntity tag;
-
-        Query query = entityManager.createQuery("select object (t) from TagEntity t where t.name = :name");
+    public TagEntity readByName(String name){
+        TypedQuery<TagEntity> query = entityManager.createQuery(WHERE_T_NAME, TagEntity.class);
         query.setParameter("name", name);
-        tag = (TagEntity) query.getSingleResult();
 
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-////        CriteriaQuery<TagEntity> query = cb.createQuery(TagEntity.class);
-////        Root<TagEntity> root = query.from(TagEntity.class);
-////        ParameterExpression<String> p = cb.parameter(String.class);
-////        query.select(root).where(cb.)
-////        tag = entityManager.find(TagEntity.class, name);
-        return tag;
+        return query.getSingleResult();
     }
 }

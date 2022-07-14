@@ -1,6 +1,7 @@
 package com.epam.esm.entity;
 
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,6 +30,8 @@ public class TagEntity implements Serializable {
 //    @NonNull
     private long id;
 //    @NonNull
+//    @NaturalId
+    @Column(name = "name", unique = true)
     private String name;
 
     public TagEntity(int id, String name) {

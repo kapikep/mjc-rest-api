@@ -16,6 +16,7 @@ import com.epam.esm.service.validator.TagValidator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 /**
  * Service for tags
@@ -31,31 +32,13 @@ public class TagServiceImpl implements TagService {
         this.repository = repository;
     }
 
-    /**
-     * Reads all tags from repository
-     *
-     * @return list with all tags from repository
-     */
-    @Override
-    public List<TagDto> readAllTags() throws ServiceException{
-        List<TagDto> tags;
-        try {
-            List<TagEntity> tagEntities = repository.readAll();
-            tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
-        } catch (RepositoryException | DataAccessException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-        return tags;
-    }
-
     @Override
     public List<TagDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
         CriteriaUtil.setDefaultPageValIfEmpty(crDto);
         CriteriaEntity cr = CriteriaUtil.criteriaDtoToEntityConverting(crDto);
         List<TagDto> tags;
         try {
-            List<TagEntity> tagEntities = repository.readPage(cr);
-            tags = TagUtil.tagEntityListToDtoConverting(tagEntities);
+            tags = TagUtil.tagEntityListToDtoConverting(repository.readPage(cr));
             crDto.setTotalSize(cr.getTotalSize());
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -69,7 +52,7 @@ public class TagServiceImpl implements TagService {
      * @return tag from repository
      */
     @Override
-    public TagDto readTag(String idStr) throws ServiceException, ValidateException {
+    public TagDto readOne(String idStr) throws ServiceException, ValidateException {
         long id = ServiceUtil.parseLong(idStr);
         TagDto tag;
         try {
@@ -86,7 +69,7 @@ public class TagServiceImpl implements TagService {
      * @return tag from repository
      */
     @Override
-    public TagDto readTag(long id) throws ServiceException, ValidateException {
+    public TagDto readOne(long id) throws ServiceException, ValidateException {
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readOne(id));
@@ -102,10 +85,7 @@ public class TagServiceImpl implements TagService {
      * @return tag from repository
      */
     @Override
-    public TagDto readTagByName(String name) throws ServiceException, ValidateException {
-        if (!TagValidator.nameValidation(name)) {
-            throw new ValidateException("incorrect.search.name", name);
-        }
+    public TagDto readByName(String name) throws ServiceException, ValidateException {
         TagDto tag;
         try {
             tag =  TagUtil.tagEntityToDtoTransfer(repository.readByName(name));
@@ -151,9 +131,8 @@ public class TagServiceImpl implements TagService {
      * @return id for created tag
      */
     @Override
-    public void createTag(TagDto tag) throws ServiceException, ValidateException {
+    public void create(TagDto tag) throws ServiceException, ValidateException {
         tag.setId(0);
-        TagValidator.tagFieldValidator(tag);
         try {
             TagEntity entity = TagUtil.tagDtoToEntityTransfer(tag);
             repository.create(entity);
@@ -171,8 +150,7 @@ public class TagServiceImpl implements TagService {
      * Validates tag fields and updates tag in repository
      */
     @Override
-    public void updateTag(TagDto tag) throws ServiceException, ValidateException {
-        TagValidator.tagFieldValidator(tag);
+    public void update(TagDto tag) throws ServiceException, ValidateException {
         try {
             if (tag.getId() == 0) {
                 throw new ValidateException("incorrect.search.id", tag.getId());
@@ -195,8 +173,7 @@ public class TagServiceImpl implements TagService {
      * Validates id and deletes tag by id in repository
      */
     @Override
-    public void deleteTag(String idStr) throws ServiceException, ValidateException {
-        int id = ServiceUtil.parseInt(idStr);
+    public void delete(long id) throws ServiceException, ValidateException {
         try {
             repository.deleteById(id);
         } catch (RepositoryException e) {

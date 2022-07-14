@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.epam.esm.repository.constant.GiftCertificateSearchParam.*;
+import static com.epam.esm.repository.constant.SearchParam.*;
 import static com.epam.esm.service.validator.GiftCertificateValidator.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,18 +96,18 @@ class GiftCertificateValidatorTest {
     @Test
     void allNotNullFieldValidationTest() throws ValidateException {
         GiftCertificateDto dto = new GiftCertificateDto();
-        assertThrows(ValidateException.class, () -> allNotNullFieldValidation(dto));
+        assertThrows(ValidateException.class, () -> isNullFieldValidation(dto));
         dto.setId(1);
-        assertFalse(allNotNullFieldValidation(dto));
+        assertFalse(isNullFieldValidation(dto));
     }
 
 
     @Test
     void giftCertificateCriteriaValidationAllOk() throws ValidateException {
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SEARCH_TAG_NAME, "tag1");
-        criteriaMap.put(SEARCH_NAME, "name");
-        criteriaMap.put(SEARCH_DESCRIPTION, "description");
+        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag1");
+        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
         String sorting = "-name";
 
         GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting);
@@ -116,9 +116,9 @@ class GiftCertificateValidatorTest {
     @Test
     void giftCertificateCriteriaWrongTagName(){
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SEARCH_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1daaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        criteriaMap.put(SEARCH_NAME, "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
-        criteriaMap.put(SEARCH_DESCRIPTION, "description");
+        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1daaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        criteriaMap.put(GIFT_SEARCH_NAME, "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
+        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
         String sorting = "+name";
 
         ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
@@ -130,9 +130,9 @@ class GiftCertificateValidatorTest {
     @Test
     void giftCertificateCriteriaWrongSortingName(){
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SEARCH_TAG_NAME, "tag");
-        criteriaMap.put(SEARCH_NAME, "name");
-        criteriaMap.put(SEARCH_DESCRIPTION, "description");
+        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag");
+        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
         String sorting = "++name";
 
         ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, sorting));
@@ -143,9 +143,9 @@ class GiftCertificateValidatorTest {
     @Test
     void giftCertificateCriteriaWrongParam(){
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SEARCH_TAG_NAME, "tag");
-        criteriaMap.put(SEARCH_NAME, "name");
-        criteriaMap.put(SEARCH_DESCRIPTION, "description");
+        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag");
+        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
         criteriaMap.put("incorrect", "description");
 
         ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateValidator.giftCertificateCriteriaValidation(criteriaMap, null));

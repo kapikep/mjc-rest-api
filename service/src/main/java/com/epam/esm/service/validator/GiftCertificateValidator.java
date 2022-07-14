@@ -2,7 +2,7 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.repository.constant.GiftCertificateSearchParam;
+import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.service.exception.ValidateException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Validator for gift certificate
@@ -37,18 +39,18 @@ public class GiftCertificateValidator {
         if (criteriaMap != null) {
             criteriaMap.forEach((k, v) -> {
 
-                switch (k){
-                    case GiftCertificateSearchParam.SEARCH_TAG_NAME:
+                switch (k) {
+                    case SearchParam.GIFT_SEARCH_BY_TAG_NAME:
                         if (v.length() > CRITERIA_TAG_LENGHT) {
                             resList.add("incorrect.param.tag");
                         }
                         break;
-                    case GiftCertificateSearchParam.SEARCH_NAME:
+                    case SearchParam.GIFT_SEARCH_NAME:
                         if (v.length() > MAX_NAME_LENGHT) {
                             resList.add("incorrect.param.name");
                         }
                         break;
-                    case GiftCertificateSearchParam.SEARCH_DESCRIPTION:
+                    case SearchParam.GIFT_SEARCH_DESCRIPTION:
                         if (v.length() > MAX_DESCRIPTION_LENGHT) {
                             resList.add("incorrect.param.description");
                         }
@@ -58,12 +60,12 @@ public class GiftCertificateValidator {
                 }
             });
 
-            if(sorting != null){
-                if(sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")){
+            if (sorting != null) {
+                if (sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")) {
                     sorting = sorting.substring(1);
                 }
 
-                if (!GiftCertificateSearchParam.SORT_PARAM.contains(sorting)) {
+                if (!SearchParam.GIFT_CERTIFICATE_SORT_PARAM.contains(sorting)) {
                     resList.add("incorrect.param.sorting");
                 }
             }
@@ -76,9 +78,10 @@ public class GiftCertificateValidator {
     /**
      * Gift Certificate Field Validation
      */
-    public void giftCertificateFieldValid(@Valid GiftCertificateDto dto){
+    public void giftCertificateFieldValid(@Valid GiftCertificateDto dto) {
 
     }
+
     public static void giftCertificateFieldValidation(@Valid GiftCertificateDto dto) throws ValidateException {
         List<String> resList = new ArrayList<>();
 
@@ -209,35 +212,12 @@ public class GiftCertificateValidator {
         return res;
     }
 
-    public static boolean allNotNullFieldValidation(GiftCertificateDto g) throws ValidateException {
-        boolean res = true;
-
+    public static boolean isNullFieldValidation(GiftCertificateDto g) throws ValidateException {
         if (g.getId() == 0) {
             throw new ValidateException("incorrect.id");
         }
-        if (res && g.getName() == null) {
-            res = false;
-        }
-        if (res && g.getDescription() == null) {
-            res = false;
-        }
-        if (res && g.getPrice() == null) {
-            res = false;
-        }
-        if (res && g.getDuration() == null) {
-            res = false;
-        }
-        if (res && g.getCreateDate() == null) {
-            res = false;
-        }
-        if (res && g.getLastUpdateDate() == null) {
-            res = false;
-        }
-        if (res && g.getTags() == null) {
-            res = false;
-        }
-
-        return res;
+        return Stream.of(g.getId(), g.getName(), g.getDescription(), g.getPrice(), g.getDuration(),
+                g.getCreateDate(), g.getTags()).anyMatch(Objects::isNull);
     }
 }
 

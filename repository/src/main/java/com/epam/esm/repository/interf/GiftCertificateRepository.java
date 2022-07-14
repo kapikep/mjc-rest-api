@@ -1,12 +1,11 @@
 package com.epam.esm.repository.interf;
 
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
+
 /**
  * Repository for gift certificates
  *
@@ -29,14 +28,14 @@ public interface GiftCertificateRepository {
      */
     GiftCertificateEntity readOne(long id) throws RepositoryException;
 
+    List<GiftCertificateEntity> readPage(CriteriaEntity cr) throws RepositoryException;
+
     /**
      * Finds gift certificates by criteria map and sorted by sorting param from database
      *
-     * @param criteriaMap search parameters
-     * @param sorting sorting for the result
-     * @return list with GiftCertificateEntity
+     * @param cr@return list with GiftCertificateEntity
      */
-    List<GiftCertificateEntity> findByCriteria(Map<String, String> criteriaMap, String sorting) throws RepositoryException;
+    List<GiftCertificateEntity> findByParams(CriteriaEntity cr) throws RepositoryException;
 
     /**
      * Creates new gift certificate in database

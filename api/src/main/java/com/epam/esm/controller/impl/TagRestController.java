@@ -3,33 +3,21 @@ package com.epam.esm.controller.impl;
 import com.epam.esm.controller.util.PaginationUtil;
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.repository.interf.TagRepository;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
-import com.epam.esm.service.util.ServiceUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.*;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 
 /**
  * Handles requests to /tags url
@@ -40,11 +28,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 @RequestMapping("/tags")
 @Validated
-public class TagController {
+public class TagRestController {
     private final TagService service;
     private final MessageSource source;
 
-    public TagController(TagService service, MessageSource source) {
+    public TagRestController(TagService service, MessageSource source) {
         this.service = service;
         this.source = source;
     }
@@ -56,7 +44,6 @@ public class TagController {
             @RequestParam(required = false, name = "size") Integer size,
             @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
         List<TagDto> tags;
-        PagedModel<TagDto> pagedModel;
 
         CriteriaDto cr = new CriteriaDto();
         cr.setPage(page);
@@ -64,13 +51,13 @@ public class TagController {
         cr.setSorting(sort);
 
         if (name != null) {
-            tags = Collections.singletonList(service.readTagByName(name));
+            tags = Collections.singletonList(service.readByName(name));
         } else {
             tags = service.readPage(cr);
         }
 
         for (TagDto tag : tags) {
-            tag.add(PaginationUtil.getSelfLink(TagController.class, tag.getId()));
+            tag.add(getSelfLink(TagRestController.class, tag.getId()));
         }
 
         if (name != null){
@@ -78,7 +65,7 @@ public class TagController {
                     new PageMetadata(1, 1, 1));
         }
 
-        pagedModel = PaginationUtil.createPagedModel(tags, cr);
+        PagedModel<TagDto> pagedModel = PaginationUtil.createPagedModel(tags, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
         return pagedModel;
     }
@@ -91,16 +78,16 @@ public class TagController {
      */
     @GetMapping("/old/{id}")
     public TagDto readTag(@PathVariable String id) throws ValidateException, ServiceException {
-        TagDto tag = service.readTag(id);
-        tag.add(PaginationUtil.getSelfLink(TagController.class, tag.getId()));
+        TagDto tag = service.readOne(id);
+        tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
 
     @GetMapping("/{id}")
-    public TagDto readTag(@PathVariable Long id) throws ValidateException, ServiceException {
-        TagDto tag = service.readTag(id);
+    public TagDto readTag(@PathVariable long id) throws ValidateException, ServiceException {
+        TagDto tag = service.readOne(id);
 //        tag.add(linkTo(methodOn(TagController.class).readTag(id)).withSelfRel());
-        tag.add(PaginationUtil.getSelfLink(TagController.class, tag.getId()));
+        tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
 
@@ -113,7 +100,8 @@ public class TagController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public TagDto crateTag(@RequestBody TagDto tag) throws ValidateException, ServiceException {
-        service.createTag(tag);
+        service.create(tag);
+        tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
 
@@ -124,10 +112,11 @@ public class TagController {
      * @return Updated tag
      */
     @PutMapping("/{id}")
-    public TagDto updateTag(@PathVariable String id,
-                            @RequestBody @Valid TagDto tag) throws ValidateException, ServiceException {
-        tag.setId(ServiceUtil.parseInt(id));
-        service.updateTag(tag);
+    public TagDto updateTag(@PathVariable long id,
+                            @RequestBody TagDto tag) throws ValidateException, ServiceException {
+        tag.setId(id);
+        service.update(tag);
+        tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
 
@@ -138,8 +127,8 @@ public class TagController {
      * @return Updated tag
      */
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
-    public String deleteTag(@PathVariable String id) throws ValidateException, ServiceException {
-        service.deleteTag(id);
+    public String deleteTag(@PathVariable Long id) throws ValidateException, ServiceException {
+        service.delete(id);
         return source.getMessage("tag.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }
 }

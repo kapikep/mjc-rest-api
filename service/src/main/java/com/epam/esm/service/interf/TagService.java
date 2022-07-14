@@ -2,13 +2,14 @@ package com.epam.esm.service.interf;
 
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
+import com.epam.esm.service.validator.groups.OnCreate;
+import com.epam.esm.service.validator.groups.OnUpdate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.*;
 import java.util.List;
 /**
  * Service for tags
@@ -19,13 +20,6 @@ import java.util.List;
 @Validated
 public interface TagService {
 
-    /**
-     * Reads all tags from repository
-     *
-     * @return list with all tags from repository
-     */
-    List<TagDto> readAllTags() throws ServiceException, ValidateException;
-
     List<TagDto> readPage(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
@@ -33,21 +27,21 @@ public interface TagService {
      *
      * @return tag from repository
      */
-    TagDto readTag(String id) throws ServiceException, ValidateException;
+    TagDto readOne(String id) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository
      *
      * @return tag from repository
      */
-    TagDto readTag(@Min(1) long id) throws ServiceException, ValidateException;
+    TagDto readOne(@Positive long id) throws ServiceException, ValidateException;
 
     /**
      * Validates name and reads tag by name from repository
      *
      * @return tag from repository
      */
-    TagDto readTagByName(String name) throws ServiceException, ValidateException;
+    TagDto readByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException, ValidateException;
 
     /**
      * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
@@ -62,17 +56,19 @@ public interface TagService {
      *
      * @return id for created tag
      */
-    void createTag(TagDto tag) throws ServiceException, ValidateException;
+    @Validated(OnCreate.class)
+    void create(@Valid TagDto tag) throws ServiceException, ValidateException;
 
     /**
      * Updates tag in repository
      *
      * @param tag tag to update
      */
-    void updateTag(TagDto tag) throws ServiceException, ValidateException;
+    @Validated(OnUpdate.class)
+    void update(@Valid TagDto tag) throws ServiceException, ValidateException;
 
     /**
      * Validates id and deletes tag by id in repository
      */
-    void deleteTag(String id) throws ServiceException, ValidateException;
+    void delete(@Positive long id) throws ServiceException, ValidateException;
 }

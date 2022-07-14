@@ -1,8 +1,9 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
-import com.epam.esm.repository.constant.GiftCertificateSearchParam;
+import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.junit.jupiter.api.Assertions;
@@ -25,13 +26,16 @@ class GiftCertificateMySQLRepositoryTest {
     @Autowired
     private GiftCertificateRepository repository;
 
+    @Autowired
+    private TagMySQLRepository tagMySQLRepository;
+
     @Test
     void readAll() throws RepositoryException {
         List<GiftCertificateEntity> gifts = repository.readAll();
 
+        gifts.forEach(System.out::println);
         assertEquals(5, gifts.size());
         gifts.forEach(Assertions::assertNotNull);
-        gifts.forEach(System.out::println);
     }
 
     @Test
@@ -42,6 +46,57 @@ class GiftCertificateMySQLRepositoryTest {
         assertEquals(expectedGift, actualGift);
     }
 
+//    @Test
+//    void put10000Gifts() throws RepositoryException {
+//        int maxLinkedTags = 7;
+//        Random tagSizeRand = new Random();
+//        Random r = new Random();
+//        Random randomTag = new Random();
+//
+//        for (int i = 0; i < 10000; i++) {
+//            try {
+//                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
+//                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
+//                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
+//            } catch (Exception ignored) {
+//            }
+//        }
+//    }
+//
+//    private List<TagEntity> linkGiftsAndTags(int size, Random randomTag) throws RepositoryException {
+//        int totalSize = 1075;
+//        List<TagEntity> tagEntities = new ArrayList<>(size);
+////        System.out.println();
+////        System.out.println("Size " + size);
+//
+//        for (int i = 0; i < size; i++) {
+//            try {
+//                long id = randomTag.nextInt(totalSize);
+////                System.out.print(id + " ");
+//                tagEntities.add(tagMySQLRepository.readOne(id));
+//            }catch (Exception ignored){
+//            }
+//        }
+//        return tagEntities;
+//    }
+
+    @Test
+    void search1000Gifts() throws RepositoryException {
+        CriteriaEntity cr = new CriteriaEntity();
+        cr.setSorting("name");
+        cr.setSize(30);
+        cr.setPage(1);
+        System.out.println(repository.findByParams(cr));
+        long a = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
+            repository.findByParams(cr);
+        }
+        long b = System.currentTimeMillis();
+
+        System.out.println("total time -> " + (b-a) + " ms");
+        System.out.println("total size -> " + cr.getTotalSize());
+    }
+
     @Test
     void readGiftNotExistCertificate() {
         assertThrows(RepositoryException.class, () -> repository.readOne(111));
@@ -50,24 +105,49 @@ class GiftCertificateMySQLRepositoryTest {
     @Test
     void findGiftCertificateMatchChecking() throws RepositoryException {
         GiftCertificateEntity expectedGift = getGiftCertificateId2();
-        Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "Car");
-        criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "washing");
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(criteriaMap, "name");
+        CriteriaEntity criteria = new CriteriaEntity();
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_NAME, "Car");
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_DESCRIPTION, "washing");
+        List<GiftCertificateEntity> actualGifts = repository.findByParams(criteria);
 
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
 
-        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "Спорт");
-        actualGifts = repository.findByCriteria(criteriaMap, null);
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Sport");
+        actualGifts = repository.findByParams(criteria);
 
         assertEquals(0, actualGifts.size());
         assertFalse(actualGifts.contains(expectedGift));
     }
 
     @Test
+    void findGiftCertificateByTags() throws RepositoryException {
+        CriteriaEntity criteria = new CriteriaEntity();
+
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto");
+        List<GiftCertificateEntity> actualGifts = repository.findByParams(criteria);
+
+        assertEquals(2, actualGifts.size());
+        assertTrue(actualGifts.contains(getGiftCertificateId2()));
+        assertTrue(actualGifts.contains(getGiftCertificateId4()));
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto,Health");
+        actualGifts = repository.findByParams(criteria);
+        assertEquals(1, actualGifts.size());
+        assertTrue(actualGifts.contains(getGiftCertificateId4()));
+
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto,Health,Water");
+        actualGifts = repository.findByParams(criteria);
+        assertEquals(0, actualGifts.size());
+
+        criteria.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Sport,Water,Health");
+        actualGifts = repository.findByParams(criteria);
+        assertEquals(1, actualGifts.size());
+        assertTrue(actualGifts.contains(getGiftCertificateId1()));
+    }
+
+    @Test
     void sranyiHibernate() throws RepositoryException {
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(null, "name");
+        List<GiftCertificateEntity> actualGifts = repository.findByParams(null);
         System.out.println("-------------------result------------------");
         if (actualGifts != null) {
             actualGifts.forEach(System.out::println);
@@ -78,19 +158,19 @@ class GiftCertificateMySQLRepositoryTest {
     void findGiftCertificateSortingChecking() throws RepositoryException {
         GiftCertificateEntity expectedLastGift = getGiftCertificateId1();
         GiftCertificateEntity expectedFirstGift = getGiftCertificateId4();
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(null, "name");
+        List<GiftCertificateEntity> actualGifts = repository.findByParams(null);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
-        actualGifts = repository.findByCriteria(null, "+name");
+        actualGifts = repository.findByParams(null);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
-        actualGifts = repository.findByCriteria(null, "-name");
+        actualGifts = repository.findByParams(null);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(4));

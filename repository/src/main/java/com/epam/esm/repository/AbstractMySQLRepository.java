@@ -2,6 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.repository.exception.RepositoryException;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -12,8 +13,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.util.List;
+
 public abstract class AbstractMySQLRepository<T extends Serializable> {
-    private Class<T> clazz;
+    protected Class<T> clazz;
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -41,7 +43,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         return entity;
     }
 
-    public List<T> readPage(CriteriaEntity cr) {
+    public List<T> readPage(CriteriaEntity cr) throws RepositoryException {
 //        Query query = entityManager.createQuery("from " + clazz.getName());
 //        query.setFirstResult((cr.getPage() - 1) * cr.getLimit());
 //        query.setMaxResults(cr.getLimit());
@@ -49,7 +51,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
-        CriteriaQuery<T> select = cq.select(entity);
+        cq.select(entity);
 
         String sorting = cr.getSorting();
 
@@ -61,14 +63,22 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
                 if (sorting.startsWith("+") || sorting.startsWith(" ")) {
                     sorting = sorting.substring(1);
                 }
-                    cq.orderBy(cb.asc(entity.get(sorting)));
-                }
+                cq.orderBy(cb.asc(entity.get(sorting)));
             }
+        }
 
         TypedQuery<T> query = entityManager.createQuery(cq);
-        query.setFirstResult((cr.getPage() - 1) * cr.getSize()); //-1
-        query.setMaxResults(cr.getSize());
-        cr.setTotalSize(getTotalSize());
+        if(cr.getSize() != null && cr.getPage() != null) {
+            query.setFirstResult((cr.getPage() - 1) * cr.getSize());
+            query.setMaxResults(cr.getSize());
+        }else {
+            throw new RepositoryException("Size and page must be not null");
+        }
+
+        CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
+        countCq.select(cb.count(countCq.from(clazz)));
+        cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
+//        cr.setTotalSize(getTotalSize());
 
         return query.getResultList();
     }
@@ -76,6 +86,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     public long getTotalSize() {
         return (long) entityManager.createQuery("select count (*) from " + clazz.getName())
                 .getSingleResult();
+        //TODO delete method
     }
 
     @Transactional

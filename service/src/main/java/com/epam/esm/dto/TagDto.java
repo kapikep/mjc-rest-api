@@ -1,5 +1,7 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.service.validator.groups.OnCreate;
+import com.epam.esm.service.validator.groups.OnUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +11,7 @@ import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -20,11 +23,11 @@ import java.io.Serializable;
 public class TagDto extends RepresentationModel<TagDto> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Min(value = 0)
+    @Positive(groups = OnUpdate.class)
     private long id;
 
-    @NotBlank
-    @Size(max = 25)
+    @NotBlank(groups = {OnCreate.class, OnUpdate.class})
+    @Size(groups = {OnCreate.class, OnUpdate.class}, max = 25)
     private String name;
 }
 

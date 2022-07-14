@@ -4,9 +4,11 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.hibernate.validator.internal.engine.path.NodeImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -43,7 +46,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ApiException> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
@@ -64,7 +67,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<ApiException> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
@@ -82,7 +85,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(NoHandlerFoundException e) {
+    public ResponseEntity<ApiException> handleNoHandlerFoundException(NoHandlerFoundException e) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         ApiException apiException = new ApiException();
         apiException.setErrorMessage(source.getMessage("incorrect.path", new Object[]{e.getMessage()}, LocaleContextHolder.getLocale()));
@@ -94,7 +97,7 @@ public class ApiExceptionHandler {
      * Exception thrown when a request handler does not support a specific request method.
      */
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<ApiException> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         HttpStatus httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
         ApiException apiException = new ApiException();
         apiException.setErrorMessage(source.getMessage("error.incorrect.method", null, LocaleContextHolder.getLocale()));
@@ -113,7 +116,7 @@ public class ApiExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(ConstraintViolationException e) {
+    public ResponseEntity<ApiException> handleConstraintViolationException(ConstraintViolationException e) {
         String code;
         HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         ApiException apiException = new ApiException();
@@ -123,14 +126,23 @@ public class ApiExceptionHandler {
         Set<ConstraintViolation<?>> exceptions = e.getConstraintViolations();
         Map<String, String> errors = new HashMap<>();
 
-        exceptions.forEach(vio -> errors.put(((PathImpl)vio.getPropertyPath()).getLeafNode().toString(), vio.getMessage()));
+        exceptions.forEach(vio -> {
+            NodeImpl leafNode = ((PathImpl) vio.getPropertyPath()).getLeafNode();
+            String fieldName;
+            if(leafNode.getParent().toString().contains("[")){
+                fieldName = leafNode.getParent().asString() + "." + leafNode.asString();
+            }else {
+                fieldName = leafNode.asString();
+            }
+            errors.put(fieldName, vio.getMessage());
+        });
 
         apiException.setErrorMessage(errors.toString());
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiException> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
@@ -165,7 +177,7 @@ public class ApiExceptionHandler {
 //    }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(ValidateException e) {
+    public ResponseEntity<ApiException> handleValidateException(ValidateException e) {
         String message;
         String code;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
@@ -200,7 +212,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiException> handleException(ServiceException e) {
+    public ResponseEntity<ApiException> handleServiceException(ServiceException e) {
         String code;
         String message;
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
@@ -213,6 +225,30 @@ public class ApiExceptionHandler {
             apiException.setErrorMessage(message);
         } else {
             apiException.setErrorMessage(e.getMessage());
+        }
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        String code;
+        String message = null;
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ApiException apiException = new ApiException();
+
+        Throwable root = e.getCause().getCause();
+
+        if (root instanceof SQLIntegrityConstraintViolationException){
+            message = root.getMessage();
+        }
+
+        code = codeDefinition(e, httpStatus);
+        apiException.setErrorCode(code);
+        if(message == null){
+            apiException.setErrorMessage(e.getMessage());
+        }else {
+            apiException.setErrorMessage(message);
         }
 
         return new ResponseEntity<>(apiException, httpStatus);
