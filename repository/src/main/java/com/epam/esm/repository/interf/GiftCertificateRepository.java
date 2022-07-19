@@ -13,7 +13,6 @@ import java.util.List;
  * @version 1.0
  */
 public interface GiftCertificateRepository {
-
     /**
      * Reads all gift certificates from database
      *
@@ -21,14 +20,14 @@ public interface GiftCertificateRepository {
      */
     List<GiftCertificateEntity> readAll() throws RepositoryException;
 
+    List<GiftCertificateEntity> readPage(CriteriaEntity cr) throws RepositoryException;
+
     /**
      * Reads gift certificate by id from database
      *
      * @return list with gift GiftCertificateEntity
      */
     GiftCertificateEntity readOne(long id) throws RepositoryException;
-
-    List<GiftCertificateEntity> readPage(CriteriaEntity cr) throws RepositoryException;
 
     /**
      * Finds gift certificates by criteria map and sorted by sorting param from database
@@ -49,7 +48,7 @@ public interface GiftCertificateRepository {
      *
      * @param giftCertificate gift certificate entity to update in db, excluding tag field
      */
-    GiftCertificateEntity update(GiftCertificateEntity giftCertificate)  throws RepositoryException;
+    GiftCertificateEntity merge(GiftCertificateEntity giftCertificate)  throws RepositoryException;
 
     /**
      * Delete gift certificate by id from database

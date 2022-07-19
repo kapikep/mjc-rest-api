@@ -43,13 +43,6 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void getCount() {
-        long size;
-        size = repository.getTotalSize();
-        System.out.println(size);
-    }
-
-    @Test
     void readPage() throws RepositoryException {
         List<TagEntity> tags;
 
@@ -126,7 +119,7 @@ class TagMySQLRepositoryTest {
     @Transactional
     void updateTag() throws RepositoryException {
         TagEntity expectedTag = new TagEntity(7, "Tag2");
-        repository.update(expectedTag);
+        repository.merge(expectedTag);
         TagEntity actualTag = repository.readOne(7);
         assertEquals(expectedTag, actualTag);
     }

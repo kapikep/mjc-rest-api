@@ -18,10 +18,12 @@ public final class SearchParam {
     public static final String GIFT_SORT_CREATE_DATE = "create_date";
     public static final String GIFT_SORT_LAST_UPDATE_DATE = "last_update_date";
     public static final String GIFT_SORT_DESCRIPTION = "description";
+    public static final String GIFT_SORT_PRICE = "price";
+    public static final String GIFT_SORT_DURATION = "duration";
 
     public static final List<String> GIFT_CERTIFICATE_SEARCH_PARAM = Arrays.asList(ID, GIFT_SEARCH_NAME, GIFT_SEARCH_DESCRIPTION);
     public static final List<String> GIFT_CERTIFICATE_SORT_PARAM = Arrays.asList(ID, GIFT_SORT_CREATE_DATE,
-            GIFT_SORT_LAST_UPDATE_DATE, NAME, GIFT_SORT_DESCRIPTION);
+            GIFT_SORT_LAST_UPDATE_DATE, NAME, GIFT_SORT_DESCRIPTION, GIFT_SORT_PRICE, GIFT_SORT_DURATION);
 
     public static final List<String> TAG_SORT_PARAM = Arrays.asList(ID, NAME);
 }

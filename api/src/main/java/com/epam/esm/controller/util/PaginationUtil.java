@@ -44,10 +44,6 @@ public class PaginationUtil {
         return PagedModel.of(col, new PagedModel.PageMetadata(cr.getSize(), cr.getPage(), cr.getTotalSize()));
     }
 
-    public static <T extends RepresentationModel<? extends T>> void addSelfLink(T t) {
-        t.add(linkTo(t.getClass()).slash(1).withSelfRel());
-    }
-
     public static Link getSelfLink(Class<?> controller, long id) {
         return linkTo(controller).slash(id).withSelfRel();
     }

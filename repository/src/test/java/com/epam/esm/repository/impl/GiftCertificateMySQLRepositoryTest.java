@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -210,7 +209,7 @@ class GiftCertificateMySQLRepositoryTest {
         expectedGift.setName("Transactional");
         expectedGift.addTag(getEmptyTag());
 
-        assertThrows(RepositoryException.class, () -> repository.update(expectedGift));
+        assertThrows(RepositoryException.class, () -> repository.merge(expectedGift));
 
         GiftCertificateEntity actual = repository.readOne(1);
 
@@ -233,7 +232,7 @@ class GiftCertificateMySQLRepositoryTest {
         GiftCertificateEntity expectedGift = getNewGiftCertificateId6();
         expectedGift.setId(5);
 
-        repository.update(expectedGift);
+        repository.merge(expectedGift);
         GiftCertificateEntity actualGifts = repository.readOne(5);
         assertEquals(expectedGift, actualGifts);
     }
@@ -245,7 +244,7 @@ class GiftCertificateMySQLRepositoryTest {
         expectedGift.setId(4);
         expectedGift.setTags(null);
 
-        repository.update(expectedGift);
+        repository.merge(expectedGift);
         GiftCertificateEntity actualGifts = repository.readOne(4);
         expectedGift.setTags(new ArrayList<>());
         assertEquals(expectedGift, actualGifts);

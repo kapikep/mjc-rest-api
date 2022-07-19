@@ -56,8 +56,7 @@ public class GiftCertificateRestController {
             @RequestParam(required = false, name = "description") String description,
             @RequestParam(required = false, name = "page") Integer page,
             @RequestParam(required = false, name = "size") Integer size,
-            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException, InterruptedException {
-        Map<String, String> searchParam = new HashMap<>();
+            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
         CriteriaDto cr = new CriteriaDto();
         List<GiftCertificateDto> gifts;
         cr.setPage(page);
@@ -65,21 +64,20 @@ public class GiftCertificateRestController {
         cr.setSorting(sort);
 
         if (tagName != null) {
-            searchParam.put(SearchParam.GIFT_SEARCH_BY_TAG_NAME, tagName);
+            cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, tagName);
         }
         if (name != null) {
-            searchParam.put(SearchParam.GIFT_SEARCH_NAME, name);
+            cr.addSearchParam(SearchParam.GIFT_SEARCH_NAME, name);
         }
         if (description != null) {
-            searchParam.put(SearchParam.GIFT_SEARCH_DESCRIPTION, description);
+            cr.addSearchParam(SearchParam.GIFT_SEARCH_DESCRIPTION, description);
         }
 
         long a = System.currentTimeMillis();
 
-        if (searchParam.isEmpty()) {
+        if (cr.getSearchParam() == null) {
             gifts = service.readPage(cr);
         } else {
-            cr.setSearchParam(searchParam);
             gifts = service.find(cr);
         }
         long b = System.currentTimeMillis();
@@ -115,15 +113,6 @@ public class GiftCertificateRestController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto dto) throws ValidateException, ServiceException {
-        service.create(dto);
-        addGiftCertificateLink(dto);
-        return dto;
-    }
-
-    @PostMapping("/v2")
-    @ResponseStatus(code = HttpStatus.CREATED)
-//    @Validated(OnCreate.class)
-    public GiftCertificateDto createGiftCertificate1(@RequestBody @Valid GiftCertificateDto dto) throws ValidateException, ServiceException {
         service.create(dto);
         addGiftCertificateLink(dto);
         return dto;

@@ -2,7 +2,6 @@ package com.epam.esm.repository;
 
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.repository.exception.RepositoryException;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -44,10 +43,6 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public List<T> readPage(CriteriaEntity cr) throws RepositoryException {
-//        Query query = entityManager.createQuery("from " + clazz.getName());
-//        query.setFirstResult((cr.getPage() - 1) * cr.getLimit());
-//        query.setMaxResults(cr.getLimit());
-
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
@@ -78,15 +73,8 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
         countCq.select(cb.count(countCq.from(clazz)));
         cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
-//        cr.setTotalSize(getTotalSize());
 
         return query.getResultList();
-    }
-
-    public long getTotalSize() {
-        return (long) entityManager.createQuery("select count (*) from " + clazz.getName())
-                .getSingleResult();
-        //TODO delete method
     }
 
     @Transactional
@@ -95,7 +83,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     @Transactional
-    public T update(final T entity) {
+    public T merge(final T entity) {
         return entityManager.merge(entity);
     }
 

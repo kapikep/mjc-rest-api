@@ -49,7 +49,8 @@ public interface TagService {
      *
      * @param tags list for get ids
      */
-    void getIdOrCreateTagsInList(List<TagDto> tags) throws ServiceException, ValidateException;
+    @Validated(OnCreate.class)
+    void getIdOrCreateTags(@Valid List<TagDto> tags) throws ServiceException, ValidateException;
 
     /**
      * Validates tag fields and creates tag in repository

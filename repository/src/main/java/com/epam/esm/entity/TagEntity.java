@@ -27,10 +27,8 @@ public class TagEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @NonNull
     private long id;
-//    @NonNull
-//    @NaturalId
+
     @Column(name = "name", unique = true)
     private String name;
 

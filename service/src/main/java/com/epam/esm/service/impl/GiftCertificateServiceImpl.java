@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
@@ -13,18 +12,15 @@ import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.ServiceUtil;
-import com.epam.esm.service.validator.GiftCertificateValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.epam.esm.service.util.CriteriaUtil.*;
-import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityTransfer;
+import static com.epam.esm.service.util.GiftCertificateUtil.*;
 
 /**
  * Service for gift certificates
@@ -42,12 +38,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
     private final TagService tagService;
 
-    @Autowired
-    private GiftCertificateValidator gfValidator;
-
-    @Autowired
-    private Validator validator;
-
     public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
         this.repository = repository;
         this.tagService = tagService;
@@ -56,7 +46,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
         setDefaultPageValIfEmpty(crDto);
-//        giftCertificateCriteriaFieldValidation(crDto);
+        sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<GiftCertificateDto> giftCertificates;
         try {
@@ -86,16 +76,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      */
     @Override
     public GiftCertificateDto readOne(long id) throws ServiceException, ValidateException {
-        if (!GiftCertificateValidator.idValidation(id)) {
-            throw new ValidateException(INCORRECT_ID, id);
-        }
         return getGiftCertificateDto(id);
     }
 
     @Override
     public List<GiftCertificateDto> find(CriteriaDto crDto) throws ServiceException, ValidateException {
         setDefaultPageValIfEmpty(crDto);
-        giftCertificateCriteriaFieldValidation(crDto);
+        sortingValidation(crDto);
         List<GiftCertificateDto> giftCertificates;
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         try {
@@ -117,20 +104,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftDto.setId(0);
         giftDto.setCreateDate(LocalDateTime.now());
         giftDto.setLastUpdateDate(LocalDateTime.now());
-
-//        System.out.println(validator.validate(giftDto));
-//        gfValidator.giftCertificateFieldValid(giftDto);
-//        GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
-
+        tagService.getIdOrCreateTags(giftDto.getTags());
         try {
-            List<TagDto> tags = giftDto.getTags();
-//            tagService.getIdOrCreateTagsInList(tags);
             GiftCertificateEntity giftEntity = giftCertificateDtoToEntityTransfer(giftDto);
-            giftEntity = repository.update(giftEntity);
-            GiftCertificateUtil.updateFieldsInDtoFromEntity(giftEntity, giftDto);
+            updateFieldsInDtoFromEntity(repository.merge(giftEntity), giftDto);
         } catch (RepositoryException e) {
             String mes = e.getMessage();
-
             if (mes != null && mes.contains(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW)) {
                 throw new ServiceException(e.getMessage(), e, "create.problem");
             }
@@ -143,19 +122,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Updates gift certificate in repository
      */
     @Override
-    //TODO "{tags[0].id=must be greater than 0}
-
     public void update(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         giftDto.setLastUpdateDate(LocalDateTime.now());
-
         try {
-            if (GiftCertificateValidator.isNullFieldValidation(giftDto)) {
+            if (GiftCertificateUtil.isNullFieldValidation(giftDto)) {
                 GiftCertificateUtil.updateFields(giftDto, readOne(giftDto.getId()));
             }
-            GiftCertificateValidator.giftCertificateFieldValidation(giftDto);
-//            tagService.getIdOrCreateTagsInList(giftDto.getTags());
-
-            repository.update(giftCertificateDtoToEntityTransfer(giftDto));
+            tagService.getIdOrCreateTags(giftDto.getTags());
+            repository.merge(giftCertificateDtoToEntityTransfer(giftDto));
         } catch (RepositoryException e) {
             String mes = e.getMessage();
 

@@ -76,17 +76,9 @@ public class TagRestController {
      * @param id id tag for search
      * @return tag by id
      */
-    @GetMapping("/old/{id}")
-    public TagDto readTag(@PathVariable String id) throws ValidateException, ServiceException {
-        TagDto tag = service.readOne(id);
-        tag.add(getSelfLink(TagRestController.class, tag.getId()));
-        return tag;
-    }
-
     @GetMapping("/{id}")
     public TagDto readTag(@PathVariable long id) throws ValidateException, ServiceException {
         TagDto tag = service.readOne(id);
-//        tag.add(linkTo(methodOn(TagController.class).readTag(id)).withSelfRel());
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }

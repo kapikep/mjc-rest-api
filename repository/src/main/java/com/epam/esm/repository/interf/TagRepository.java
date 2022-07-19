@@ -23,8 +23,6 @@ public interface TagRepository {
      * @return tagEntity  from database
      */
 
-    long getTotalSize();
-
     TagEntity readOne(long id) throws RepositoryException;
 
     List<TagEntity> readPage(CriteriaEntity criteria) throws RepositoryException;
@@ -48,7 +46,7 @@ public interface TagRepository {
      *
      * @param tag tag to create in db
      */
-    TagEntity update(TagEntity tag) throws RepositoryException;
+    TagEntity merge(TagEntity tag) throws RepositoryException;
 
     /**
      * Deletes tag in database

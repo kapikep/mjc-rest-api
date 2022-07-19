@@ -1,10 +1,18 @@
 package com.epam.esm.service.util;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificateEntity;
+import com.epam.esm.repository.constant.SearchParam;
+import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SORT_PARAM;
 
 /**
  * Utils for gift certificate
@@ -13,7 +21,9 @@ import java.util.List;
  * @version 1.0
  */
 public class GiftCertificateUtil {
-
+    private static final int MAX_NAME_LENGHT = 45;
+    private static final int MAX_DESCRIPTION_LENGHT = 255;
+    public static final int CRITERIA_TAG_LENGHT = 45;
     /**
      * Converting giftCertificateEntity to giftCertificateListDto
      */
@@ -39,14 +49,11 @@ public class GiftCertificateUtil {
 
     public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificateEntity entity) {
         GiftCertificateDto dto = new GiftCertificateDto();
-        return getGiftCertificateDto(entity, dto);
+        updateFieldsInDtoFromEntity(entity, dto);
+        return dto;
     }
 
-    public static GiftCertificateDto updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) {
-        return getGiftCertificateDto(entity, dto);
-    }
-
-    private static GiftCertificateDto getGiftCertificateDto(GiftCertificateEntity entity, GiftCertificateDto dto) {
+    public static void updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
@@ -55,14 +62,12 @@ public class GiftCertificateUtil {
         dto.setCreateDate(entity.getCreateDate());
         dto.setLastUpdateDate(entity.getLastUpdateDate());
         dto.setTags(TagUtil.tagEntityListToDtoConverting(entity.getTags()));
-        return dto;
     }
 
     /**
      * Updates fields in new GiftCertificate from old GiftCertificate if it's null in new GiftCertificate
      */
     public static void updateFields(GiftCertificateDto newGiftCertificate, GiftCertificateDto oldGiftCertificate) {
-
         if (newGiftCertificate.getName() == null) {
             newGiftCertificate.setName(oldGiftCertificate.getName());
         }
@@ -84,5 +89,27 @@ public class GiftCertificateUtil {
         if (newGiftCertificate.getTags() == null) {
             newGiftCertificate.setTags(oldGiftCertificate.getTags());
         }
+    }
+
+    public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
+        String sorting = crDto.getSorting();
+
+        if (sorting != null) {
+            if (sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")) {
+                sorting = sorting.substring(1);
+            }
+
+            if (!GIFT_CERTIFICATE_SORT_PARAM.contains(sorting)) {
+                throw new ValidateException("incorrect.param.sorting", GIFT_CERTIFICATE_SORT_PARAM);
+            }
+        }
+    }
+
+    public static boolean isNullFieldValidation(GiftCertificateDto g) throws ValidateException {
+        if (g.getId() == 0) {
+            throw new ValidateException("incorrect.id");
+        }
+        return Stream.of(g.getId(), g.getName(), g.getDescription(), g.getPrice(), g.getDuration(),
+                g.getCreateDate(), g.getTags()).anyMatch(Objects::isNull);
     }
 }

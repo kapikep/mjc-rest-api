@@ -63,7 +63,7 @@ class TagServiceImplTest {
         when(repository.readByName(getTagDtoId2().getName())).thenReturn(getTagEntityId2());
         when(repository.readByName(getTagDtoId5().getName())).thenReturn(getTagEntityId5());
 
-        service.getIdOrCreateTagsInList(tagsDtoList);
+        service.getIdOrCreateTags(tagsDtoList);
         assertEquals(1, tagsDtoList.get(0).getId());
         assertEquals(2, tagsDtoList.get(1).getId());
         assertEquals(5, tagsDtoList.get(2).getId());
@@ -77,7 +77,7 @@ class TagServiceImplTest {
 //        when(repository.create(tagsEntityList.get(1))).thenReturn(6);
 //        when(repository.create(tagsEntityList.get(2))).thenReturn(7);
 
-        service.getIdOrCreateTagsInList(tagsDtoList);
+        service.getIdOrCreateTags(tagsDtoList);
         assertEquals(1, tagsDtoList.get(0).getId());
         assertEquals(6, tagsDtoList.get(1).getId());
         assertEquals(7, tagsDtoList.get(2).getId());
@@ -85,12 +85,12 @@ class TagServiceImplTest {
 
     @Test
     void getTagIdOrCreateNewTagInputNull() {
-        assertDoesNotThrow(() -> service.getIdOrCreateTagsInList(null));
+        assertDoesNotThrow(() -> service.getIdOrCreateTags(null));
     }
 
     @Test
     void getTagIdOrCreateNewTagIsEmpty() {
-        assertDoesNotThrow(() -> service.getIdOrCreateTagsInList(new ArrayList<>()));
+        assertDoesNotThrow(() -> service.getIdOrCreateTags(new ArrayList<>()));
     }
 
     @Test
@@ -122,9 +122,9 @@ class TagServiceImplTest {
     @Test
     void updateTag() throws RepositoryException, ValidateException, ServiceException {
         service.update(getTagDtoId1());
-        verify(repository, times(1)).update(getTagEntityId1());
+        verify(repository, times(1)).merge(getTagEntityId1());
 
-        doThrow(new RepositoryException()).when(repository).update(getTagEntityId1());
+        doThrow(new RepositoryException()).when(repository).merge(getTagEntityId1());
         assertThrows(ServiceException.class, () -> service.update(getTagDtoId1()));
 
         assertThrows(ValidateException.class, () -> service.update(new TagDto(-1, null)));

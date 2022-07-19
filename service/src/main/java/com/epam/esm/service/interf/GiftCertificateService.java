@@ -37,7 +37,6 @@ public interface GiftCertificateService {
      *
      * @return gift certificate from repository
      */
-
     GiftCertificateDto readOne(@Positive long id) throws ServiceException, ValidateException;
 
     @Validated(OnCreate.class)
