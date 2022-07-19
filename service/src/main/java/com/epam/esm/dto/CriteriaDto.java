@@ -18,7 +18,7 @@ public class CriteriaDto {
     @Size(min=2, max=15)
     private String sorting;
     private Long totalSize;
-    private Map<String, @Size(min=2, max=20) String> searchParam;
+    private Map<String, @Size(min=2, max=40) String> searchParam;
 
     public void addSearchParam(String fieldName, String fieldValue){
         if(searchParam == null){

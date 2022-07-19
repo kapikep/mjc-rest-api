@@ -19,7 +19,6 @@ import java.util.List;
  */
 @Validated
 public interface TagService {
-
     List<TagDto> readPage(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**

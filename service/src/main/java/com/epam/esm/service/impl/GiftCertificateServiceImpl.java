@@ -14,6 +14,7 @@ import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.ServiceUtil;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
@@ -29,10 +30,8 @@ import static com.epam.esm.service.util.GiftCertificateUtil.*;
  * @version 1.0
  */
 @Service
-@Validated
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
-    public static final String INCORRECT_ID = "incorrect.search.id";
     public static final String CANNOT_ADD_OR_UPDATE_A_CHILD_ROW = "Cannot add or update a child row";
 
     private final GiftCertificateRepository repository;
@@ -100,6 +99,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Creates gift certificate in repository
      */
     @Override
+    @Transactional
     public void create(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         giftDto.setId(0);
         giftDto.setCreateDate(LocalDateTime.now());
@@ -122,6 +122,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Updates gift certificate in repository
      */
     @Override
+    @Transactional
     public void update(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         giftDto.setLastUpdateDate(LocalDateTime.now());
         try {

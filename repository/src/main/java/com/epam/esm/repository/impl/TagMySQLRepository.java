@@ -17,7 +17,6 @@ import javax.persistence.TypedQuery;
  */
 @Repository
 public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository{
-
     private static final String WHERE_T_NAME = "select object (t) from TagEntity t where t.name = :name";
 
     public TagMySQLRepository() {

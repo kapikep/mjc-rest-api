@@ -20,7 +20,6 @@ import java.util.List;
  */
 @Validated
 public interface GiftCertificateService {
-
     List<GiftCertificateDto> readPage(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
 
     List<GiftCertificateDto> find(@Valid CriteriaDto cr) throws ServiceException, ValidateException;

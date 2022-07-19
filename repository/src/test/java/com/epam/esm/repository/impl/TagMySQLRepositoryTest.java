@@ -48,7 +48,7 @@ class TagMySQLRepositoryTest {
 
         CriteriaEntity cr = new CriteriaEntity();
         cr.setPage(1);
-        cr.setSize(20);
+        cr.setSize(2);
         cr.setSorting("-id");
 
         tags = repository.readPage(cr);

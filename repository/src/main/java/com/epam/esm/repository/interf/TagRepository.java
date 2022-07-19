@@ -14,8 +14,9 @@ import java.util.List;
  */
 @Repository
 public interface TagRepository {
-
     List<TagEntity> readAll() throws RepositoryException;
+
+    List<TagEntity> readPage(CriteriaEntity criteria) throws RepositoryException;
 
     /**
      * Reads tag by id from database
@@ -24,8 +25,6 @@ public interface TagRepository {
      */
 
     TagEntity readOne(long id) throws RepositoryException;
-
-    List<TagEntity> readPage(CriteriaEntity criteria) throws RepositoryException;
     /**
      * Reads tag by name from database
      *

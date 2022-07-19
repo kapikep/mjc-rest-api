@@ -29,9 +29,14 @@ public class GiftCertificateUtil {
      */
     public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificateEntity> giftCertificateList) {
         List<GiftCertificateDto> giftCertificateDtoList = new ArrayList<>();
-
         giftCertificateList.forEach(entity -> giftCertificateDtoList.add(giftCertificateEntityToDtoTransfer(entity)));
         return giftCertificateDtoList;
+    }
+
+    public static List<GiftCertificateEntity> giftCertificateDtoListToEntityConverting(List<GiftCertificateDto> dtos) {
+        List<GiftCertificateEntity> entities = new ArrayList<>();
+        dtos.forEach(dto -> entities.add(giftCertificateDtoToEntityTransfer(dto)));
+        return entities;
     }
 
     public static GiftCertificateEntity giftCertificateDtoToEntityTransfer(GiftCertificateDto dto){

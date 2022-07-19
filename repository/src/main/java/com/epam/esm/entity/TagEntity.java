@@ -17,8 +17,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ToString(exclude = "giftCertificates")
+//@ToString
 @EqualsAndHashCode(exclude = "giftCertificates")
-//@RequiredArgsConstructor
+//@EqualsAndHashCode
 @AllArgsConstructor
 @Entity
 @Table(name = "tag")

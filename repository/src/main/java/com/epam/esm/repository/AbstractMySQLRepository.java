@@ -14,12 +14,10 @@ import java.io.Serializable;
 import java.util.List;
 
 public abstract class AbstractMySQLRepository<T extends Serializable> {
-    protected Class<T> clazz;
-
     @PersistenceContext
     protected EntityManager entityManager;
-
-    public final void setClazz(final Class<T> clazzToSet) {
+    protected Class<T> clazz;
+    protected final void setClazz(final Class<T> clazzToSet) {
         this.clazz = clazzToSet;
     }
 
@@ -28,21 +26,23 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
         TypedQuery<T> query = entityManager.createQuery(cq);
-
         return query.getResultList();
     }
 
     public T readOne(final long id) throws RepositoryException {
+        System.out.println("'''''''''''''read One'''''''''''''''");
         T entity;
         entity = entityManager.find(clazz, id);
 
         if (entity == null) {
             throw new RepositoryException("Incorrect result size: expected 1, actual 0");
         }
+        System.out.println("'''''''''''''end read One'''''''''''''''");
         return entity;
     }
 
     public List<T> readPage(CriteriaEntity cr) throws RepositoryException {
+        System.out.println("'''''''''''''read Page'''''''''''''''");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
@@ -73,8 +73,9 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
         countCq.select(cb.count(countCq.from(clazz)));
         cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
-
-        return query.getResultList();
+        List<T> list = query.getResultList();
+        System.out.println("'''''''''''''end read Page'''''''''''''''");
+        return list;
     }
 
     @Transactional

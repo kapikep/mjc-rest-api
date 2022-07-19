@@ -27,7 +27,6 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
  */
 @RestController
 @RequestMapping("/tags")
-@Validated
 public class TagRestController {
     private final TagService service;
     private final MessageSource source;

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString(exclude = "orders")
+//@ToString(exclude = "orders")
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -22,7 +23,7 @@ public class UserEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
 
     @Column(name = "first_name", nullable = false, length = 25)
     private String firstName;
@@ -39,6 +40,6 @@ public class UserEntity implements Serializable {
     @Column(name = "phone_number", nullable = false, length = 17)
     private String phoneNumber;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<OrderForGiftCertificateEntity> orders = new ArrayList<>();
 }

@@ -36,7 +36,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  */
 @RestController
 @RequestMapping("/gift-certificates")
-@Validated
 public class GiftCertificateRestController {
     private final GiftCertificateService service;
     private final MessageSource source;

@@ -19,9 +19,7 @@ class OrderForGiftCertificateMySQLRepositoryTest {
     @Transactional
     void readAllOrdersTest() {
         List<OrderForGiftCertificateEntity> users;
-        users = repository.readAllUsers();
         System.out.println("---------------RESULT-------------------");
-        users.forEach(System.out::println);
         System.out.println("---------------RESULT-------------------");
 
     }

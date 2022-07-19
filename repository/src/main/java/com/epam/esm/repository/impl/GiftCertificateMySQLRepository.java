@@ -28,7 +28,6 @@ import static com.epam.esm.repository.constant.SearchParam.GIFT_SEARCH_BY_TAG_NA
  */
 @Repository
 public class GiftCertificateMySQLRepository extends AbstractMySQLRepository<GiftCertificateEntity> implements GiftCertificateRepository {
-
     private static final String SELECT_FROM_GIFT = "select distinct g from GiftCertificateEntity g left join g.tags t";
     public static final String SELECT_COUNT_FROM_GIFT = "select count (gc.id) from GiftCertificateEntity gc where gc in (";
 

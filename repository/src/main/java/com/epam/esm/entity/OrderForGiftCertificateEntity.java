@@ -3,6 +3,7 @@ package com.epam.esm.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString(exclude = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -22,7 +24,7 @@ public class OrderForGiftCertificateEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
 
     @Column(name = "order_time", nullable = false)
     private Timestamp orderTime;
@@ -30,7 +32,8 @@ public class OrderForGiftCertificateEntity implements Serializable {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -39,7 +42,7 @@ public class OrderForGiftCertificateEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
     private List<GiftCertificateEntity> gifts = new ArrayList<>();
 
-    public void addTag(GiftCertificateEntity gift) {
+    public void addGiftCertificate(GiftCertificateEntity gift) {
         this.gifts.add(gift);
     }
 }
