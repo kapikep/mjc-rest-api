@@ -49,16 +49,6 @@ public class TagUtil {
     }
 
     public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
-        String sorting = crDto.getSorting();
-
-        if (sorting != null) {
-            if (sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")) {
-                sorting = sorting.substring(1);
-            }
-
-            if (!TAG_SORT_PARAM.contains(sorting)) {
-                throw new ValidateException("incorrect.param.sorting", TAG_SORT_PARAM);
-            }
-        }
+        CriteriaUtil.sortingValidation(crDto, TAG_SORT_PARAM);
     }
 }

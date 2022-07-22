@@ -107,7 +107,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         tagService.getIdOrCreateTags(giftDto.getTags());
         try {
             GiftCertificateEntity giftEntity = giftCertificateDtoToEntityTransfer(giftDto);
-            updateFieldsInDtoFromEntity(repository.merge(giftEntity), giftDto);
+            repository.create(giftEntity);
+            updateFieldsInDtoFromEntity(giftEntity, giftDto);
         } catch (RepositoryException e) {
             String mes = e.getMessage();
             if (mes != null && mes.contains(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW)) {
@@ -163,7 +164,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificateDto dto;
         try {
             entity = repository.readOne(id);
-            dto = GiftCertificateUtil.giftCertificateEntityToDtoTransfer(entity);
+            dto = giftCertificateEntityToDtoTransfer(entity);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }

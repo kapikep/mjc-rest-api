@@ -42,7 +42,6 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public List<T> readPage(CriteriaEntity cr) throws RepositoryException {
-        System.out.println("'''''''''''''read Page'''''''''''''''");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
@@ -73,9 +72,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
         countCq.select(cb.count(countCq.from(clazz)));
         cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
-        List<T> list = query.getResultList();
-        System.out.println("'''''''''''''end read Page'''''''''''''''");
-        return list;
+        return query.getResultList();
     }
 
     @Transactional
@@ -83,17 +80,14 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         entityManager.persist(entity);
     }
 
-    @Transactional
     public T merge(final T entity) {
         return entityManager.merge(entity);
     }
 
-    @Transactional
     public void delete(final T entity) {
         entityManager.remove(entity);
     }
 
-    @Transactional
     public void deleteById(final long entityId) throws RepositoryException {
         final T entity = readOne(entityId);
         delete(entity);

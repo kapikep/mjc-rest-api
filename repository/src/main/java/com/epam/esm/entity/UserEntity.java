@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-//@ToString(exclude = "orders")
-@ToString
+@ToString(exclude = "orders")
+//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

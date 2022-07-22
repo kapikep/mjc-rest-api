@@ -36,7 +36,6 @@ public class GiftCertificateMySQLRepository extends AbstractMySQLRepository<Gift
     }
 
     @Override
-    @Transactional
     public List<GiftCertificateEntity> findByParams(CriteriaEntity cr) throws RepositoryException {
         Map<String, String> criteriaMap = cr.getSearchParam();
         String sorting = cr.getSorting();

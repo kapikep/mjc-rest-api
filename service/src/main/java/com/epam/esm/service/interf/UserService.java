@@ -10,13 +10,16 @@ import com.epam.esm.service.exception.ValidateException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Validated
 public interface UserService {
-    List<UserDto> readPage(CriteriaDto cr) throws ValidateException, ServiceException;
+    List<UserDto> readPage(@Valid CriteriaDto cr) throws ValidateException, ServiceException;
 
-    UserDto readOne(long id) throws ValidateException, ServiceException;
+    UserDto readOne(@Positive long id) throws ValidateException, ServiceException;
 
-    public List<OrderForGiftCertificateDto> getUserOrders(long customerId, CriteriaDto cr) throws ValidateException, ServiceException;
+    public List<OrderForGiftCertificateDto> getUserOrders(@Positive long customerId,
+                                                          @Valid CriteriaDto cr) throws ValidateException, ServiceException;
 }

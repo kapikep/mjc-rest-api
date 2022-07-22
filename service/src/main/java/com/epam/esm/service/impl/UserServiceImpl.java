@@ -21,6 +21,7 @@ import static com.epam.esm.service.util.UserUtil.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+    public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     private final UserRepository repository;
 
     public UserServiceImpl(UserRepository repository) {
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> readPage(CriteriaDto crDto) throws ValidateException, ServiceException {
         setDefaultPageValIfEmpty(crDto);
+        sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<UserDto> users;
         try {
@@ -43,13 +45,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto readOne(long id) throws ValidateException, ServiceException {
-        return null;
+        UserDto dto;
+        try{
+            dto = userEntityToDtoTransfer(repository.readOne(id));
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
+        }
+        return dto;
     }
 
     @Override
     public List<OrderForGiftCertificateDto> getUserOrders(long customerId, CriteriaDto crDto)
             throws ValidateException, ServiceException {
         setDefaultPageValIfEmpty(crDto);
+        sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<OrderForGiftCertificateDto> orders;
         try {

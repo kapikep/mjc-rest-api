@@ -1,29 +1,42 @@
 package com.epam.esm.service.util;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.OrderForGiftCertificateDto;
-import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.OrderForGiftCertificateEntity;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
+import static com.epam.esm.repository.constant.SearchParam.*;
 
 public class OrderForGiftCertificateUtil {
-    public static List<OrderForGiftCertificateDto> OrderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities){
+    public static List<OrderForGiftCertificateDto> OrderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities) throws ValidateException {
+        if(entities == null){
+            throw new ValidateException("orderForGiftCertificateEntity list is null");
+        }
         List<OrderForGiftCertificateDto> dtoList = new ArrayList<>();
-        entities.forEach(entity -> dtoList.add(OrderForGiftCertificateEntityToDtoTransfer(entity)));
+        for (OrderForGiftCertificateEntity entity : entities) {
+            dtoList.add(orderForGiftCertificateEntityToDtoTransfer(entity));
+        }
         return dtoList;
     }
 
-    public static List<OrderForGiftCertificateEntity> OrderForGiftCertificateDtoListToEntityConverting(List<OrderForGiftCertificateDto> dtoList){
+    public static List<OrderForGiftCertificateEntity> OrderForGiftCertificateDtoListToEntityConverting(List<OrderForGiftCertificateDto> dtoList) throws ValidateException {
+        if(dtoList == null){
+            throw new ValidateException("orderForGiftCertificateDto list is null");
+        }
         List<OrderForGiftCertificateEntity> entities = new ArrayList<>();
-        dtoList.forEach(dto -> entities.add(OrderForGiftCertificateDtoToEntityTransfer(dto)));
+        for (OrderForGiftCertificateDto dto : dtoList) {
+            entities.add(orderForGiftCertificateDtoToEntityTransfer(dto));
+        }
         return entities;
     }
 
-    public static OrderForGiftCertificateEntity OrderForGiftCertificateDtoToEntityTransfer(OrderForGiftCertificateDto dto){
+    public static OrderForGiftCertificateEntity orderForGiftCertificateDtoToEntityTransfer(OrderForGiftCertificateDto dto) throws ValidateException {
+        if(dto == null){
+            throw new ValidateException("orderForGiftCertificateDto is null");
+        }
         OrderForGiftCertificateEntity entity = new OrderForGiftCertificateEntity();
         entity.setId(dto.getId());
         entity.setOrderTime(dto.getOrderTime());
@@ -33,13 +46,20 @@ public class OrderForGiftCertificateUtil {
         return entity;
     }
 
-    public static OrderForGiftCertificateDto OrderForGiftCertificateEntityToDtoTransfer(OrderForGiftCertificateEntity entity){
+    public static OrderForGiftCertificateDto orderForGiftCertificateEntityToDtoTransfer(OrderForGiftCertificateEntity entity) throws ValidateException {
         OrderForGiftCertificateDto dto = new OrderForGiftCertificateDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(OrderForGiftCertificateEntity entity, OrderForGiftCertificateDto dto){
+    public static void updateFieldsInDtoFromEntity(OrderForGiftCertificateEntity entity,
+                                                   OrderForGiftCertificateDto dto) throws ValidateException {
+        if(dto == null){
+            throw new ValidateException("orderForGiftCertificateDto is null");
+        }
+        if(entity == null){
+            throw new ValidateException("orderForGiftCertificateEntity is null");
+        }
         dto.setId(entity.getId());
         dto.setOrderTime(entity.getOrderTime());
         dto.setTotalAmount(entity.getTotalAmount());
@@ -48,17 +68,7 @@ public class OrderForGiftCertificateUtil {
         dto.setGifts(GiftCertificateUtil.giftCertificateEntityListToDtoConverting(entity.getGifts()));
     }
 
-    public static void sortingValidation(CriteriaEntity crDto) throws ValidateException {
-        String sorting = crDto.getSorting();
-
-        if (sorting != null) {
-            if (sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")) {
-                sorting = sorting.substring(1);
-            }
-
-            if (!TAG_SORT_PARAM.contains(sorting)) {
-                throw new ValidateException("incorrect.param.sorting", TAG_SORT_PARAM);
-            }
-        }
+    public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
+        CriteriaUtil.sortingValidation(crDto, ORDER_SORT_PARAM);
     }
 }

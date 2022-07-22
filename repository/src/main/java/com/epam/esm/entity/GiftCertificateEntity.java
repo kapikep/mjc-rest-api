@@ -31,18 +31,24 @@ public class GiftCertificateEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "description")
     private String description;
+
     @Column(name = "price")
     @Min(value = 0)
     private Double price;
+
     @Column(name = "duration")
     @Min(value = 0, message = "{incorrect.duration}")
     private Integer duration;
+
     @Column(name = "create_date")
     private LocalDateTime createDate;
+
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 

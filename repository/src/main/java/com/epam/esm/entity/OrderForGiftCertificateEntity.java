@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString(exclude = "user")
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -27,9 +29,10 @@ public class OrderForGiftCertificateEntity implements Serializable {
     private long id;
 
     @Column(name = "order_time", nullable = false)
-    private Timestamp orderTime;
+    private LocalDateTime orderTime;
 
     @Column(name = "total_amount", nullable = false)
+    @Min(value = 0)
     private BigDecimal totalAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)

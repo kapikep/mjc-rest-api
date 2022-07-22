@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SORT_PARAM;
+import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
 
 /**
  * Utils for gift certificate
@@ -97,17 +98,7 @@ public class GiftCertificateUtil {
     }
 
     public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
-        String sorting = crDto.getSorting();
-
-        if (sorting != null) {
-            if (sorting.startsWith("-") || sorting.startsWith("+") || sorting.startsWith(" ")) {
-                sorting = sorting.substring(1);
-            }
-
-            if (!GIFT_CERTIFICATE_SORT_PARAM.contains(sorting)) {
-                throw new ValidateException("incorrect.param.sorting", GIFT_CERTIFICATE_SORT_PARAM);
-            }
-        }
+        CriteriaUtil.sortingValidation(crDto, GIFT_CERTIFICATE_SORT_PARAM);
     }
 
     public static boolean isNullFieldValidation(GiftCertificateDto g) throws ValidateException {

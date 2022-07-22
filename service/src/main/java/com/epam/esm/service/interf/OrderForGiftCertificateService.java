@@ -6,9 +6,14 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Validated
 public interface OrderForGiftCertificateService {
-    List<OrderForGiftCertificateDto> getUserOrders(long userId, CriteriaDto criteriaDto) throws ValidateException, ServiceException;
+    List<OrderForGiftCertificateDto> getUserOrders(@Positive long userId,
+                                                   @Valid CriteriaDto criteriaDto) throws ValidateException, ServiceException;
+
+    OrderForGiftCertificateDto create(@Positive long customerId, String orderIds) throws ValidateException, ServiceException;
 }
