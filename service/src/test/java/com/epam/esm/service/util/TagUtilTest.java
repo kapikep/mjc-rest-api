@@ -2,6 +2,7 @@ package com.epam.esm.service.util;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,28 +13,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TagUtilTest {
     @Test
-    void tagEntityListToDtoConvertingTest() {
+    void tagEntityListToDtoConvertingTest() throws ValidateException {
         List<TagDto> actualDto = tagEntityListToDtoConverting(getEntityList());
 
         assertEquals(getDtoList(), actualDto);
     }
 
     @Test
-    void tagDtoListToEntityConvertingTest() {
+    void tagDtoListToEntityConvertingTest() throws ValidateException {
         List<TagEntity> actualEntity = tagDtoListToEntityConverting(getDtoList());
 
         assertEquals(getEntityList(), actualEntity);
     }
 
     @Test
-    void tagDtoToEntityTransferTest() {
+    void tagDtoToEntityTransferTest() throws ValidateException {
         TagEntity actualEntity = tagDtoToEntityTransfer(getTagDtoId1());
 
         assertEquals(getTagEntityId1(), actualEntity);
     }
 
     @Test
-    void tagEntityToDtoTransferTest() {
+    void tagEntityToDtoTransferTest() throws ValidateException {
         TagDto actualTagDto = tagEntityToDtoTransfer(getTagEntityId2());
 
         assertEquals(getTagDtoId2(), actualTagDto);

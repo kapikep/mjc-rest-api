@@ -42,7 +42,7 @@ public class OrderForGiftCertificateUtil {
         entity.setOrderTime(dto.getOrderTime());
         entity.setTotalAmount(dto.getTotalAmount());
         entity.setUser(UserUtil.userDtoToEntityTransfer(dto.getUser()));
-        entity.setGifts(GiftCertificateUtil.giftCertificateDtoListToEntityConverting(dto.getGifts()));
+        entity.setOrderItems(OrderItemUtil.orderItemDtoListToEntityConverting(dto.getOrderItems(), entity));
         return entity;
     }
 
@@ -64,8 +64,7 @@ public class OrderForGiftCertificateUtil {
         dto.setOrderTime(entity.getOrderTime());
         dto.setTotalAmount(entity.getTotalAmount());
         dto.setUser(UserUtil.userEntityToDtoTransfer(entity.getUser()));
-        entity.getGifts().forEach(g -> g.setTags(new ArrayList<>()));
-        dto.setGifts(GiftCertificateUtil.giftCertificateEntityListToDtoConverting(entity.getGifts()));
+        dto.setOrderItems(OrderItemUtil.orderItemEntityListToDtoConverting(entity.getOrderItems()));
     }
 
     public static void sortingValidation(CriteriaDto crDto) throws ValidateException {

@@ -1,7 +1,5 @@
 package com.epam.esm.dto;
 
-import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,9 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Relation(collectionRelation = "users")
+@Relation(collectionRelation = "gift certificate orders")
 public class OrderForGiftCertificateDto extends RepresentationModel<OrderForGiftCertificateDto> {
     private long id;
 
@@ -30,5 +26,5 @@ public class OrderForGiftCertificateDto extends RepresentationModel<OrderForGift
 
     private UserDto user;
 
-    private List<GiftCertificateDto> gifts = new ArrayList<>();
+    private List<OrderItemDto> orderItems = new ArrayList<>();
 }

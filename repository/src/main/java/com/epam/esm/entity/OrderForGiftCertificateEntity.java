@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +30,12 @@ public class OrderForGiftCertificateEntity implements Serializable {
     private LocalDateTime orderTime;
 
     @Column(name = "total_amount", nullable = false)
-    @Min(value = 0)
     private BigDecimal totalAmount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "gift_certificate_has_order",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
-    private List<GiftCertificateEntity> gifts = new ArrayList<>();
-
-    public void addGiftCertificate(GiftCertificateEntity gift) {
-        this.gifts.add(gift);
-    }
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItemEntity> orderItems = new ArrayList<>();
 }

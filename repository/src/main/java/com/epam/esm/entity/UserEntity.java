@@ -12,7 +12,6 @@ import java.util.List;
 
 @Data
 @ToString(exclude = "orders")
-//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -40,6 +39,6 @@ public class UserEntity implements Serializable {
     @Column(name = "phone_number", nullable = false, length = 17)
     private String phoneNumber;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     private List<OrderForGiftCertificateEntity> orders = new ArrayList<>();
 }

@@ -165,7 +165,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             entity = repository.readOne(id);
             dto = giftCertificateEntityToDtoTransfer(entity);
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | ValidateException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }
         return dto;

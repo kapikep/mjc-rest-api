@@ -40,9 +40,14 @@ public class UserRestController {
         cr.setSize(size);
         cr.setSorting(sort);
 
-        PagedModel<UserDto> pagedModel = PaginationUtil.createPagedModel(service.readPage(cr), cr);
+        List<UserDto> dtoList = service.readPage(cr);
+
+        for (UserDto dto : dtoList) {
+            dto.add(getSelfLink(UserEntity.class, dto.getId()));
+        }
+
+        PagedModel<UserDto> pagedModel = PaginationUtil.createPagedModel(dtoList, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
-        //TODO link to orders
         return pagedModel;
     }
 
@@ -72,10 +77,9 @@ public class UserRestController {
     @PostMapping(value = "/{customerId}/orders")
     @ResponseStatus(code = HttpStatus.CREATED)
     public OrderForGiftCertificateDto createOrder(@PathVariable long customerId,
-                                                  @RequestParam(name = "order_id") String orderIds) throws ValidateException, ServiceException {
+                                                  @RequestBody List<OrderItemDto> items) throws ValidateException, ServiceException {
 
-        OrderForGiftCertificateDto order = orderService.create(customerId, orderIds);
-
+        OrderForGiftCertificateDto order = orderService.create(customerId, items);
         return order;
     }
 }

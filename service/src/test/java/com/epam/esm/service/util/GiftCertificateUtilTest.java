@@ -4,6 +4,7 @@ import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -19,20 +20,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class GiftCertificateUtilTest {
 
     @Test
-    void giftCertificateEntityListToDtoConvertingTest() {
+    void giftCertificateEntityListToDtoConvertingTest() throws ValidateException {
         List<GiftCertificateDto> actualList = giftCertificateEntityListToDtoConverting(getEntityList());
 
         assertEquals(getDtoList(), actualList);
     }
 
     @Test
-    void giftCertificateDtoToEntityTransferTest() {
+    void giftCertificateDtoToEntityTransferTest() throws ValidateException {
         GiftCertificateEntity actualEntity = giftCertificateDtoToEntityTransfer(getDtoId1());
         assertEquals(getEntityId1(), actualEntity);
     }
 
     @Test
-    void giftCertificateEntityToDtoTransferTest() {
+    void giftCertificateEntityToDtoTransferTest() throws ValidateException {
         GiftCertificateDto actualDto = giftCertificateEntityToDtoTransfer(getEntityId2());
         assertEquals(getDtoId2(), actualDto);
     }

@@ -22,8 +22,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gift_certificate")
 @ToString(exclude = "tags")
+@Table(name = "gift_certificate")
 public class GiftCertificateEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class GiftCertificateEntity implements Serializable {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "gift_certificate_has_tag",
             joinColumns = @JoinColumn(name = "gift_certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))

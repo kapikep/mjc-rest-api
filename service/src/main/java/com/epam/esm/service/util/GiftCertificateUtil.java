@@ -28,19 +28,32 @@ public class GiftCertificateUtil {
     /**
      * Converting giftCertificateEntity to giftCertificateListDto
      */
-    public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificateEntity> giftCertificateList) {
+    public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificateEntity> giftCertificateList) throws ValidateException {
+        if(giftCertificateList == null){
+            throw new ValidateException("GiftCertificate entities list is null");
+        }
         List<GiftCertificateDto> giftCertificateDtoList = new ArrayList<>();
-        giftCertificateList.forEach(entity -> giftCertificateDtoList.add(giftCertificateEntityToDtoTransfer(entity)));
+        for (GiftCertificateEntity entity : giftCertificateList) {
+            giftCertificateDtoList.add(giftCertificateEntityToDtoTransfer(entity));
+        }
         return giftCertificateDtoList;
     }
 
-    public static List<GiftCertificateEntity> giftCertificateDtoListToEntityConverting(List<GiftCertificateDto> dtos) {
+    public static List<GiftCertificateEntity> giftCertificateDtoListToEntityConverting(List<GiftCertificateDto> dtos) throws ValidateException {
+        if(dtos == null){
+            throw new ValidateException("GiftCertificate dto list is null");
+        }
         List<GiftCertificateEntity> entities = new ArrayList<>();
-        dtos.forEach(dto -> entities.add(giftCertificateDtoToEntityTransfer(dto)));
+        for (GiftCertificateDto dto : dtos) {
+            entities.add(giftCertificateDtoToEntityTransfer(dto));
+        }
         return entities;
     }
 
-    public static GiftCertificateEntity giftCertificateDtoToEntityTransfer(GiftCertificateDto dto){
+    public static GiftCertificateEntity giftCertificateDtoToEntityTransfer(GiftCertificateDto dto) throws ValidateException {
+        if(dto == null){
+            throw new ValidateException("GiftCertificateDto is null");
+        }
         GiftCertificateEntity entity = new GiftCertificateEntity();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
@@ -53,13 +66,19 @@ public class GiftCertificateUtil {
         return entity;
     }
 
-    public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificateEntity entity) {
+    public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificateEntity entity) throws ValidateException {
         GiftCertificateDto dto = new GiftCertificateDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) {
+    public static void updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) throws ValidateException {
+        if(dto == null){
+            throw new ValidateException("GiftCertificateDto is null");
+        }
+        if(entity == null){
+            throw new ValidateException("GiftCertificateEntity is null");
+        }
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());

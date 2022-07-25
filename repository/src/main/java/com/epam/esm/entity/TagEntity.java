@@ -17,9 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ToString(exclude = "giftCertificates")
-//@ToString
 @EqualsAndHashCode(exclude = "giftCertificates")
-//@EqualsAndHashCode
 @AllArgsConstructor
 @Entity
 @Table(name = "tag")
@@ -38,6 +36,6 @@ public class TagEntity implements Serializable {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "tags")
     private List<GiftCertificateEntity> giftCertificates = new ArrayList<>();
 }

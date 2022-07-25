@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.OrderForGiftCertificateDto;
+import com.epam.esm.dto.OrderItemDto;
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.OrderForGiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
@@ -16,7 +17,6 @@ import com.epam.esm.service.util.OrderForGiftCertificateUtil;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverti
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityTransfer;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.sortingValidation;
-import static com.epam.esm.service.util.ServiceUtil.parseLong;
 
 @Service
 public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertificateService {
@@ -43,6 +42,11 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
 
     @Override
     public List<OrderForGiftCertificateDto> getUserOrders(long userId, CriteriaDto crDto) throws ValidateException, ServiceException {
+        try {
+            userService.readOne(userId);
+        } catch (ServiceException e) {
+            throw new ServiceException(e.getMessage(), e, "error.user.not.found", userId);
+        }
         setDefaultPageValIfEmpty(crDto);
         sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
@@ -58,34 +62,25 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
     }
 
     @Override
-    public OrderForGiftCertificateDto create(long customerId, String orderIds) throws ValidateException, ServiceException {
+    public OrderForGiftCertificateDto create(long customerId, List<OrderItemDto> orderItems) throws ValidateException, ServiceException {
         OrderForGiftCertificateDto orderDto = new OrderForGiftCertificateDto();
-        List<GiftCertificateDto> gifts = new ArrayList<>();
-        BigDecimal totalAmount = null;
+        BigDecimal totalAmount = new BigDecimal(0);
         orderDto.setId(0);
-        try{
+        try {
             orderDto.setUser(userService.readOne(customerId));
-        }catch (ServiceException e){
+        } catch (ServiceException e) {
             throw new ServiceException(e.getMessage(), e, "error.user.not.found", customerId);
         }
 
-        if(orderIds != null){
-            if(orderIds.contains(",")){
-                String ids [] = orderIds.split(",");
-                totalAmount = new BigDecimal(0);
-                for (int i = 0; i < ids.length; i++) {
-                    GiftCertificateDto giftDto = giftService.readOne(parseLong(ids[i]));
-                    totalAmount = totalAmount.add(BigDecimal.valueOf(giftDto.getPrice()));
-                    gifts.add(giftDto);
-                }
-            }else {
-                GiftCertificateDto giftDto = giftService.readOne(parseLong(orderIds));
-                totalAmount = new BigDecimal(giftDto.getPrice());
-                gifts.add(giftDto);
+        for (OrderItemDto item : orderItems) {
+            GiftCertificateDto gift = giftService.readOne(item.getGiftCertificate().getId());
+            item.setGiftCertificate(gift);
+            for (int i = 0; i < item.getQuantity(); i++) {
+                totalAmount = totalAmount.add(BigDecimal.valueOf(gift.getPrice()));
             }
         }
         orderDto.setTotalAmount(totalAmount);
-        orderDto.setGifts(gifts);
+        orderDto.setOrderItems(orderItems);
         orderDto.setOrderTime(LocalDateTime.now());
         try {
             OrderForGiftCertificateEntity entity = orderForGiftCertificateDtoToEntityTransfer(orderDto);
