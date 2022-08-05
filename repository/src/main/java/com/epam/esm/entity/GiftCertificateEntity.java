@@ -1,9 +1,6 @@
 package com.epam.esm.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -22,9 +19,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString(exclude = "tags")
+@ToString(exclude = "tags", callSuper = true)
 @Table(name = "gift_certificate")
-public class GiftCertificateEntity implements Serializable {
+@EqualsAndHashCode(exclude = "tags", callSuper = false)
+public class GiftCertificateEntity extends AuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -46,17 +44,22 @@ public class GiftCertificateEntity implements Serializable {
     @Min(value = 0, message = "{incorrect.duration}")
     private Integer duration;
 
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @Column(name = "last_update_date")
-    private LocalDateTime lastUpdateDate;
-
     @ManyToMany
     @JoinTable(name = "gift_certificate_has_tag",
             joinColumns = @JoinColumn(name = "gift_certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<TagEntity> tags = new ArrayList<>();
+
+    public GiftCertificateEntity(long id, String name, String description, Double price, Integer duration,
+                                 LocalDateTime createDate, LocalDateTime lastUpdateDate, List<TagEntity> tags) {
+        super(createDate, lastUpdateDate);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.tags = tags;
+    }
 
     public void addTag(TagEntity tag) {
         this.tags.add(tag);

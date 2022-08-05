@@ -1,19 +1,19 @@
 package com.epam.esm.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
-@ToString(exclude = "order")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@ToString(exclude = "order")
 @Entity
 @Table(name = "order_item")
-public class OrderItemEntity {
+public class OrderItemEntity  extends AuditingEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

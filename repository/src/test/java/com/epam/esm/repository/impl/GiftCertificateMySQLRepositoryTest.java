@@ -46,23 +46,23 @@ class GiftCertificateMySQLRepositoryTest {
 
         assertEquals(expectedGift, actualGift);
     }
-
-    @Test
-    void put10000Gifts() throws RepositoryException {
-        int maxLinkedTags = 7;
-        Random tagSizeRand = new Random();
-        Random r = new Random();
-        Random randomTag = new Random();
-
-        for (int i = 0; i < 10000; i++) {
-            try {
-                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
-                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
-                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
-            } catch (Exception ignored) {
-            }
-        }
-    }
+//
+//    @Test
+//    void put10000Gifts() throws RepositoryException {
+//        int maxLinkedTags = 7;
+//        Random tagSizeRand = new Random();
+//        Random r = new Random();
+//        Random randomTag = new Random();
+//
+//        for (int i = 0; i < 10000; i++) {
+//            try {
+//                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
+//                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
+//                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
+//            } catch (Exception ignored) {
+//            }
+//        }
+//    }
 
     private List<TagEntity> linkGiftsAndTags(int size, Random randomTag) throws RepositoryException {
         int totalSize = 1075;

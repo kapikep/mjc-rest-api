@@ -18,10 +18,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "giftCertificates")
-@EqualsAndHashCode(exclude = "giftCertificates")
+@EqualsAndHashCode(exclude = "giftCertificates", callSuper = false)
 @Entity
 @Table(name = "tag")
-public class TagEntity implements Serializable {
+public class TagEntity extends AuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

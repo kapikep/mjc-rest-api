@@ -12,6 +12,7 @@ import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.ServiceUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,17 +31,13 @@ import static com.epam.esm.service.util.GiftCertificateUtil.*;
  * @version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     public static final String CANNOT_ADD_OR_UPDATE_A_CHILD_ROW = "Cannot add or update a child row";
 
     private final GiftCertificateRepository repository;
     private final TagService tagService;
-
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
-        this.repository = repository;
-        this.tagService = tagService;
-    }
 
     @Override
     public List<GiftCertificateDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
@@ -102,8 +99,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void create(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
         giftDto.setId(0);
-        giftDto.setCreateDate(LocalDateTime.now());
-        giftDto.setLastUpdateDate(LocalDateTime.now());
         tagService.getIdOrCreateTags(giftDto.getTags());
         try {
             GiftCertificateEntity giftEntity = giftCertificateDtoToEntityTransfer(giftDto);
@@ -125,13 +120,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void update(GiftCertificateDto giftDto) throws ServiceException, ValidateException {
-        giftDto.setLastUpdateDate(LocalDateTime.now());
+        GiftCertificateEntity giftEntity;
         try {
             if (GiftCertificateUtil.isNullFieldValidation(giftDto)) {
                 GiftCertificateUtil.updateFields(giftDto, readOne(giftDto.getId()));
             }
             tagService.getIdOrCreateTags(giftDto.getTags());
-            repository.merge(giftCertificateDtoToEntityTransfer(giftDto));
+            giftEntity = giftCertificateDtoToEntityTransfer(giftDto);
+            repository.merge(giftEntity);
+            updateFieldsInDtoFromEntity(giftEntity, giftDto);
+            giftDto.setLastUpdateDate(LocalDateTime.now());
         } catch (RepositoryException e) {
             String mes = e.getMessage();
 

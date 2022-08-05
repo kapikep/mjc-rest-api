@@ -1,9 +1,6 @@
 package com.epam.esm.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString(exclude = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@ToString(exclude = "orders")
 @Entity
 @Table(name = "users")
-public class UserEntity implements Serializable {
+public class UserEntity extends AuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
