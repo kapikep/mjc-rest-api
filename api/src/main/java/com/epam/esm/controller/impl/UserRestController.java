@@ -8,6 +8,7 @@ import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.OrderForGiftCertificateService;
 import com.epam.esm.service.interf.UserService;
 import com.epam.esm.service.util.ServiceUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -19,17 +20,12 @@ import java.util.List;
 import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserRestController {
     private final UserService service;
     private final OrderForGiftCertificateService orderService;
     private final MessageSource source;
-
-    public UserRestController(UserService service, OrderForGiftCertificateService orderService, MessageSource source) {
-        this.service = service;
-        this.orderService = orderService;
-        this.source = source;
-    }
 
     @GetMapping
     public PagedModel<UserDto> rearPage(@RequestParam(required = false, name = "page") Integer page,

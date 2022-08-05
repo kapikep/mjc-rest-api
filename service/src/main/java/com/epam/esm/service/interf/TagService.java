@@ -42,6 +42,8 @@ public interface TagService {
      */
     TagDto readByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException, ValidateException;
 
+    List<TagDto> getMostWidelyTag() throws ServiceException;
+
     /**
      * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
      * write id in list

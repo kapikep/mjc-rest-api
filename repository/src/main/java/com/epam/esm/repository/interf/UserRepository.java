@@ -11,4 +11,6 @@ public interface UserRepository {
     List<UserEntity> readPage(CriteriaEntity cr) throws RepositoryException;
 
     UserEntity readOne(long id) throws RepositoryException;
+
+    List<UserEntity> findUserWithHighestCostOfAllOrders();
 }

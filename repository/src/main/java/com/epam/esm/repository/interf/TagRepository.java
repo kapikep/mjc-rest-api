@@ -53,4 +53,6 @@ public interface TagRepository {
      * @param id  id to create in db
      */
     void deleteById(long id) throws RepositoryException;
+
+    List<TagEntity> findMostWidelyTag();
 }

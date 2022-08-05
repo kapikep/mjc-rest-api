@@ -98,6 +98,17 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    @Override
+    public List<TagDto> getMostWidelyTag() throws ServiceException {
+        List<TagDto> tags;
+        try {
+            tags = tagEntityListToDtoConverting(repository.findMostWidelyTag());
+        } catch (ValidateException e) {
+            throw new ServiceException(e);
+        }
+        return tags;
+    }
+
     /**
      * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
      * write id in list

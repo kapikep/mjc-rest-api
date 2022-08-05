@@ -118,6 +118,8 @@ public class GiftCertificateMySQLRepository extends AbstractMySQLRepository<Gift
                 .createQuery(findQuery.insert(0, SELECT_COUNT_FROM_GIFT).append(")").toString())
                 .getSingleResult());
 
+        pageValidation(cr);
+
         return query.getResultList();
     }
 

@@ -47,39 +47,36 @@ class GiftCertificateMySQLRepositoryTest {
         assertEquals(expectedGift, actualGift);
     }
 
-//    @Test
-//    void put10000Gifts() throws RepositoryException {
-//        int maxLinkedTags = 7;
-//        Random tagSizeRand = new Random();
-//        Random r = new Random();
-//        Random randomTag = new Random();
-//
-//        for (int i = 0; i < 10000; i++) {
-//            try {
-//                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
-//                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
-//                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
-//            } catch (Exception ignored) {
-//            }
-//        }
-//    }
-//
-//    private List<TagEntity> linkGiftsAndTags(int size, Random randomTag) throws RepositoryException {
-//        int totalSize = 1075;
-//        List<TagEntity> tagEntities = new ArrayList<>(size);
-////        System.out.println();
-////        System.out.println("Size " + size);
-//
-//        for (int i = 0; i < size; i++) {
-//            try {
-//                long id = randomTag.nextInt(totalSize);
-////                System.out.print(id + " ");
-//                tagEntities.add(tagMySQLRepository.readOne(id));
-//            }catch (Exception ignored){
-//            }
-//        }
-//        return tagEntities;
-//    }
+    @Test
+    void put10000Gifts() throws RepositoryException {
+        int maxLinkedTags = 7;
+        Random tagSizeRand = new Random();
+        Random r = new Random();
+        Random randomTag = new Random();
+
+        for (int i = 0; i < 10000; i++) {
+            try {
+                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
+                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
+                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private List<TagEntity> linkGiftsAndTags(int size, Random randomTag) throws RepositoryException {
+        int totalSize = 1075;
+        List<TagEntity> tagEntities = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++) {
+            try {
+                long id = randomTag.nextInt(totalSize);
+                tagEntities.add(tagMySQLRepository.readOne(id));
+            }catch (Exception ignored){
+            }
+        }
+        return tagEntities;
+    }
 
     @Test
     void search1000Gifts() throws RepositoryException {

@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +30,15 @@ class TagMySQLRepositoryTest {
 
     @Autowired
     private TagRepository repository;
+
+    @Test
+    void findMostWidelyTagTest(){
+        List<TagEntity> tags = repository.findMostWidelyTag();
+        System.out.println(tags.size());
+        System.out.println(tags);
+        assertTrue(tags.size() > 0);
+    }
+
 
     @Test
 //    @Transactional
@@ -57,8 +67,8 @@ class TagMySQLRepositoryTest {
         System.out.println(tags.size());
     }
 
-//    @Test
-//    void put1000tags() throws RepositoryException {
+    @Test
+    void put1000tags() throws RepositoryException {
 //
 //        for (int i = 0; i < 1000; i++) {
 //            try {
@@ -67,7 +77,7 @@ class TagMySQLRepositoryTest {
 //                System.out.println(e);
 //            }
 //        }
-//    }
+    }
 
     @Test
 //    @Transactional

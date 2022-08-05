@@ -6,6 +6,7 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.*;
@@ -26,15 +27,11 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
  * @version 1.0
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/tags")
 public class TagRestController {
     private final TagService service;
     private final MessageSource source;
-
-    public TagRestController(TagService service, MessageSource source) {
-        this.service = service;
-        this.source = source;
-    }
 
     @GetMapping
     public PagedModel<TagDto> readTags(
@@ -67,6 +64,17 @@ public class TagRestController {
         PagedModel<TagDto> pagedModel = PaginationUtil.createPagedModel(tags, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
         return pagedModel;
+    }
+
+    @GetMapping("most-widely")
+    public List<TagDto> getMostWidelyTag() throws ServiceException {
+        List<TagDto> tags = service.getMostWidelyTag();
+
+        for (TagDto tag : tags) {
+            tag.add(getSelfLink(TagRestController.class, tag.getId()));
+        }
+
+        return tags;
     }
 
     /**

@@ -9,6 +9,7 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.validator.groups.OnCreate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.CollectionModel;
@@ -35,15 +36,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  * @version 1.0
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/gift-certificates")
 public class GiftCertificateRestController {
     private final GiftCertificateService service;
     private final MessageSource source;
-
-    public GiftCertificateRestController(GiftCertificateService service, MessageSource source) {
-        this.service = service;
-        this.source = source;
-    }
 
     /**
      * Finds gift certificate by parameters

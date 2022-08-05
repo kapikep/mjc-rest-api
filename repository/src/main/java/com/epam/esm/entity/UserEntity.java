@@ -41,4 +41,14 @@ public class UserEntity implements Serializable {
 
     @OneToMany(mappedBy = "user")
     private List<OrderForGiftCertificateEntity> orders = new ArrayList<>();
+
+    public UserEntity(long id, String firstName, String secondName,
+                      String login, String password, String phoneNumber) {
+        this.id = id;
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.login = login;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
 }

@@ -16,9 +16,9 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString(exclude = "giftCertificates")
 @EqualsAndHashCode(exclude = "giftCertificates")
-@AllArgsConstructor
 @Entity
 @Table(name = "tag")
 public class TagEntity implements Serializable {
@@ -31,11 +31,11 @@ public class TagEntity implements Serializable {
     @Column(name = "name", unique = true)
     private String name;
 
+    @ManyToMany(mappedBy = "tags")
+    private List<GiftCertificateEntity> giftCertificates = new ArrayList<>();
+
     public TagEntity(int id, String name) {
         this.id = id;
         this.name = name;
     }
-
-    @ManyToMany(mappedBy = "tags")
-    private List<GiftCertificateEntity> giftCertificates = new ArrayList<>();
 }

@@ -17,6 +17,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     @PersistenceContext
     protected EntityManager entityManager;
     protected Class<T> clazz;
+
     protected final void setClazz(final Class<T> clazzToSet) {
         this.clazz = clazzToSet;
     }
@@ -62,32 +63,57 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         }
 
         TypedQuery<T> query = entityManager.createQuery(cq);
-        if(cr.getSize() != null && cr.getPage() != null) {
+        if (cr.getSize() != null && cr.getPage() != null) {
             query.setFirstResult((cr.getPage() - 1) * cr.getSize());
             query.setMaxResults(cr.getSize());
-        }else {
+        } else {
             throw new RepositoryException("Size and page must be not null");
         }
 
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
         countCq.select(cb.count(countCq.from(clazz)));
         cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
+
+        pageValidation(cr);
+
         return query.getResultList();
     }
+
+    public void pageValidation(CriteriaEntity cr) throws RepositoryException {
+        if (cr.getSize() == null) {
+            throw new RepositoryException("Size must be not null");
+        }
+        if (cr.getPage() == null) {
+            throw new RepositoryException("Page must be not null");
+        }
+        if (cr.getTotalSize() == null) {
+            throw new RepositoryException("Total size must be not null");
+        }
+
+        long totalPages = (long) Math.ceil(cr.getTotalSize() / (double) cr.getSize());
+
+        if (cr.getPage() > totalPages) {
+            throw new RepositoryException("Page must be between 1 and " + totalPages);
+        }
+    }
+
 
     @Transactional
     public void create(final T entity) {
         entityManager.persist(entity);
     }
 
+    @Transactional
     public T merge(final T entity) {
         return entityManager.merge(entity);
     }
 
+    @Transactional
     public void delete(final T entity) {
         entityManager.remove(entity);
     }
 
+    @Transactional
     public void deleteById(final long entityId) throws RepositoryException {
         final T entity = readOne(entityId);
         delete(entity);
