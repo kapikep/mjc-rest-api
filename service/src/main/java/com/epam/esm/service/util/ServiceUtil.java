@@ -3,7 +3,6 @@ package com.epam.esm.service.util;
 import com.epam.esm.service.exception.ValidateException;
 
 public class ServiceUtil {
-
     public static int parseInt(String str) throws ValidateException {
         int i;
         try {

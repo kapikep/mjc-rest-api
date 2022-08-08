@@ -12,6 +12,7 @@ import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.util.CriteriaUtil;
 import com.epam.esm.service.util.ServiceUtil;
 import com.epam.esm.service.util.TagUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,9 @@ import static com.epam.esm.service.util.TagUtil.*;
  * @version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     private final TagRepository repository;
-
-    public TagServiceImpl(TagRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<TagDto> readPage(CriteriaDto crDto) throws ServiceException, ValidateException {
@@ -121,12 +119,10 @@ public class TagServiceImpl implements TagService {
             for (TagDto tag : tags) {
                 if (tag.getId() <= 0) {
                     try {
-                        updateFieldsInDtoFromEntity(repository
-                                .readByName(tag.getName()), tag);
+                        updateFieldsInDtoFromEntity(repository.readByName(tag.getName()), tag);
                     } catch (RepositoryException | DataAccessException e) {
                         try {
-                            updateFieldsInDtoFromEntity(repository
-                                    .merge(tagDtoToEntityTransfer(tag)), tag);
+                            updateFieldsInDtoFromEntity(repository.merge(tagDtoToEntityTransfer(tag)), tag);
                         } catch (RepositoryException ex) {
                             throw new ServiceException(e.getMessage(), e);
                         }

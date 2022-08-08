@@ -14,12 +14,12 @@ import com.epam.esm.service.interf.GiftCertificateService;
 import com.epam.esm.service.interf.OrderForGiftCertificateService;
 import com.epam.esm.service.interf.UserService;
 import com.epam.esm.service.util.OrderForGiftCertificateUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
@@ -28,17 +28,11 @@ import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGift
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.sortingValidation;
 
 @Service
+@RequiredArgsConstructor
 public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertificateService {
     private final OrderForGiftCertificateRepository repository;
     private final UserService userService;
     private final GiftCertificateService giftService;
-
-    public OrderForGiftCertificateServiceImpl(OrderForGiftCertificateRepository repository,
-                                              UserService userService, GiftCertificateService giftService) {
-        this.repository = repository;
-        this.userService = userService;
-        this.giftService = giftService;
-    }
 
     @Override
     public List<OrderForGiftCertificateDto> getUserOrders(long userId, CriteriaDto crDto) throws ValidateException, ServiceException {

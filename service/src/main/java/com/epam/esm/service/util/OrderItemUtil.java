@@ -1,10 +1,8 @@
 package com.epam.esm.service.util;
 
 import com.epam.esm.dto.OrderItemDto;
-import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.OrderForGiftCertificateEntity;
 import com.epam.esm.entity.OrderItemEntity;
-import com.epam.esm.entity.UserEntity;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;

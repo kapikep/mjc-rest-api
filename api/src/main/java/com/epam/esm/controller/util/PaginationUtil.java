@@ -2,13 +2,13 @@ package com.epam.esm.controller.util;
 
 import com.epam.esm.controller.impl.GiftCertificateRestController;
 import com.epam.esm.controller.impl.TagRestController;
+import com.epam.esm.controller.impl.UserRestController;
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collection;
@@ -46,6 +46,10 @@ public class PaginationUtil {
 
     public static Link getSelfLink(Class<?> controller, long id) {
         return linkTo(controller).slash(id).withSelfRel();
+    }
+
+    public static Link getUserOrderLink(long userId, long orderId) {
+        return linkTo(UserRestController.class).slash(userId).slash("orders").withSelfRel();
     }
 
     public static void addGiftCertificateLink(GiftCertificateDto gift) {

@@ -18,6 +18,23 @@ import java.util.List;
 @Repository
 public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository{
     private static final String WHERE_T_NAME = "select object (t) from TagEntity t where t.name = :name";
+    public static final String MOST_WIDELY_TAG_OF_USER_WITH_HIGHEST_COST = "select `id`, `name`, `create_date`, `last_update_date`" +
+            "from (select `t`.id as `id`, `t`.name as `name`," +
+            "             t.create_date as `create_date`, `t`.last_update_date as `last_update_date`," +
+            "             rank() over (partition by user_id order by sum(`item`.quantity) desc ) as `rank`" +
+            "      from orders_for_gift_certificates `order`" +
+            "               join order_item `item` on `order`.id = `item`.order_id" +
+            "               join gift_certificate gc on `item`.gift_certificate_id = `gc`.id" +
+            "               join gift_certificate_has_tag gcht on `gc`.id = `gcht`.gift_certificate_id" +
+            "               join tag `t` on `t`.id = `gcht`.tag_id" +
+            "      where user_id in (select user_id" +
+            "                        from orders_for_gift_certificates" +
+            "                        group by user_id" +
+            "                        having SUM(total_amount) >= ALL (select SUM(total_amount) as sum" +
+            "                                                         from orders_for_gift_certificates" +
+            "                                                         group by user_id))" +
+            "      group by user_id, t.id) as `inner`" +
+            "where `rank` = 1";
 
     public TagMySQLRepository() {
         setClazz(TagEntity.class);
@@ -31,39 +48,9 @@ public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> imple
     }
 
     @Override
+    @SuppressWarnings(value = "unchecked")
     public List<TagEntity> findMostWidelyTag(){
-        List<TagEntity> tags;
-        Query query = entityManager.createNativeQuery("select `id`, `name`, `user`" +
-                "from (select `t`.id as `id`, user_id as `user`, t.name as `name`,\n" +
-                "             dense_rank() over (partition by user_id order by sum(`item`.quantity) desc ) as `rank`\n" +
-                "      from orders_for_gift_certificates `order`\n" +
-                "               join order_item `item` on `order`.id = `item`.order_id\n" +
-                "               join gift_certificate gc on `item`.gift_certificate_id = `gc`.id\n" +
-                "               join gift_certificate_has_tag gcht on `gc`.id = `gcht`.gift_certificate_id\n" +
-                "               join tag `t` on `t`.id = `gcht`.tag_id\n" +
-                "      where user_id in (select user_id\n" +
-                "                        from orders_for_gift_certificates\n" +
-                "                        group by user_id\n" +
-                "                        having SUM(total_amount) >= ALL (select SUM(total_amount) as sum\n" +
-                "                                                         from orders_for_gift_certificates\n" +
-                "                                                         group by user_id))\n" +
-                "      group by user_id, t.id) as `inner`\n" +
-                "where `rank` = 1;", TagEntity.class);
-
-
-//        Query query = entityManager.createNativeQuery("select `id`, `name`\n" +
-//                "from (select `t`.id as `id`, `t`.name as `name`, rank() over (order by sum(`item`.quantity) desc) as `rank`\n" +
-//                "            from orders_for_gift_certificates `order`\n" +
-//                "                     left join order_item `item` on `order`.id = `item`.order_id\n" +
-//                "                     left join gift_certificate `gc` on `item`.gift_certificate_id = `gc`.id\n" +
-//                "                     left join gift_certificate_has_tag gcht on `gc`.id = `gcht`.gift_certificate_id\n" +
-//                "                     left join tag `t` on `t`.id = `gcht`.tag_id\n" +
-//                "            where user_id = 2\n" +
-//                "            group by t.id) as `temp`\n" +
-//                "where `rank` = 1", TagEntity.class);
-//        Query query = entityManager.createQuery("select tag from OrderForGiftCertificateEntity o left join o.orderItems item left join item.giftCertificate gc left join gc.tags tag " +
-//                "where o.user.id = 3 and sum (item.quantity) > 2 group by tag.id");
-
+        Query query = entityManager.createNativeQuery(MOST_WIDELY_TAG_OF_USER_WITH_HIGHEST_COST, TagEntity.class);
         return query.getResultList();
     }
 }

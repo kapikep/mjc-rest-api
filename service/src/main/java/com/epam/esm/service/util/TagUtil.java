@@ -8,7 +8,6 @@ import com.epam.esm.service.exception.ValidateException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SORT_PARAM;
 import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
 
 /**

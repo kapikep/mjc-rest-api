@@ -2,14 +2,13 @@ package com.epam.esm.service.util;
 
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.UserDto;
-import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.UserEntity;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.repository.constant.SearchParam.*;
+import static com.epam.esm.repository.constant.SearchParam.USER_SORT_PARAM;
 
 public class UserUtil {
     public static List<UserDto> userEntityListToDtoConverting(List<UserEntity> entities) throws ValidateException {

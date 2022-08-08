@@ -2,20 +2,17 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.AbstractMySQLRepository;
 import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SEARCH_PARAM;
 import static com.epam.esm.repository.constant.SearchParam.GIFT_SEARCH_BY_TAG_NAME;
@@ -122,78 +119,4 @@ public class GiftCertificateMySQLRepository extends AbstractMySQLRepository<Gift
 
         return query.getResultList();
     }
-
-//    @Override
-//    @Transactional
-//    public List<GiftCertificateEntity> findByParams(CriteriaEntity cr) throws RepositoryException {
-//        Map<String, String> criteriaMap = cr.getSearchParam();
-//        String sorting = cr.getSorting();
-//        StringBuilder findQuery = new StringBuilder("select distinct g from GiftCertificateEntity g left join g.tags t");
-//        String[] tags = null;
-//
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//
-//        CriteriaQuery<GiftCertificateEntity> cq;
-//        TypedQuery<GiftCertificateEntity> query;
-//
-//        cq = cb.createQuery(clazz);
-//        Metamodel m = entityManager.getMetamodel();
-//        EntityType<GiftCertificateEntity> gift_ = m.entity(GiftCertificateEntity.class);
-//        EntityType<TagEntity> tag_ = m.entity(TagEntity.class);
-//        Root<GiftCertificateEntity> gift = cq.from(clazz);
-//        Join<GiftCertificateEntity, TagEntity> tag = gift.join("tags", JoinType.LEFT);
-//
-//        cq.select(gift);
-//        cq.distinct(true);
-//        cq.orderBy(cb.asc(gift.get(sorting)));
-//
-////        Path<String> path = root.get("name");
-////        List<Predicate> predicates = new ArrayList<>();
-////        predicates.add(cb.like(path, "Ночной"));
-////        cq.where(cb.equal(tag.get("name"), "Автоспорт"));
-////        cq.where(cb.equal(tag.get("name"), "Автолюбителям"));
-////        cq.where(cb.or(predicates);
-//
-//
-////        Subquery<TagEntity> subquery = query.subquery(TagEntity.class);
-////        Root<TagEntity> tagEntityRoot = subquery.from(TagEntity.class);
-////        subquery.select(tagEntityRoot).where(cb.like(tagEntityRoot.get("name"), "%Автолюбителям%"));
-//
-//
-//
-//
-////        Predicate greaterThanPrice = cb.lt(root.get("price"), 11);
-////        Predicate chairItems = cb.like(root.get("Tag.name"), "%Автолюбителям%");
-////        query.select(root).where(cb.or(greaterThanPrice, chairItems));
-//
-////        query.select(root).where(cb.in()).;
-//
-//
-//
-//        Predicate [] predicates = new Predicate[1];
-////        predicates[0] = cb.in(tag.get("name")).value("Автоспорт").value("Автолюбителям");
-////        cq.where(cb.or(predicates));
-////        cq.groupBy(gift.get("id"));
-////        cq.having(cb.equal(cb.count(tag.get("name")), 2));
-//
-//
-//
-//        cr.setTotalSize(0l);
-//        Subquery<GiftCertificateEntity> subquery = cq.subquery(GiftCertificateEntity.class);
-//        CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
-////        countCq.select(cb.count(countCq.from(clazz).in(subquery)));
-//        countCq.select(cb.count(gift)).where(cb.in(gift).value(subquery));
-//        cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
-//
-//        query = entityManager.createQuery(cq);
-//
-//        if (cr.getSize() != null && cr.getPage() != null) {
-//            query.setFirstResult((cr.getPage() - 1) * cr.getSize());
-//            query.setMaxResults(30);
-//        } else {
-//            throw new RepositoryException("Size and page must be not null");
-//        }
-//
-//        return query.getResultList();
-//    }
 }
