@@ -3,17 +3,14 @@ package com.epam.esm.service.util;
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.service.exception.ValidateException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SORT_PARAM;
-import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
 
 /**
  * Utils for gift certificate
@@ -22,9 +19,6 @@ import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
  * @version 1.0
  */
 public class GiftCertificateUtil {
-    private static final int MAX_NAME_LENGHT = 45;
-    private static final int MAX_DESCRIPTION_LENGHT = 255;
-    public static final int CRITERIA_TAG_LENGHT = 45;
     /**
      * Converting giftCertificateEntity to giftCertificateListDto
      */

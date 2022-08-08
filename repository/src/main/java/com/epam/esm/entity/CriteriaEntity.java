@@ -1,7 +1,6 @@
 package com.epam.esm.entity;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.HashMap;
 import java.util.Map;

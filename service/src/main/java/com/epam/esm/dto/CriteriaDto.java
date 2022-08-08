@@ -1,9 +1,11 @@
 package com.epam.esm.dto;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,20 +1,19 @@
 package com.epam.esm.controller.impl;
 
 import com.epam.esm.controller.util.PaginationUtil;
-import com.epam.esm.dto.*;
-import com.epam.esm.entity.UserEntity;
+import com.epam.esm.dto.CriteriaDto;
+import com.epam.esm.dto.OrderForGiftCertificateDto;
+import com.epam.esm.dto.OrderItemDto;
+import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.OrderForGiftCertificateService;
 import com.epam.esm.service.interf.UserService;
-import com.epam.esm.service.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
@@ -25,7 +24,6 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 public class UserRestController {
     private final UserService service;
     private final OrderForGiftCertificateService orderService;
-    private final MessageSource source;
 
     @GetMapping
     public PagedModel<UserDto> rearPage(@RequestParam(required = false, name = "page") Integer page,
@@ -38,9 +36,7 @@ public class UserRestController {
 
         List<UserDto> dtoList = service.readPage(cr);
 
-        for (UserDto dto : dtoList) {
-            dto.add(getSelfLink(UserEntity.class, dto.getId()));
-        }
+        dtoList.forEach(dto -> dto.add(getSelfLink(UserRestController.class, dto.getId())));
 
         PagedModel<UserDto> pagedModel = PaginationUtil.createPagedModel(dtoList, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
@@ -66,7 +62,7 @@ public class UserRestController {
     @GetMapping("/{id}")
     public UserDto readUser(@PathVariable long id) throws ValidateException, ServiceException {
         UserDto dto = service.readOne(id);
-        dto.add(getSelfLink(UserEntity.class, dto.getId()));
+        dto.add(getSelfLink(UserRestController.class, dto.getId()));
         return dto;
     }
 

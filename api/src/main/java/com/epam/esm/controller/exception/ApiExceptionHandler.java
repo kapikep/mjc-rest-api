@@ -12,7 +12,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,14 +21,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Handles application exceptions
@@ -48,22 +44,37 @@ public class ApiExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ApiException> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String code;
+        String resMes;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
         Throwable tr = e.getCause();
-        String resMes = e.getCause().getMessage();
+        if (tr != null) {
+            resMes = e.getCause().getMessage();
 
-        if (tr instanceof InvalidFormatException) {
-            InvalidFormatException inv = (InvalidFormatException) tr;
-            JsonMappingException.Reference ref = inv.getPath().get(0);
-            resMes = ref.getFieldName() + ":" + getMessageForParse(inv.getTargetType());
+            if (tr instanceof InvalidFormatException) {
+                InvalidFormatException inv = (InvalidFormatException) tr;
+                JsonMappingException.Reference ref = inv.getPath().get(0);
+                resMes = ref.getFieldName() + ":" + getMessageForParse(inv.getTargetType());
+            }
+        } else {
+            resMes = e.getMessage();
+            if (resMes != null) {
+                if (resMes.contains("Required request body is missing")) {
+                    resMes = source.getMessage("error.request.body.missing", null,
+                            LocaleContextHolder.getLocale());
+                }
+            }
         }
-
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
         apiException.setErrorMessage(resMes);
 
         return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiException> handleNullPointerException(NullPointerException e) {
+        return null;
     }
 
     @ExceptionHandler
@@ -129,9 +140,9 @@ public class ApiExceptionHandler {
         exceptions.forEach(vio -> {
             NodeImpl leafNode = ((PathImpl) vio.getPropertyPath()).getLeafNode();
             String fieldName;
-            if(leafNode.getParent().toString().contains("[")){
+            if (leafNode.getParent().toString().contains("[")) {
                 fieldName = leafNode.getParent().asString() + "." + leafNode.asString();
-            }else {
+            } else {
                 fieldName = leafNode.asString();
             }
             errors.put(fieldName, vio.getMessage());
@@ -160,21 +171,6 @@ public class ApiExceptionHandler {
         apiException.setErrorMessage(errors.toString());
         return new ResponseEntity<>(apiException, httpStatus);
     }
-
-//    @ExceptionHandler
-//    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException e) {
-//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-//
-//        LinkedHashMap<String, String> errors = new LinkedHashMap<>();
-//        e.getAllErrors().forEach((error) -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
-//
-//        errors.put("errorCode", codeDefinition(e, httpStatus));
-//        return errors;
-//    }
 
     @ExceptionHandler
     public ResponseEntity<ApiException> handleValidateException(ValidateException e) {
@@ -207,7 +203,6 @@ public class ApiExceptionHandler {
                 apiException.setErrorMessage(e.getMessage());
             }
         }
-
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
@@ -239,15 +234,15 @@ public class ApiExceptionHandler {
 
         Throwable root = e.getCause().getCause();
 
-        if (root instanceof SQLIntegrityConstraintViolationException){
+        if (root instanceof SQLIntegrityConstraintViolationException) {
             message = root.getMessage();
         }
 
         code = codeDefinition(e, httpStatus);
         apiException.setErrorCode(code);
-        if(message == null){
+        if (message == null) {
             apiException.setErrorMessage(e.getMessage());
-        }else {
+        } else {
             apiException.setErrorMessage(message);
         }
 
@@ -262,52 +257,32 @@ public class ApiExceptionHandler {
     private String codeDefinition(Exception e, HttpStatus httpStatus) {
         String res = "00";
         int httpStatusCode = httpStatus.value();
-
-//        String mes = e.getStackTrace()[1].getClassName();
-//        boolean b = Arrays.stream(e.getStackTrace()).anyMatch(x -> x.getClassName().contains("tag"));
-//        System.out.println(b);
-//
-//        if (e instanceof BindException || e instanceof HttpMessageNotReadableException) {
-//            mes = e.getMessage();
-//        }
-//
-//        if (mes.contains("GiftCertificate")) {
-//            res = "01";
-//        } else if (mes.contains("Tag")) {
-//            res = "02";
-//        }
-
-//        if (res.equals("00")) {
-//            String path = ServletUriComponentsBuilder.fromCurrentRequest().build().getPath();
-//            assert path != null;
-//            if (path.contains("gift-certificates")) {
-//                res = "01";
-//            } else if (path.contains("tag")) {
-//                res = "02";
-//            }
-//        }
-
         String path = ServletUriComponentsBuilder.fromCurrentRequest().build().getPath();
         assert path != null;
+
         if (path.contains("gift-certificates")) {
             res = "01";
         } else if (path.contains("tag")) {
             res = "02";
+        } else if (path.contains("users")) {
+            res = "03";
+        }
+
+        if (path.contains("orders")) {
+            res = "04";
         }
 
         res = httpStatusCode + res;
-
         return res;
     }
 
     private String getMessageForParse(Class<?> clazz) {
         String lowCaseClassName = clazz.getSimpleName().toLowerCase();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(source.getMessage("must.be.with", null, LocaleContextHolder.getLocale()));
-        sb.append(" ").append(lowCaseClassName).append(" ");
-        sb.append(source.getMessage("word.size", null, LocaleContextHolder.getLocale()));
+        String sb = source.getMessage("must.be.with", null, LocaleContextHolder.getLocale()) +
+                " " + lowCaseClassName + " " +
+                source.getMessage("word.size", null, LocaleContextHolder.getLocale());
 
-        return sb.toString();
+        return sb;
     }
 }

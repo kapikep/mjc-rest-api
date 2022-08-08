@@ -3,31 +3,20 @@ package com.epam.esm.controller.impl;
 import com.epam.esm.controller.util.PaginationUtil;
 import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.TagDto;
 import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.GiftCertificateService;
-import com.epam.esm.service.validator.groups.OnCreate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink;
-import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Handles requests to /gift-certificates url
@@ -96,7 +85,7 @@ public class GiftCertificateRestController {
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ValidateException, ServiceException {
         GiftCertificateDto dto = service.readOne(id);
-//        addGiftCertificateLink(dto);
+        addGiftCertificateLink(dto);
         return dto;
     }
 
