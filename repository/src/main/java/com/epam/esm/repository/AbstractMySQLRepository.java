@@ -80,10 +80,10 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public void pageValidation(CriteriaEntity cr) throws RepositoryException {
-        if (cr.getSize() == null) {
+        if (cr.getSize() == null && cr.getSize() < 1) {
             throw new RepositoryException("Size must be not null");
         }
-        if (cr.getPage() == null) {
+        if (cr.getPage() == null && cr.getPage() < 1) {
             throw new RepositoryException("Page must be not null");
         }
         if (cr.getTotalSize() == null) {
@@ -92,11 +92,14 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
 
         long totalPages = (long) Math.ceil(cr.getTotalSize() / (double) cr.getSize());
 
-        if (cr.getPage() > totalPages) {
+        if ((totalPages == 0 || totalPages == 1) && cr.getPage() > 1) {
+            throw new RepositoryException("Page must be 1");
+        }
+
+        if (cr.getPage() > totalPages && totalPages > 1) {
             throw new RepositoryException("Page must be between 1 and " + totalPages);
         }
     }
-
 
     @Transactional
     public void create(final T entity) {

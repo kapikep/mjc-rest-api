@@ -1,7 +1,6 @@
 package com.epam.esm.entity;
 
 import lombok.*;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;

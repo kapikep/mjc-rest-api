@@ -3,13 +3,12 @@ package com.epam.esm.service.util;
 import com.epam.esm.service.exception.ValidateException;
 
 public class ServiceUtil {
-
     public static int parseInt(String str) throws ValidateException {
         int i;
         try {
             i = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            throw new ValidateException("incorrect.parameter", new Object[]{str});
+            throw new ValidateException("incorrect.parameter", str);
         }
         return i;
     }
@@ -19,7 +18,7 @@ public class ServiceUtil {
         try {
             i = Long.parseLong(str);
         } catch (NumberFormatException e) {
-            throw new ValidateException("incorrect.parameter", new Object[]{str});
+            throw new ValidateException("incorrect.parameter", str);
         }
         return i;
     }

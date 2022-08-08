@@ -10,6 +10,7 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.UserService;
 import com.epam.esm.service.util.OrderForGiftCertificateUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +21,10 @@ import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.UserUtil.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     private final UserRepository repository;
-
-    public UserServiceImpl(UserRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<UserDto> readPage(CriteriaDto crDto) throws ValidateException, ServiceException {

@@ -2,7 +2,6 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.OrderForGiftCertificateEntity;
-import com.epam.esm.entity.UserEntity;
 import com.epam.esm.repository.AbstractMySQLRepository;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.OrderForGiftCertificateRepository;
@@ -61,12 +60,4 @@ public class OrderForGiftCertificateMySQLRepository extends AbstractMySQLReposit
 
         return query.getResultList();
     }
-
-//    TypedQuery<UserEntity> query = entityManager.createQuery(
-//            "select o.user from OrderForGiftCertificateEntity o group by o.user",
-//            UserEntity.class);
-//        query.setFirstResult(0);
-//        query.setMaxResults(3);
-//
-//        return query.getResultList();
 }
