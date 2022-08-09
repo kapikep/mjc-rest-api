@@ -8,7 +8,7 @@ public class ServiceUtil {
         try {
             i = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            throw new ValidateException("incorrect.parameter", new Object[]{str});
+            throw new ValidateException("incorrect.parameter", str);
         }
         return i;
     }
@@ -18,7 +18,7 @@ public class ServiceUtil {
         try {
             i = Long.parseLong(str);
         } catch (NumberFormatException e) {
-            throw new ValidateException("incorrect.parameter", new Object[]{str});
+            throw new ValidateException("incorrect.parameter", str);
         }
         return i;
     }
