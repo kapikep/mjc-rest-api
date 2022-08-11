@@ -1,10 +1,10 @@
-insert into tag values(default, 'Sport');
-insert into tag values(default, 'Water');
-insert into tag values(default, 'Photo-session');
-insert into tag values(default, 'Cafe');
-insert into tag values(default, 'Auto');
-insert into tag values(default, 'Romantic');
-insert into tag values(default, 'Health');
+insert into tag values(default, 'Sport', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Water', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Photo-session', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Cafe', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Auto', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Romantic', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
+insert into tag values(default, 'Health', '2022-04-27 04:43:55.000','2022-04-27 04:43:55.000');
 
 insert into gift_certificate values(default,'Water skiing', 'Water skiing on Minsk sea', 20, 50, '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
 insert into gift_certificate values(default,'Car wash', 'Complex for cars with washing and body treatment from KlinArt', 100, 180, '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
@@ -19,3 +19,4 @@ insert into gift_certificate_has_tag values(2,5);
 insert into gift_certificate_has_tag values(3,7);
 insert into gift_certificate_has_tag values(4,7);
 insert into gift_certificate_has_tag values(4,5);
+

@@ -13,10 +13,10 @@ import java.util.List;
 
 @Validated
 public interface UserService {
-    List<UserDto> readPage(@Valid CriteriaDto cr) throws ValidateException, ServiceException;
+    List<UserDto> readAllUsersPaginated(@Valid CriteriaDto cr) throws ValidateException, ServiceException;
 
-    UserDto readOne(@Positive long id) throws ValidateException, ServiceException;
+    UserDto readUserById(@Positive long id) throws ValidateException, ServiceException;
 
-    public List<OrderForGiftCertificateDto> getUserOrders(@Positive long customerId,
-                                                          @Valid CriteriaDto cr) throws ValidateException, ServiceException;
+    List<OrderForGiftCertificateDto> getUserOrdersForGiftCertificate(@Positive long customerId,
+                                                                     @Valid CriteriaDto cr) throws ValidateException, ServiceException;
 }

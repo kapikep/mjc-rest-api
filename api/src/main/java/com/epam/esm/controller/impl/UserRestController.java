@@ -12,7 +12,14 @@ import com.epam.esm.service.interf.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,7 +29,7 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserRestController {
-    private final UserService service;
+    private final UserService userService;
     private final OrderForGiftCertificateService orderService;
 
     @GetMapping
@@ -34,7 +41,7 @@ public class UserRestController {
         cr.setSize(size);
         cr.setSorting(sort);
 
-        List<UserDto> dtoList = service.readPage(cr);
+        List<UserDto> dtoList = userService.readAllUsersPaginated(cr);
 
         dtoList.forEach(dto -> dto.add(getSelfLink(UserRestController.class, dto.getId())));
 
@@ -52,7 +59,7 @@ public class UserRestController {
         cr.setPage(page);
         cr.setSize(size);
         cr.setSorting(sort);
-        List<OrderForGiftCertificateDto> order = orderService.getUserOrders(customerId, cr);
+        List<OrderForGiftCertificateDto> order = orderService.getUserOrdersForGiftCertificate(customerId, cr);
 
         PagedModel<OrderForGiftCertificateDto> pagedModel = PaginationUtil.createPagedModel(order, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
@@ -61,7 +68,7 @@ public class UserRestController {
 
     @GetMapping("/{id}")
     public UserDto readUser(@PathVariable long id) throws ValidateException, ServiceException {
-        UserDto dto = service.readOne(id);
+        UserDto dto = userService.readUserById(id);
         dto.add(getSelfLink(UserRestController.class, dto.getId()));
         return dto;
     }
@@ -71,7 +78,7 @@ public class UserRestController {
     public OrderForGiftCertificateDto createOrder(@PathVariable long customerId,
                                                   @RequestBody List<OrderItemDto> items) throws ValidateException, ServiceException {
 
-        OrderForGiftCertificateDto order = orderService.create(customerId, items);
+        OrderForGiftCertificateDto order = orderService.createOrderForGiftCertificate(customerId, items);
         return order;
     }
 }

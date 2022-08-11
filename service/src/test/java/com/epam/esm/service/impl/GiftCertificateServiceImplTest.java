@@ -14,7 +14,10 @@ import com.epam.esm.service.util.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -24,10 +27,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -62,18 +69,18 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void testReadGiftCertificateStr() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readOne(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
+        when(repository.readById(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
 
         try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
              MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
             servUtil.when(() -> ServiceUtil.parseInt(anyString())).thenReturn(1);
             util.when(() -> GiftCertificateUtil.giftCertificateEntityToDtoTransfer(getEntityId1()))
                     .thenReturn(getDtoId1());
-            GiftCertificateDto actualDto = service.readOne("1");
+            GiftCertificateDto actualDto = service.readGiftCertificateById("1");
             assertEquals(dtoList.get(0), actualDto);
         }
-        assertThrows(ServiceException.class, () -> service.readOne("2"));
-        assertThrows(ServiceException.class, () -> service.readOne("2"));
+        assertThrows(ServiceException.class, () -> service.readGiftCertificateById("2"));
+        assertThrows(ServiceException.class, () -> service.readGiftCertificateById("2"));
     }
 
 //    @Test
@@ -107,7 +114,7 @@ class GiftCertificateServiceImplTest {
         try (MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
             servUtil.when(() -> ServiceUtil.parseInt(anyString())).thenThrow(new ValidateException());
 
-            assertThrows(ValidateException.class, () -> service.readOne("abc"));
+            assertThrows(ValidateException.class, () -> service.readGiftCertificateById("abc"));
         }
     }
 
@@ -119,7 +126,7 @@ class GiftCertificateServiceImplTest {
             util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
                     .thenReturn(gift1);
 
-            service.create(dtoList.get(0));
+            service.createGiftCertificate(dtoList.get(0));
 
             verify(repository, times(1)).create(gift1);
         }
@@ -135,7 +142,7 @@ class GiftCertificateServiceImplTest {
         GiftCertificateEntity entity;
         GiftCertificateUtil util = spy(new GiftCertificateUtil());
 
-        service.create(dto);
+        service.createGiftCertificate(dto);
         entity = util.giftCertificateDtoToEntityTransfer(dto);
         assertEquals(timeNow.getMonthValue(), entity.getCreateDate().getMonthValue());
         assertEquals(timeNow.getMonthValue(), entity.getLastUpdateDate().getMonthValue());
@@ -155,7 +162,7 @@ class GiftCertificateServiceImplTest {
             util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
                     .thenReturn(gift1);
 
-            service.update(dtoList.get(0));
+            service.updateGiftCertificate(dtoList.get(0));
 
             verify(repository, times(1)).merge(gift1);
         }
@@ -187,7 +194,7 @@ class GiftCertificateServiceImplTest {
     void deleteGiftCertificate() throws RepositoryException, ValidateException, ServiceException {
         try (MockedStatic<ServiceUtil> util = Mockito.mockStatic(ServiceUtil.class)){
             util.when(() -> ServiceUtil.parseInt("1")).thenReturn(1);
-            service.delete(1);
+            service.deleteGiftCertificateById(1);
             verify(repository, times(1)).deleteById(1);
         }
     }

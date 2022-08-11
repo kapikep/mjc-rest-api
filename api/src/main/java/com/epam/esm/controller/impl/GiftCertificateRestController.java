@@ -12,7 +12,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -28,8 +37,8 @@ import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink
 @RequiredArgsConstructor
 @RequestMapping("/gift-certificates")
 public class GiftCertificateRestController {
-    private final GiftCertificateService service;
-    private final MessageSource source;
+    private final GiftCertificateService giftCertificateService;
+    private final MessageSource messageSource;
 
     /**
      * Finds gift certificate by parameters
@@ -60,16 +69,16 @@ public class GiftCertificateRestController {
 
         long a = System.currentTimeMillis();
 
-        if (cr.getSearchParam() == null) {
-            gifts = service.readPage(cr);
-        } else {
-            gifts = service.find(cr);
-        }
+        gifts = cr.getSearchParam() == null ? giftCertificateService.readAllGiftCertificatesPaginated(cr)
+                : giftCertificateService.findGiftCertificatesByCriteria(cr);
+
         long b = System.currentTimeMillis();
 
         System.out.println("total time -> " + (b - a) + " ms");
         System.out.println("total size -> " + cr.getTotalSize());
         System.out.println("list size -> " + gifts.size());
+
+        gifts.forEach(PaginationUtil::addGiftCertificateLink);
 
         PagedModel<GiftCertificateDto> pagedModel = PaginationUtil.createPagedModel(gifts, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
@@ -84,38 +93,38 @@ public class GiftCertificateRestController {
      */
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ValidateException, ServiceException {
-        GiftCertificateDto dto = service.readOne(id);
-        addGiftCertificateLink(dto);
-        return dto;
+        GiftCertificateDto gift = giftCertificateService.readGiftCertificateById(id);
+        addGiftCertificateLink(gift);
+        return gift;
     }
 
     /**
      * Creates gift certificate
      *
-     * @param dto gift certificate to create
+     * @param gift gift certificate to create
      * @return id created gift certificate
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto dto) throws ValidateException, ServiceException {
-        service.create(dto);
-        addGiftCertificateLink(dto);
-        return dto;
+    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto gift) throws ValidateException, ServiceException {
+        giftCertificateService.createGiftCertificate(gift);
+        addGiftCertificateLink(gift);
+        return gift;
     }
 
     /**
      * Updates gift certificate
      *
-     * @param dto gift certificate to update
+     * @param gift gift certificate to update
      * @return id created gift certificate
      */
     @PatchMapping("/{id}")
     public GiftCertificateDto updateGiftCertificate(@PathVariable long id,
-                                                    @RequestBody GiftCertificateDto dto) throws ValidateException, ServiceException {
-        dto.setId(id);
-        service.update(dto);
-        addGiftCertificateLink(dto);
-        return dto;
+                                                    @RequestBody GiftCertificateDto gift) throws ValidateException, ServiceException {
+        gift.setId(id);
+        giftCertificateService.updateGiftCertificate(gift);
+        addGiftCertificateLink(gift);
+        return gift;
     }
 
     /**
@@ -126,7 +135,7 @@ public class GiftCertificateRestController {
      */
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
     public String deleteGiftCertificate(@PathVariable long id) throws ValidateException, ServiceException {
-        service.delete(id);
-        return source.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
+        giftCertificateService.deleteGiftCertificateById(id);
+        return messageSource.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }
 }

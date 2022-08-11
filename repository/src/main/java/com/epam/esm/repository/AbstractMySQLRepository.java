@@ -30,7 +30,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         return query.getResultList();
     }
 
-    public T readOne(final long id) throws RepositoryException {
+    public T readById(final long id) throws RepositoryException {
         System.out.println("'''''''''''''read One'''''''''''''''");
         T entity;
         entity = entityManager.find(clazz, id);
@@ -42,12 +42,36 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
         return entity;
     }
 
-    public List<T> readPage(CriteriaEntity cr) throws RepositoryException {
+    public List<T> readAllPaginated(CriteriaEntity cr) throws RepositoryException {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
         cq.select(entity);
 
+        setSorting(cq, cb, entity, cr);
+        TypedQuery<T> query = entityManager.createQuery(cq);
+        setPagination(query, cr);
+
+        CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
+        countCq.select(cb.count(countCq.from(clazz)));
+        cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
+
+        pageValidation(cr);
+
+        return query.getResultList();
+    }
+
+    public void setPagination(TypedQuery<T> query, CriteriaEntity cr) throws RepositoryException {
+        if (cr.getSize() != null && cr.getPage() != null) {
+            query.setFirstResult((cr.getPage() - 1) * cr.getSize());
+            query.setMaxResults(cr.getSize());
+        } else {
+            throw new RepositoryException("Size and page must be not null");
+        }
+    }
+
+    public void setSorting(CriteriaQuery<T> cq, CriteriaBuilder cb,
+                           Root<T> entity, CriteriaEntity cr){
         String sorting = cr.getSorting();
 
         if (sorting != null) {
@@ -61,22 +85,6 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
                 cq.orderBy(cb.asc(entity.get(sorting)));
             }
         }
-
-        TypedQuery<T> query = entityManager.createQuery(cq);
-        if (cr.getSize() != null && cr.getPage() != null) {
-            query.setFirstResult((cr.getPage() - 1) * cr.getSize());
-            query.setMaxResults(cr.getSize());
-        } else {
-            throw new RepositoryException("Size and page must be not null");
-        }
-
-        CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
-        countCq.select(cb.count(countCq.from(clazz)));
-        cr.setTotalSize(entityManager.createQuery(countCq).getSingleResult());
-
-        pageValidation(cr);
-
-        return query.getResultList();
     }
 
     public void pageValidation(CriteriaEntity cr) throws RepositoryException {
@@ -118,7 +126,7 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
 
     @Transactional
     public void deleteById(final long entityId) throws RepositoryException {
-        final T entity = readOne(entityId);
+        final T entity = readById(entityId);
         delete(entity);
     }
 }

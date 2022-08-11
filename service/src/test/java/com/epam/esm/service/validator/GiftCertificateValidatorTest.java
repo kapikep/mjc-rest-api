@@ -2,18 +2,11 @@ package com.epam.esm.service.validator;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.exception.ValidateException;
-import com.epam.esm.service.util.GiftCertificateUtil;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.epam.esm.repository.constant.SearchParam.*;
 import static com.epam.esm.service.util.GiftCertificateUtil.isNullFieldValidation;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GiftCertificateValidatorTest {
 

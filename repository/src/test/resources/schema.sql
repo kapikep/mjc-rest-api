@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS tag
 (
     id   INT         NOT NULL AUTO_INCREMENT,
     name VARCHAR(45) NOT NULL,
+    create_date      TIMESTAMP(3) NOT NULL,
+    last_update_date TIMESTAMP(3) NOT NULL,
     PRIMARY KEY (id),
     unique (name)
 );

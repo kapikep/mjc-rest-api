@@ -6,6 +6,7 @@ import com.epam.esm.repository.exception.RepositoryException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest
 class UserMySQLRepositoryTest {
 
@@ -29,7 +30,7 @@ class UserMySQLRepositoryTest {
     }
 
     @Test
-    void put1000users() throws RepositoryException {
+    void put1000users(){
         Random r = new Random();
         UserEntity user;
         long phoneNumber = 375_292_899_999L;
@@ -46,10 +47,8 @@ class UserMySQLRepositoryTest {
                 user = new UserEntity(0L, "First name" + r.nextInt(100),
                         "Second name" + r.nextInt(100), "login" + i, password.toString(),
                         "+" + phoneNumber);
-//                System.out.println(user);
                 repository.create(user);
-            } catch (Exception e) {
-                System.out.println(e);
+            } catch (Exception ignored) {
             }
         }
     }
@@ -61,7 +60,7 @@ class UserMySQLRepositoryTest {
         cr.setPage(1);
         cr.setSize(2);
         List<UserEntity> users;
-        users = repository.readPage(cr);
+        users = repository.readAllPaginated(cr);
         System.out.println("---------------RESULT-------------------");
         users.forEach(System.out::println);
     }

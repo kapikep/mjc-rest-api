@@ -3,7 +3,6 @@ package com.epam.esm.repository.interf;
 import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,21 +20,21 @@ public interface GiftCertificateRepository {
      */
     List<GiftCertificateEntity> readAll() throws RepositoryException;
 
-    List<GiftCertificateEntity> readPage(CriteriaEntity cr) throws RepositoryException;
+    List<GiftCertificateEntity> readAllPaginated(CriteriaEntity cr) throws RepositoryException;
 
     /**
      * Reads gift certificate by id from database
      *
      * @return list with gift GiftCertificateEntity
      */
-    GiftCertificateEntity readOne(long id) throws RepositoryException;
+    GiftCertificateEntity readById(long id) throws RepositoryException;
 
     /**
      * Finds gift certificates by criteria map and sorted by sorting param from database
      *
      * @param cr@return list with GiftCertificateEntity
      */
-    List<GiftCertificateEntity> findByParams(CriteriaEntity cr) throws RepositoryException;
+    List<GiftCertificateEntity> findByCriteria(CriteriaEntity cr) throws RepositoryException;
 
     /**
      * Creates new gift certificate in database

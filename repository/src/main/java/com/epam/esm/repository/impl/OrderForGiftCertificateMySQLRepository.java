@@ -29,27 +29,11 @@ public class OrderForGiftCertificateMySQLRepository extends AbstractMySQLReposit
         cq.select(entity);
         cq.where(cb.equal(entity.get("user").get("id"), userId));
 
-        String sorting = cr.getSorting();
-
-        if (sorting != null) {
-            if (sorting.startsWith("-")) {
-                sorting = sorting.substring(1);
-                cq.orderBy(cb.desc(entity.get(sorting)));
-            } else {
-                if (sorting.startsWith("+") || sorting.startsWith(" ")) {
-                    sorting = sorting.substring(1);
-                }
-                cq.orderBy(cb.asc(entity.get(sorting)));
-            }
-        }
+        setSorting(cq, cb, entity, cr);
 
         TypedQuery<OrderForGiftCertificateEntity> query = entityManager.createQuery(cq);
-        if(cr.getSize() != null && cr.getPage() != null) {
-            query.setFirstResult((cr.getPage() - 1) * cr.getSize());
-            query.setMaxResults(cr.getSize());
-        }else {
-            throw new RepositoryException("Size and page must be not null");
-        }
+
+        setPagination(query, cr);
 
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
         countCq.select(cb.count(countCq.from(clazz)));

@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.esm.service.util.GiftCertificateUtil.*;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityTransfer;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityListToDtoConverting;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityToDtoTransfer;
+import static com.epam.esm.service.util.GiftCertificateUtil.updateFields;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

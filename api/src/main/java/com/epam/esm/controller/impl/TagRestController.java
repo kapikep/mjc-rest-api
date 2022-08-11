@@ -12,7 +12,16 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +38,8 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 @RequiredArgsConstructor
 @RequestMapping("/tags")
 public class TagRestController {
-    private final TagService service;
-    private final MessageSource source;
+    private final TagService tagService;
+    private final MessageSource messageSource;
 
     @GetMapping
     public PagedModel<TagDto> readTags(
@@ -45,15 +54,10 @@ public class TagRestController {
         cr.setSize(size);
         cr.setSorting(sort);
 
-        if (name != null) {
-            tags = Collections.singletonList(service.readByName(name));
-        } else {
-            tags = service.readPage(cr);
-        }
+        tags = name != null ? Collections.singletonList(tagService.readTagByName(name))
+                : tagService.readAllTagsPaginated(cr);
 
-        for (TagDto tag : tags) {
-            tag.add(getSelfLink(TagRestController.class, tag.getId()));
-        }
+        tags.forEach(tag -> tag.add(getSelfLink(TagRestController.class, tag.getId())));
 
         if (name != null){
             return PagedModel.of(tags,
@@ -67,11 +71,9 @@ public class TagRestController {
 
     @GetMapping("most-widely")
     public List<TagDto> getMostWidelyTag() throws ServiceException {
-        List<TagDto> tags = service.getMostWidelyTag();
+        List<TagDto> tags = tagService.getMostWidelyTag();
 
-        for (TagDto tag : tags) {
-            tag.add(getSelfLink(TagRestController.class, tag.getId()));
-        }
+        tags.forEach(tag -> tag.add(getSelfLink(TagRestController.class, tag.getId())));
 
         return tags;
     }
@@ -84,7 +86,7 @@ public class TagRestController {
      */
     @GetMapping("/{id}")
     public TagDto readTag(@PathVariable long id) throws ValidateException, ServiceException {
-        TagDto tag = service.readOne(id);
+        TagDto tag = tagService.readTagById(id);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
@@ -98,7 +100,7 @@ public class TagRestController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public TagDto crateTag(@RequestBody TagDto tag) throws ValidateException, ServiceException {
-        service.create(tag);
+        tagService.createTag(tag);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
@@ -113,7 +115,7 @@ public class TagRestController {
     public TagDto updateTag(@PathVariable long id,
                             @RequestBody TagDto tag) throws ValidateException, ServiceException {
         tag.setId(id);
-        service.update(tag);
+        tagService.updateTag(tag);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
     }
@@ -126,7 +128,7 @@ public class TagRestController {
      */
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
     public String deleteTag(@PathVariable Long id) throws ValidateException, ServiceException {
-        service.delete(id);
-        return source.getMessage("tag.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
+        tagService.deleteTagById(id);
+        return messageSource.getMessage("tag.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }
 }

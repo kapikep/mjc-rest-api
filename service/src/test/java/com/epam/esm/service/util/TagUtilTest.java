@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.service.util.TagUtil.*;
+import static com.epam.esm.service.util.TagUtil.tagDtoListToEntityConverting;
+import static com.epam.esm.service.util.TagUtil.tagDtoToEntityTransfer;
+import static com.epam.esm.service.util.TagUtil.tagEntityListToDtoConverting;
+import static com.epam.esm.service.util.TagUtil.tagEntityToDtoTransfer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TagUtilTest {

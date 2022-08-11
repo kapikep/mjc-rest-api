@@ -9,7 +9,9 @@ import com.epam.esm.service.validator.groups.OnUpdate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.List;
 /**
  * Service for tags
@@ -19,28 +21,28 @@ import java.util.List;
  */
 @Validated
 public interface TagService {
-    List<TagDto> readPage(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
+    List<TagDto> readAllTagsPaginated(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository
      *
      * @return tag from repository
      */
-    TagDto readOne(String id) throws ServiceException, ValidateException;
+    TagDto readTagById(String id) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository
      *
      * @return tag from repository
      */
-    TagDto readOne(@Positive long id) throws ServiceException, ValidateException;
+    TagDto readTagById(@Positive long id) throws ServiceException, ValidateException;
 
     /**
      * Validates name and reads tag by name from repository
      *
      * @return tag from repository
      */
-    TagDto readByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException, ValidateException;
+    TagDto readTagByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException, ValidateException;
 
     List<TagDto> getMostWidelyTag() throws ServiceException;
 
@@ -51,15 +53,14 @@ public interface TagService {
      * @param tags list for get ids
      */
     @Validated(OnCreate.class)
-    void getIdOrCreateTags(@Valid List<TagDto> tags) throws ServiceException, ValidateException;
+    List<TagDto> setIdOrCreateTags(@Valid List<TagDto> tags) throws ServiceException, ValidateException;
 
     /**
      * Validates tag fields and creates tag in repository
      *
-     * @return id for created tag
      */
     @Validated(OnCreate.class)
-    void create(@Valid TagDto tag) throws ServiceException, ValidateException;
+    void createTag(@Valid TagDto tag) throws ServiceException, ValidateException;
 
     /**
      * Updates tag in repository
@@ -67,10 +68,10 @@ public interface TagService {
      * @param tag tag to update
      */
     @Validated(OnUpdate.class)
-    void update(@Valid TagDto tag) throws ServiceException, ValidateException;
+    void updateTag(@Valid TagDto tag) throws ServiceException, ValidateException;
 
     /**
      * Validates id and deletes tag by id in repository
      */
-    void delete(@Positive long id) throws ServiceException, ValidateException;
+    void deleteTagById(@Positive long id) throws ServiceException, ValidateException;
 }

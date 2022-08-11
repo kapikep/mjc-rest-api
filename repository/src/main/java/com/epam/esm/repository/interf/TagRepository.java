@@ -16,7 +16,7 @@ import java.util.List;
 public interface TagRepository {
     List<TagEntity> readAll() throws RepositoryException;
 
-    List<TagEntity> readPage(CriteriaEntity criteria) throws RepositoryException;
+    List<TagEntity> readAllPaginated(CriteriaEntity criteria) throws RepositoryException;
 
     /**
      * Reads tag by id from database
@@ -24,7 +24,7 @@ public interface TagRepository {
      * @return tagEntity  from database
      */
 
-    TagEntity readOne(long id) throws RepositoryException;
+    TagEntity readById(long id) throws RepositoryException;
     /**
      * Reads tag by name from database
      *
@@ -36,7 +36,6 @@ public interface TagRepository {
      * Creates tag in database
      *
      * @param tag tagEntity to create in db
-     * @return id for created tag
      */
     void create(TagEntity tag) throws RepositoryException;
 

@@ -18,22 +18,24 @@ import java.util.List;
 
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
-import static com.epam.esm.service.util.UserUtil.*;
+import static com.epam.esm.service.util.UserUtil.sortingValidation;
+import static com.epam.esm.service.util.UserUtil.userEntityListToDtoConverting;
+import static com.epam.esm.service.util.UserUtil.userEntityToDtoTransfer;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     public static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Override
-    public List<UserDto> readPage(CriteriaDto crDto) throws ValidateException, ServiceException {
+    public List<UserDto> readAllUsersPaginated(CriteriaDto crDto) throws ValidateException, ServiceException {
         setDefaultPageValIfEmpty(crDto);
         sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<UserDto> users;
         try {
-            users = userEntityListToDtoConverting(repository.readPage(cr));
+            users = userEntityListToDtoConverting(userRepository.readAllPaginated(cr));
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -42,10 +44,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto readOne(long id) throws ValidateException, ServiceException {
+    public UserDto readUserById(long id) throws ValidateException, ServiceException {
         UserDto dto;
         try{
-            dto = userEntityToDtoTransfer(repository.readOne(id));
+            dto = userEntityToDtoTransfer(userRepository.readById(id));
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<OrderForGiftCertificateDto> getUserOrders(long customerId, CriteriaDto crDto)
+    public List<OrderForGiftCertificateDto> getUserOrdersForGiftCertificate(long customerId, CriteriaDto crDto)
             throws ValidateException, ServiceException {
         setDefaultPageValIfEmpty(crDto);
         sortingValidation(crDto);
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
         List<OrderForGiftCertificateDto> orders;
         try {
             orders = OrderForGiftCertificateUtil
-                    .OrderForGiftCertificateEntityListToDtoConverting(repository.readOne(customerId).getOrders());
+                    .OrderForGiftCertificateEntityListToDtoConverting(userRepository.readById(customerId).getOrders());
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }

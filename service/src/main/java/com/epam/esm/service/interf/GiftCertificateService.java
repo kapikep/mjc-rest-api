@@ -20,29 +20,29 @@ import java.util.List;
  */
 @Validated
 public interface GiftCertificateService {
-    List<GiftCertificateDto> readPage(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
+    List<GiftCertificateDto> readAllGiftCertificatesPaginated(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
 
-    List<GiftCertificateDto> find(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
-
-    /**
-     * Validates id and reads gift certificates by id from repository
-     *
-     * @return gift certificate from repository
-     */
-    GiftCertificateDto readOne(String id) throws ServiceException, ValidateException;
+    List<GiftCertificateDto> findGiftCertificatesByCriteria(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads gift certificates by id from repository
      *
      * @return gift certificate from repository
      */
-    GiftCertificateDto readOne(@Positive long id) throws ServiceException, ValidateException;
+    GiftCertificateDto readGiftCertificateById(String id) throws ServiceException, ValidateException;
+
+    /**
+     * Validates id and reads gift certificates by id from repository
+     *
+     * @return gift certificate from repository
+     */
+    GiftCertificateDto readGiftCertificateById(@Positive long id) throws ServiceException, ValidateException;
 
     @Validated(OnCreate.class)
-    void create(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
+    void createGiftCertificate(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
 
     @Validated(OnUpdate.class)
-    void update(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
+    void updateGiftCertificate(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
 
-    void delete(@Positive long idStr) throws ServiceException, ValidateException;
+    void deleteGiftCertificateById(@Positive long id) throws ServiceException, ValidateException;
 }

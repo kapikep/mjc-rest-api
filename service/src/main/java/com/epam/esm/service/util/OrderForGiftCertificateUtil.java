@@ -8,7 +8,7 @@ import com.epam.esm.service.exception.ValidateException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.repository.constant.SearchParam.*;
+import static com.epam.esm.repository.constant.SearchParam.ORDER_SORT_PARAM;
 
 public class OrderForGiftCertificateUtil {
     public static List<OrderForGiftCertificateDto> OrderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities) throws ValidateException {
