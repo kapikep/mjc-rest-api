@@ -17,6 +17,28 @@ insert into gift_certificate_has_tag values(1,2);
 insert into gift_certificate_has_tag values(1,7);
 insert into gift_certificate_has_tag values(2,5);
 insert into gift_certificate_has_tag values(3,7);
-insert into gift_certificate_has_tag values(4,7);
 insert into gift_certificate_has_tag values(4,5);
+insert into gift_certificate_has_tag values(4,7);
+insert into gift_certificate_has_tag values(5,5);
 
+insert into users values(default, 'Vasilij', 'Pupkin', 'Vasilij', 'fasfq3wfw', '+375292629988', '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
+insert into users values (default, 'Svetlana', 'Vasilievna', 'Svetlana', 'dewqewqr44', '+375292629995', '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
+insert into users values (default, 'Kirill', 'Ivanovich', 'Kirill', 'dew88wqr44', '+375292629969', '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
+insert into users values (default, 'Vladimir', 'Ponamarev', 'Vladimir', 'ewrr3w88wqr44', '+375292629944', '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
+insert into users values (default, 'Igor', 'Vasiliev', 'Igor', 'ewqawerasdqr44', '+375292628844', '2022-04-27 04:43:55.000', '2022-04-27 04:43:55.000');
+
+insert into orders_for_gift_certificates values (default, '2022-05-27 04:43:55.000', 3, 50, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-06-27 04:43:55.000', 3, 150, '2022-06-27 04:43:55.000', '2022-06-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-07-27 04:43:55.000', 3, 150, '2022-07-27 04:43:55.000', '2022-07-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-06-27 04:43:55.000', 4, 150, '2022-06-27 04:43:55.000', '2022-06-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-06-27 04:43:55.000', 4, 70, '2022-06-27 04:43:55.000', '2022-06-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-06-27 04:43:55.000', 2, 100, '2022-06-27 04:43:55.000', '2022-06-27 04:43:55.000');
+insert into orders_for_gift_certificates values (default, '2022-06-27 04:43:55.000', 1, 30, '2022-06-27 04:43:55.000', '2022-06-27 04:43:55.000');
+
+insert into order_item values(default, 1, 1, 2, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 4, 2, 1, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 5, 3, 2, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 1, 7, 5, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 1, 4, 2, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 2, 4, 3, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');
+insert into order_item values(default, 3, 5, 1, '2022-05-27 04:43:55.000', '2022-05-27 04:43:55.000');

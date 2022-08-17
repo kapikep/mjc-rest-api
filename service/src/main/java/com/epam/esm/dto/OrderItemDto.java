@@ -16,9 +16,7 @@ import javax.validation.constraints.Positive;
 @Relation(collectionRelation = "order item")
 public class OrderItemDto  extends RepresentationModel<OrderItemDto> {
     private long id;
-
     private GiftCertificateDto giftCertificate;
-
     @Positive
     private int quantity;
 }

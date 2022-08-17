@@ -31,18 +31,16 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public T readById(final long id) throws RepositoryException {
-        System.out.println("'''''''''''''read One'''''''''''''''");
         T entity;
         entity = entityManager.find(clazz, id);
 
         if (entity == null) {
             throw new RepositoryException("Incorrect result size: expected 1, actual 0");
         }
-        System.out.println("'''''''''''''end read One'''''''''''''''");
         return entity;
     }
 
-    public List<T> readAllPaginated(CriteriaEntity cr) throws RepositoryException {
+    public List<T> readPaginated(CriteriaEntity cr) throws RepositoryException {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> entity = cq.from(clazz);
@@ -62,6 +60,9 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public void setPagination(TypedQuery<T> query, CriteriaEntity cr) throws RepositoryException {
+        if(cr == null){
+            throw new RepositoryException("Criteria must be not null");
+        }
         if (cr.getSize() != null && cr.getPage() != null) {
             query.setFirstResult((cr.getPage() - 1) * cr.getSize());
             query.setMaxResults(cr.getSize());
@@ -71,7 +72,10 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public void setSorting(CriteriaQuery<T> cq, CriteriaBuilder cb,
-                           Root<T> entity, CriteriaEntity cr){
+                           Root<T> entity, CriteriaEntity cr) throws RepositoryException {
+        if(cr == null){
+            throw new RepositoryException("Criteria must be not null");
+        }
         String sorting = cr.getSorting();
 
         if (sorting != null) {
@@ -88,6 +92,10 @@ public abstract class AbstractMySQLRepository<T extends Serializable> {
     }
 
     public void pageValidation(CriteriaEntity cr) throws RepositoryException {
+        //TODO assert.notnull
+        if(cr == null){
+            throw new RepositoryException("Criteria must be not null");
+        }
         if (cr.getSize() == null && cr.getSize() < 1) {
             throw new RepositoryException("Size must be not null");
         }

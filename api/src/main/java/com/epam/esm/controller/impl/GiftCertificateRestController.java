@@ -44,7 +44,7 @@ public class GiftCertificateRestController {
      * Finds gift certificate by parameters
      */
     @GetMapping
-    public PagedModel<GiftCertificateDto> findGiftCertificateByParams1(
+    public PagedModel<GiftCertificateDto> findGiftCertificateByParams(
             @RequestParam(required = false, name = "tag") String tagName,
             @RequestParam(required = false, name = "name") String name,
             @RequestParam(required = false, name = "description") String description,
@@ -69,7 +69,7 @@ public class GiftCertificateRestController {
 
         long a = System.currentTimeMillis();
 
-        gifts = cr.getSearchParam() == null ? giftCertificateService.readAllGiftCertificatesPaginated(cr)
+        gifts = cr.getSearchParam() == null ? giftCertificateService.readGiftCertificatesPaginated(cr)
                 : giftCertificateService.findGiftCertificatesByCriteria(cr);
 
         long b = System.currentTimeMillis();
@@ -92,7 +92,7 @@ public class GiftCertificateRestController {
      * @return gift certificate by id
      */
     @GetMapping("/{id}")
-    public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ValidateException, ServiceException {
+    public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ServiceException {
         GiftCertificateDto gift = giftCertificateService.readGiftCertificateById(id);
         addGiftCertificateLink(gift);
         return gift;
@@ -134,7 +134,7 @@ public class GiftCertificateRestController {
      * @return id deleted gift certificate
      */
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
-    public String deleteGiftCertificate(@PathVariable long id) throws ValidateException, ServiceException {
+    public String deleteGiftCertificate(@PathVariable long id) throws ServiceException {
         giftCertificateService.deleteGiftCertificateById(id);
         return messageSource.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());
     }

@@ -19,21 +19,15 @@ import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 /**
- * Spring configuration for Core module (dev config)
+ * Spring configuration for Repository tests
  *
  * @author Artsemi Kapitula
  * @version 1.0
  */
-//@Profile("test")
-//@Configuration
-//@EnableTransactionManagement
-
 @ComponentScan(basePackages = "com.epam.esm")
 @SpringBootConfiguration
 @EnableAutoConfiguration
-
 @EntityScan(basePackages = "com.epam.esm.entity")
-//@SpringBootApplication
 public class RepositoryTestConfig {
 
 }

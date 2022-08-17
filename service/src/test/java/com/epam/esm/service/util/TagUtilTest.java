@@ -1,95 +1,151 @@
 package com.epam.esm.service.util;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.epam.esm.service.constant.ExceptionMes.TAG_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.dtoFactory.TagDtoFactory.getTagDtoId1;
+import static com.epam.esm.service.dtoFactory.TagDtoFactory.getTagDtoId2;
+import static com.epam.esm.service.dtoFactory.TagDtoFactory.getTagDtoId3;
+import static com.epam.esm.service.dtoFactory.TagDtoFactory.getTagDtoList;
+import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId1;
+import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId2;
+import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId3;
+import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityList;
+import static com.epam.esm.service.util.TagUtil.sortingValidation;
 import static com.epam.esm.service.util.TagUtil.tagDtoListToEntityConverting;
-import static com.epam.esm.service.util.TagUtil.tagDtoToEntityTransfer;
+import static com.epam.esm.service.util.TagUtil.tagDtoToEntityConverting;
 import static com.epam.esm.service.util.TagUtil.tagEntityListToDtoConverting;
-import static com.epam.esm.service.util.TagUtil.tagEntityToDtoTransfer;
+import static com.epam.esm.service.util.TagUtil.tagEntityToDtoConverting;
+import static com.epam.esm.service.util.TagUtil.updateFieldsInDtoFromEntity;
+import static com.epam.esm.service.util.TagUtil.updateFieldsInEntityFromDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TagUtilTest {
     @Test
-    void tagEntityListToDtoConvertingTest() throws ValidateException {
-        List<TagDto> actualDto = tagEntityListToDtoConverting(getEntityList());
+    void tagEntityListToDtoConvertingTest() {
+        List<TagDto> actualDto = tagEntityListToDtoConverting(getTagEntityList());
 
-        assertEquals(getDtoList(), actualDto);
+        assertEquals(getTagDtoList(), actualDto);
     }
 
     @Test
-    void tagDtoListToEntityConvertingTest() throws ValidateException {
-        List<TagEntity> actualEntity = tagDtoListToEntityConverting(getDtoList());
+    void tagEntityListToDtoConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> tagEntityListToDtoConverting(null));
 
-        assertEquals(getEntityList(), actualEntity);
+        assertEquals(TAG_ENTITY_LIST_MUST_NOT_BE_NULL, e.getMessage());
     }
 
     @Test
-    void tagDtoToEntityTransferTest() throws ValidateException {
-        TagEntity actualEntity = tagDtoToEntityTransfer(getTagDtoId1());
+    void tagDtoListToEntityConvertingTest() {
+        List<TagEntity> actualEntity = tagDtoListToEntityConverting(getTagDtoList());
+
+        assertEquals(getTagEntityList(), actualEntity);
+    }
+
+    @Test
+    void tagDtoListToEntityConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> tagDtoListToEntityConverting(null));
+
+        assertEquals(TAG_DTO_LIST_MUST_NOT_BE_NULL, e.getMessage());
+    }
+
+
+    @Test
+    void tagDtoToEntityConvertingTest() {
+        TagEntity actualEntity = tagDtoToEntityConverting(getTagDtoId1());
 
         assertEquals(getTagEntityId1(), actualEntity);
     }
 
     @Test
-    void tagEntityToDtoTransferTest() throws ValidateException {
-        TagDto actualTagDto = tagEntityToDtoTransfer(getTagEntityId2());
+    void tagDtoToEntityConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> tagDtoToEntityConverting(null));
+
+        assertEquals(TAG_DTO_MUST_NOT_BE_NULL, e.getMessage());
+    }
+
+    @Test
+    void tagEntityToDtoConvertingTest() {
+        TagDto actualTagDto = tagEntityToDtoConverting(getTagEntityId2());
 
         assertEquals(getTagDtoId2(), actualTagDto);
     }
 
-    private List<TagEntity> getEntityList(){
-        List<TagEntity> tagEntityList = new ArrayList<>();
-        tagEntityList.add(getTagEntityId1());
-        tagEntityList.add(getTagEntityId2());
-        tagEntityList.add(getTagEntityId5());
-        tagEntityList.add(getTagEntityId7());
-        return tagEntityList;
+    @Test
+    void tagEntityToDtoConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> tagEntityToDtoConverting(null));
+
+        assertEquals(TAG_ENTITY_MUST_NOT_BE_NULL, e.getMessage());
     }
 
-    private List<TagDto> getDtoList(){
-        List<TagDto> tagDtoList = new ArrayList<>();
-        tagDtoList.add(getTagDtoId1());
-        tagDtoList.add(getTagDtoId2());
-        tagDtoList.add(getTagDtoId5());
-        tagDtoList.add(getTagDtoId7());
-        return tagDtoList;
+    @Test
+    void updateFieldsInDtoFromEntityTest() {
+        TagDto dto = new TagDto();
+        updateFieldsInDtoFromEntity(getTagEntityId3(), dto);
+
+        assertEquals(getTagDtoId3(), dto);
     }
 
-    private TagEntity getTagEntityId1() {
-        return new TagEntity(1, "Sport");
+    @Test
+    void updateFieldsInDtoFromEntityNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> updateFieldsInDtoFromEntity(null, new TagDto()));
+
+        assertEquals(TAG_ENTITY_MUST_NOT_BE_NULL, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class,
+                () -> updateFieldsInDtoFromEntity(new TagEntity(), null));
+
+        assertEquals(TAG_DTO_MUST_NOT_BE_NULL, e.getMessage());
     }
 
-    private TagEntity getTagEntityId2() {
-        return new TagEntity(2, "Water");
+    @Test
+    void updateFieldsInEntityFromDtoTest() {
+        TagEntity actualEntity = new TagEntity();
+        TagEntity expectedEntity = getTagEntityId3();
+        updateFieldsInEntityFromDto(getTagDtoId3(), actualEntity);
+
+        assertEquals(expectedEntity, actualEntity);
     }
 
-    private TagEntity getTagEntityId5() {
-        return new TagEntity(5, "Auto");
+    @Test
+    void updateFieldsInEntityFromDtoNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> updateFieldsInEntityFromDto(null, new TagEntity()));
+
+        assertEquals(TAG_DTO_MUST_NOT_BE_NULL, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class,
+                () -> updateFieldsInEntityFromDto(new TagDto(), null));
+
+        assertEquals(TAG_ENTITY_MUST_NOT_BE_NULL, e.getMessage());
     }
 
-    private TagEntity getTagEntityId7() {
-        return new TagEntity(7, "Health");
-    }
+    @Test
+    void sortingValidationTest() throws ValidateException {
+        CriteriaDto cr = new CriteriaDto();
+        cr.setSorting("id");
+        sortingValidation(cr);
 
-    private TagDto getTagDtoId1() {
-        return new TagDto(1, "Sport");
-    }
+        cr.setSorting("-id");
+        sortingValidation(cr);
 
-    private TagDto getTagDtoId2() {
-        return new TagDto(2, "Water");
-    }
-
-    private TagDto getTagDtoId5() {
-        return new TagDto(5, "Auto");
-    }
-
-    private TagDto getTagDtoId7() {
-        return new TagDto(7, "Health");
+        cr.setSorting("duration");
+        assertThrows(ValidateException.class,
+                () -> sortingValidation(cr));
     }
 }

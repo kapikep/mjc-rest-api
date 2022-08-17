@@ -9,61 +9,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.repository.constant.SearchParam.ORDER_SORT_PARAM;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
+import static org.springframework.util.Assert.notNull;
 
 public class OrderForGiftCertificateUtil {
-    public static List<OrderForGiftCertificateDto> OrderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities) throws ValidateException {
-        if(entities == null){
-            throw new ValidateException("orderForGiftCertificateEntity list is null");
-        }
+    public static List<OrderForGiftCertificateDto> orderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities){
+        notNull(entities, ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL);
+
         List<OrderForGiftCertificateDto> dtoList = new ArrayList<>();
         for (OrderForGiftCertificateEntity entity : entities) {
-            dtoList.add(orderForGiftCertificateEntityToDtoTransfer(entity));
+            dtoList.add(orderForGiftCertificateEntityToDtoConverting(entity));
         }
         return dtoList;
     }
 
-    public static List<OrderForGiftCertificateEntity> OrderForGiftCertificateDtoListToEntityConverting(List<OrderForGiftCertificateDto> dtoList) throws ValidateException {
-        if(dtoList == null){
-            throw new ValidateException("orderForGiftCertificateDto list is null");
-        }
+    public static List<OrderForGiftCertificateEntity> orderForGiftCertificateDtoListToEntityConverting(List<OrderForGiftCertificateDto> dtoList) {
+        notNull(dtoList, ORDER_FOR_GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL);
+
         List<OrderForGiftCertificateEntity> entities = new ArrayList<>();
         for (OrderForGiftCertificateDto dto : dtoList) {
-            entities.add(orderForGiftCertificateDtoToEntityTransfer(dto));
+            entities.add(orderForGiftCertificateDtoToEntityConverting(dto));
         }
         return entities;
     }
 
-    public static OrderForGiftCertificateEntity orderForGiftCertificateDtoToEntityTransfer(OrderForGiftCertificateDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("orderForGiftCertificateDto is null");
-        }
+    public static OrderForGiftCertificateEntity orderForGiftCertificateDtoToEntityConverting(OrderForGiftCertificateDto dto) {
+        notNull(dto, ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+
         OrderForGiftCertificateEntity entity = new OrderForGiftCertificateEntity();
         entity.setId(dto.getId());
         entity.setOrderTime(dto.getOrderTime());
         entity.setTotalAmount(dto.getTotalAmount());
-        entity.setUser(UserUtil.userDtoToEntityTransfer(dto.getUser()));
+        entity.setUser(UserUtil.userDtoToEntityConverting(dto.getUser()));
         entity.setOrderItems(OrderItemUtil.orderItemDtoListToEntityConverting(dto.getOrderItems(), entity));
         return entity;
     }
 
-    public static OrderForGiftCertificateDto orderForGiftCertificateEntityToDtoTransfer(OrderForGiftCertificateEntity entity) throws ValidateException {
+    public static OrderForGiftCertificateDto orderForGiftCertificateEntityToDtoConverting(OrderForGiftCertificateEntity entity) {
         OrderForGiftCertificateDto dto = new OrderForGiftCertificateDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
     public static void updateFieldsInDtoFromEntity(OrderForGiftCertificateEntity entity,
-                                                   OrderForGiftCertificateDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("orderForGiftCertificateDto is null");
-        }
-        if(entity == null){
-            throw new ValidateException("orderForGiftCertificateEntity is null");
-        }
+                                                   OrderForGiftCertificateDto dto) {
+        notNull(dto, ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+        notNull(entity, ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL);
+
         dto.setId(entity.getId());
         dto.setOrderTime(entity.getOrderTime());
         dto.setTotalAmount(entity.getTotalAmount());
-        dto.setUser(UserUtil.userEntityToDtoTransfer(entity.getUser()));
+        dto.setUser(UserUtil.userEntityToDtoConverting(entity.getUser()));
         dto.setOrderItems(OrderItemUtil.orderItemEntityListToDtoConverting(entity.getOrderItems()));
     }
 

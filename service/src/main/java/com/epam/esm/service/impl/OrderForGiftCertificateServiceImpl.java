@@ -24,22 +24,26 @@ import java.util.List;
 
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
-import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityTransfer;
+import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.sortingValidation;
+import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity;
 
 @Service
 @RequiredArgsConstructor
 public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertificateService {
+    public static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
+    public static final String ERROR_GIFT_NOT_FOUND = "error.gift.not.found";
     private final OrderForGiftCertificateRepository orderRepository;
     private final UserService userService;
     private final GiftCertificateService giftService;
 
     @Override
-    public List<OrderForGiftCertificateDto> getUserOrdersForGiftCertificate(long userId, CriteriaDto crDto) throws ValidateException, ServiceException {
+    public List<OrderForGiftCertificateDto> readUserOrdersForGiftCertificatePaginated(long userId, CriteriaDto crDto)
+            throws ValidateException, ServiceException {
         try {
             userService.readUserById(userId);
         } catch (ServiceException e) {
-            throw new ServiceException(e.getMessage(), e, "error.user.not.found", userId);
+            throw new ServiceException(e.getMessage(), e, ERROR_USER_NOT_FOUND, userId);
         }
         setDefaultPageValIfEmpty(crDto);
         sortingValidation(crDto);
@@ -47,7 +51,7 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
         List<OrderForGiftCertificateDto> orders;
         try {
             orders = OrderForGiftCertificateUtil
-                    .OrderForGiftCertificateEntityListToDtoConverting(orderRepository.getUserOrders(userId, cr));
+                    .orderForGiftCertificateEntityListToDtoConverting(orderRepository.getUserOrdersPaginated(userId, cr));
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -56,33 +60,37 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
     }
 
     @Override
-    public OrderForGiftCertificateDto createOrderForGiftCertificate(long customerId, List<OrderItemDto> orderItems) throws ValidateException, ServiceException {
+    public OrderForGiftCertificateDto createOrderForGiftCertificate(long customerId, List<OrderItemDto> orderItems) throws ServiceException {
         OrderForGiftCertificateDto orderDto = new OrderForGiftCertificateDto();
         BigDecimal totalAmount = new BigDecimal(0);
         orderDto.setId(0);
         try {
             orderDto.setUser(userService.readUserById(customerId));
         } catch (ServiceException e) {
-            throw new ServiceException(e.getMessage(), e, "error.user.not.found", customerId);
+            throw new ServiceException(e.getMessage(), e, ERROR_USER_NOT_FOUND, customerId);
         }
 
         for (OrderItemDto item : orderItems) {
-            GiftCertificateDto gift = giftService.readGiftCertificateById(item.getGiftCertificate().getId());
-            item.setGiftCertificate(gift);
-            for (int i = 0; i < item.getQuantity(); i++) {
-                totalAmount = totalAmount.add(BigDecimal.valueOf(gift.getPrice()));
+            try {
+                GiftCertificateDto gift = giftService.readGiftCertificateById(item.getGiftCertificate().getId());
+                item.setGiftCertificate(gift);
+                BigDecimal price = BigDecimal.valueOf(gift.getPrice());
+                BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
+                totalAmount = totalAmount.add(price.multiply(quantity));
+            } catch (ServiceException e) {
+                throw new ServiceException(e.getMessage(), e, ERROR_GIFT_NOT_FOUND, item.getGiftCertificate().getId());
             }
         }
+
         orderDto.setTotalAmount(totalAmount);
         orderDto.setOrderItems(orderItems);
         orderDto.setOrderTime(LocalDateTime.now());
         try {
-            OrderForGiftCertificateEntity entity = orderForGiftCertificateDtoToEntityTransfer(orderDto);
-            orderRepository.create(entity);
-            OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity(entity, orderDto);
+            OrderForGiftCertificateEntity orderEntity = orderForGiftCertificateDtoToEntityConverting(orderDto);
+            orderRepository.create(orderEntity);
+            updateFieldsInDtoFromEntity(orderEntity, orderDto);
         } catch (RepositoryException | DataAccessException e) {
-            String mes = e.getMessage();
-            throw new ServiceException(mes, e);
+            throw new ServiceException(e.getMessage(), e);
         }
         return orderDto;
     }

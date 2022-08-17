@@ -27,9 +27,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "tags")
 @Relation(collectionRelation = "gift certificates")
 public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
+
     @Positive(groups = OnUpdate.class)
     private long id;
 

@@ -9,143 +9,129 @@ import com.epam.esm.repository.interf.GiftCertificateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.repository.impl.util.EntityUtil.getCriteriaWithDefaultVal;
-import static com.epam.esm.repository.impl.util.EntityUtil.getEmptyTag;
-import static com.epam.esm.repository.impl.util.EntityUtil.getGiftCertificateId1;
-import static com.epam.esm.repository.impl.util.EntityUtil.getGiftCertificateId2;
-import static com.epam.esm.repository.impl.util.EntityUtil.getGiftCertificateId4;
-import static com.epam.esm.repository.impl.util.EntityUtil.getGiftCertificateId5;
-import static com.epam.esm.repository.impl.util.EntityUtil.getNewGiftCertificate;
+import static com.epam.esm.repository.impl.EntityFactory.EntityFactory.getNewCriteriaWithDefaultVal;
+import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntity;
+import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId1;
+import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId2;
+import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId4;
+import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId5;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//@SpringBootTest
-//@Transactional
-
 @ActiveProfiles("test")
-@DataJpaTest
+@SpringBootTest
+@Transactional
 @EnableJpaAuditing
 class GiftCertificateMySQLRepositoryTest {
     @Autowired
-    private GiftCertificateRepository repository;
-
-    @Autowired
-    private TagMySQLRepository tagMySQLRepository;
+    private GiftCertificateRepository giftCertificateRepository;
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Test
-    void readAll() throws RepositoryException {
-        List<GiftCertificateEntity> gifts = repository.readAll();
+    void readAllTest() throws RepositoryException {
+        List<GiftCertificateEntity> gifts = giftCertificateRepository.readAll();
 
         assertEquals(5, gifts.size());
         gifts.forEach(Assertions::assertNotNull);
     }
 
     @Test
-    void readGiftExistCertificate() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getGiftCertificateId1();
-        GiftCertificateEntity actualGift = repository.readById(1);
+    void readGiftExistCertificateTest() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntityId1();
+        GiftCertificateEntity actualGift = giftCertificateRepository.readById(1);
 
         assertEquals(expectedGift, actualGift);
     }
 
     @Test
-    void readGiftNotExistCertificate() {
-        assertThrows(RepositoryException.class, () -> repository.readById(111));
+    void readGiftNotExistCertificateTest() {
+        assertThrows(RepositoryException.class, () -> giftCertificateRepository.readById(111));
     }
 
-//    @Test
-//    void search1000Gifts() throws RepositoryException {
-//        CriteriaEntity cr = getCriteriaWithDefaultVal();
-//        cr.setSorting("id");
-//        System.out.println(repository.findByCriteria(cr));
-//        long a = System.currentTimeMillis();
-//        for (int i = 0; i < 100; i++) {
-//            repository.findByCriteria(cr);
-//        }
-//        long b = System.currentTimeMillis();
-//
-//        System.out.println("total time -> " + (b - a) + " ms");
-//        System.out.println("total size -> " + cr.getTotalSize());
-//    }
-
     @Test
-    void findGiftCertificateMatchChecking() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getGiftCertificateId2();
-        CriteriaEntity cr = getCriteriaWithDefaultVal();
+    void findGiftCertificateMatchCheckingTest() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntityId2();
+        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
         cr.addSearchParam(SearchParam.GIFT_SEARCH_NAME, "Car");
         cr.addSearchParam(SearchParam.GIFT_SEARCH_DESCRIPTION, "washing");
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(cr);
+        List<GiftCertificateEntity> actualGifts = giftCertificateRepository.findByCriteria(cr);
 
         assertEquals(1, actualGifts.size());
         assertTrue(actualGifts.contains(expectedGift));
 
         cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Sport");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
 
         assertEquals(0, actualGifts.size());
         assertFalse(actualGifts.contains(expectedGift));
     }
 
     @Test
-    void findGiftCertificateByTags() throws RepositoryException {
-        CriteriaEntity cr = getCriteriaWithDefaultVal();
+    void findGiftCertificateByTagsTest() throws RepositoryException {
+        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
         cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto");
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(cr);
+        List<GiftCertificateEntity> actualGifts = giftCertificateRepository.findByCriteria(cr);
 
-        assertEquals(2, actualGifts.size());
-        assertEquals(2, cr.getTotalSize());
-        assertTrue(actualGifts.contains(getGiftCertificateId2()));
-        assertTrue(actualGifts.contains(getGiftCertificateId4()));
+        assertEquals(3, actualGifts.size());
+        assertEquals(3, cr.getTotalSize());
+        assertTrue(actualGifts.contains(getNewGiftCertificateEntityId2()));
+        assertTrue(actualGifts.contains(getNewGiftCertificateEntityId4()));
 
         cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto,Health");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
         assertEquals(1, actualGifts.size());
         assertEquals(1, cr.getTotalSize());
-        assertTrue(actualGifts.contains(getGiftCertificateId4()));
+        assertTrue(actualGifts.contains(getNewGiftCertificateEntityId4()));
 
         cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Auto,Health,Water");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
         assertEquals(0, actualGifts.size());
         assertEquals(0, cr.getTotalSize());
 
         cr.addSearchParam(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "Sport,Water,Health");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
         assertEquals(1, actualGifts.size());
         assertEquals(1, cr.getTotalSize());
-        assertTrue(actualGifts.contains(getGiftCertificateId1()));
+        assertTrue(actualGifts.contains(getNewGiftCertificateEntityId1()));
     }
 
     @Test
-    void findGiftCertificateSortingChecking() throws RepositoryException {
-        CriteriaEntity cr = getCriteriaWithDefaultVal();
+    void findGiftCertificateSortingCheckingTest() throws RepositoryException {
+        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
         cr.setSorting("id");
-        GiftCertificateEntity expectedFirstGift = getGiftCertificateId1();
-        GiftCertificateEntity expectedLastGift = getGiftCertificateId5();
-        List<GiftCertificateEntity> actualGifts = repository.findByCriteria(cr);
+        GiftCertificateEntity expectedFirstGift = getNewGiftCertificateEntityId1();
+        GiftCertificateEntity expectedLastGift = getNewGiftCertificateEntityId5();
+        List<GiftCertificateEntity> actualGifts = giftCertificateRepository.findByCriteria(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
         cr.setSorting("+id");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
         cr.setSorting("-id");
-        actualGifts = repository.findByCriteria(cr);
+        actualGifts = giftCertificateRepository.findByCriteria(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(4));
@@ -153,26 +139,26 @@ class GiftCertificateMySQLRepositoryTest {
     }
 
     @Test
-    void giftCertificatePageSortingChecking() throws RepositoryException {
-        CriteriaEntity cr = getCriteriaWithDefaultVal();
+    void giftCertificatePageSortingCheckingTest() throws RepositoryException {
+        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
         cr.setSorting("name");
-        GiftCertificateEntity expectedLastGift = getGiftCertificateId1();
-        GiftCertificateEntity expectedFirstGift = getGiftCertificateId4();
-        List<GiftCertificateEntity> actualGifts = repository.readAllPaginated(cr);
+        GiftCertificateEntity expectedLastGift = getNewGiftCertificateEntityId1();
+        GiftCertificateEntity expectedFirstGift = getNewGiftCertificateEntityId4();
+        List<GiftCertificateEntity> actualGifts = giftCertificateRepository.readPaginated(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
         cr.setSorting("+name");
-        actualGifts = repository.readAllPaginated(cr);
+        actualGifts = giftCertificateRepository.readPaginated(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(0));
         assertEquals(expectedLastGift, actualGifts.get(4));
 
         cr.setSorting("-name");
-        actualGifts = repository.readAllPaginated(cr);
+        actualGifts = giftCertificateRepository.readPaginated(cr);
 
         assertEquals(5, actualGifts.size());
         assertEquals(expectedFirstGift, actualGifts.get(4));
@@ -180,93 +166,111 @@ class GiftCertificateMySQLRepositoryTest {
     }
 
     @Test
-    void createGiftCertificate1() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getNewGiftCertificate();
+    void createGiftCertificateTest() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
 
-        repository.create(expectedGift);
-        long id = expectedGift.getId();
-
-        GiftCertificateEntity actualGift = repository.readById(id);
+        giftCertificateRepository.create(expectedGift);
+        GiftCertificateEntity actualGift = giftCertificateRepository.readById(expectedGift.getId());
 
         expectedGift.setId(actualGift.getId());
         assertEquals(expectedGift, actualGift);
     }
 
-//    @Test
-//    void createGiftCertificateCheckTransactional() throws RepositoryException {
-//        final GiftCertificateEntity expectedGift = getNewGiftCertificate();
-//        expectedGift.addTag(getEmptyTag());
-//
-////        final int id = repository.readAll().size() + 1;
-//
-//        List<TagEntity> tags = expectedGift.getTags();
-//
-//        repository.create(expectedGift);
-//        final long id = expectedGift.getId();
-//        final GiftCertificateEntity gc = repository.readById(id);
-//        gc.getTags();
-//
-//        assertThrows(RepositoryException.class, () -> repository.create(expectedGift));
-////        assertThrows(RepositoryException.class, () -> repository.readOne(id));
-//    }
+    @Test
+    void createGiftCertificateAuditingTest() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
 
-//    @Test
-//    void updateGiftCertificateCheckTransactional1() throws RepositoryException {
-//        GiftCertificateEntity expectedGift = getGiftCertificateId1();
-//        expectedGift.setName("Transactional");
-//        expectedGift.addTag(getEmptyTag());
-//
-//        assertThrows(RepositoryException.class, () -> repository.merge(expectedGift));
-//
-//        GiftCertificateEntity actual = repository.readById(1);
-//
-//        assertEquals(getGiftCertificateId1(), actual);
-//    }
+        giftCertificateRepository.create(expectedGift);
+        LocalDateTime createDate = LocalDateTime.now();
+        entityManager.flush();
+        entityManager.clear();
+        GiftCertificateEntity actualGift = giftCertificateRepository.readById(expectedGift.getId());
 
-//    @Test
-//    @Transactional
-//    void createGiftCertificateCheckTransactional1() throws RepositoryException {
-//        GiftCertificateEntity expectedGift = getNewGiftCertificate();
-//        expectedGift.setName("Transactional1");
-//        repository.create(expectedGift);
-//        expectedGift.setName("Transactional2");
-//        repository.create(expectedGift);
-//    }
+        assertTrue((createDate.toEpochSecond(ZoneOffset.UTC) -
+                actualGift.getCreateDate().toEpochSecond(ZoneOffset.UTC)) < 1);
+
+        assertTrue((createDate.toEpochSecond(ZoneOffset.UTC) -
+                actualGift.getLastUpdateDate().toEpochSecond(ZoneOffset.UTC)) < 1);
+    }
 
     @Test
-    void updateGiftCertificate1() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getNewGiftCertificate();
+    void createGiftCertificateCheckTagsCascadeTypeTest() throws RepositoryException {
+        TestTransaction.end();
+
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
+        expectedGift.addTag(new TagEntity(0, null));
+
+        long id = giftCertificateRepository.readAll().size() + 1;
+
+        assertThrows(org.springframework.dao.InvalidDataAccessApiUsageException.class,
+                () -> giftCertificateRepository.create(expectedGift));
+        assertThrows(RepositoryException.class, () -> giftCertificateRepository.readById(id));
+    }
+
+    @Test
+    void updateGiftCertificate1Test() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
         expectedGift.setId(5);
 
-        repository.merge(expectedGift);
-        GiftCertificateEntity actualGifts = repository.readById(5);
+        giftCertificateRepository.merge(expectedGift);
+        GiftCertificateEntity actualGifts = giftCertificateRepository.readById(5);
         assertEquals(expectedGift, actualGifts);
     }
 
     @Test
-    void updateGiftCertificate2() throws RepositoryException {
-        GiftCertificateEntity expectedGift = getNewGiftCertificate();
+    void updateGiftCertificate2Test() throws RepositoryException {
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
         expectedGift.setId(4);
         expectedGift.setTags(null);
 
-        repository.merge(expectedGift);
-        GiftCertificateEntity actualGifts = repository.readById(4);
+        giftCertificateRepository.merge(expectedGift);
+        GiftCertificateEntity actualGifts = giftCertificateRepository.readById(4);
         expectedGift.setTags(new ArrayList<>());
         assertEquals(expectedGift, actualGifts);
     }
 
     @Test
-    void deleteExistingGiftCertificate() throws RepositoryException {
-        repository.deleteById(4);
+    void updateGiftCertificateAuditingTest() throws RepositoryException {
+        GiftCertificateEntity expectedGift = giftCertificateRepository.readById(3);
+        expectedGift.setName("New name");
+        expectedGift.setPrice(100.0);
 
-        assertThrows(RepositoryException.class, () -> repository.readById(4));
+        giftCertificateRepository.merge(expectedGift);
+        LocalDateTime createDate = LocalDateTime.now();
+        entityManager.flush();
+        entityManager.clear();
+        GiftCertificateEntity actualGift = giftCertificateRepository.readById(3);
+
+        assertEquals(LocalDateTime.parse("2022-04-27T04:43:55.000"), actualGift.getCreateDate());
+
+        assertTrue((createDate.toEpochSecond(ZoneOffset.UTC) -
+                actualGift.getLastUpdateDate().toEpochSecond(ZoneOffset.UTC)) < 1);
     }
 
     @Test
-    void deleteNotExistingGiftCertificate() {
-        assertThrows(RepositoryException.class, () -> repository.deleteById(111));
+    void deleteExistingGiftCertificateTest() throws RepositoryException {
+        giftCertificateRepository.deleteById(4);
+
+        assertThrows(RepositoryException.class, () -> giftCertificateRepository.readById(4));
     }
 
+    @Test
+    void deleteNotExistingGiftCertificateTest() {
+        assertThrows(RepositoryException.class, () -> giftCertificateRepository.deleteById(111));
+    }
+
+//    @Test
+//    void search1000Gifts() throws RepositoryException {
+//        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
+//        long a = System.currentTimeMillis();
+//        for (int i = 0; i < 1000; i++) {
+//            giftCertificateRepository.findByCriteria(cr);
+//        }
+//        long b = System.currentTimeMillis();
+//
+//        System.out.println("total time -> " + (b - a) + " ms");
+//        System.out.println("total size -> " + cr.getTotalSize());
+//    }
 //
 //    @Test
 //    void put10000Gifts() throws RepositoryException {

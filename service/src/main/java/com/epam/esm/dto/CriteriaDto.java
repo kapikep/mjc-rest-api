@@ -1,6 +1,7 @@
 package com.epam.esm.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@NoArgsConstructor
 public class CriteriaDto {
 
     @Positive
@@ -21,6 +23,12 @@ public class CriteriaDto {
     private String sorting;
     private Long totalSize;
     private Map<@Size(min=2, max=40)String, @Size(min=2, max=40) String> searchParam;
+
+    public CriteriaDto(Integer page, Integer size, String sorting) {
+        this.page = page;
+        this.size = size;
+        this.sorting = sorting;
+    }
 
     public void addSearchParam(String fieldName, String fieldValue){
         if(searchParam == null){

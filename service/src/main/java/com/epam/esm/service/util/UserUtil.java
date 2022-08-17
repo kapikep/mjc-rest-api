@@ -9,34 +9,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.repository.constant.SearchParam.USER_SORT_PARAM;
+import static com.epam.esm.service.constant.ExceptionMes.USER_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.USER_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.USER_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.USER_ENTITY_MUST_NOT_BE_NULL;
+import static org.springframework.util.Assert.notNull;
 
 public class UserUtil {
-    public static List<UserDto> userEntityListToDtoConverting(List<UserEntity> entities) throws ValidateException {
-        if(entities == null){
-            throw new ValidateException("User entities list is null");
-        }
+    public static List<UserDto> userEntityListToDtoConverting(List<UserEntity> entities) {
+        notNull(entities, USER_ENTITY_LIST_MUST_NOT_BE_NULL);
+
         List<UserDto> dtoList = new ArrayList<>();
         for (UserEntity entity : entities) {
-            dtoList.add(userEntityToDtoTransfer(entity));
+            dtoList.add(userEntityToDtoConverting(entity));
         }
         return dtoList;
     }
 
-    public static List<UserEntity> userDtoListToEntityConverting(List<UserDto> dtoList) throws ValidateException {
-        if(dtoList == null){
-            throw new ValidateException("User dto list is null");
-        }
+    public static List<UserEntity> userDtoListToEntityConverting(List<UserDto> dtoList) {
+        notNull(dtoList, USER_DTO_LIST_MUST_NOT_BE_NULL);
+
         List<UserEntity> entities = new ArrayList<>();
         for (UserDto dto : dtoList) {
-            entities.add(userDtoToEntityTransfer(dto));
+            entities.add(userDtoToEntityConverting(dto));
         }
         return entities;
     }
 
-    public static UserEntity userDtoToEntityTransfer(UserDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("User is null");
-        }
+    public static UserEntity userDtoToEntityConverting(UserDto dto) {
+        notNull(dto, USER_DTO_MUST_NOT_BE_NULL);
+
         UserEntity entity = new UserEntity();
         entity.setId(dto.getId());
         entity.setFirstName(dto.getFirstName());
@@ -45,19 +47,16 @@ public class UserUtil {
         return entity;
     }
 
-    public static UserDto userEntityToDtoTransfer(UserEntity entity) throws ValidateException {
+    public static UserDto userEntityToDtoConverting(UserEntity entity) {
         UserDto dto = new UserDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(UserEntity entity, UserDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("UserDto is null");
-        }
-        if(entity == null){
-            throw new ValidateException("UserEntity is null");
-        }
+    public static void updateFieldsInDtoFromEntity(UserEntity entity, UserDto dto) {
+        notNull(dto, USER_DTO_MUST_NOT_BE_NULL);
+        notNull(entity, USER_ENTITY_MUST_NOT_BE_NULL);
+
         dto.setId(entity.getId());
         dto.setFirstName(entity.getFirstName());
         dto.setSecondName(entity.getSecondName());

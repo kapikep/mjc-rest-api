@@ -55,7 +55,7 @@ public class TagRestController {
         cr.setSorting(sort);
 
         tags = name != null ? Collections.singletonList(tagService.readTagByName(name))
-                : tagService.readAllTagsPaginated(cr);
+                : tagService.readTagsPaginated(cr);
 
         tags.forEach(tag -> tag.add(getSelfLink(TagRestController.class, tag.getId())));
 

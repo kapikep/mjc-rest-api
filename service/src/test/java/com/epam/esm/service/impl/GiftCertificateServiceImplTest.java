@@ -1,17 +1,18 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.TagEntity;
+import com.epam.esm.repository.constant.SearchParam;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.interf.GiftCertificateRepository;
+import com.epam.esm.service.dtoFactory.DtoFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
+import com.epam.esm.service.util.CriteriaUtil;
 import com.epam.esm.service.util.GiftCertificateUtil;
-import com.epam.esm.service.util.ServiceUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,295 +22,248 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Map;
 
+import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDtoWithDefaultVal;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId1;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDto;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId1;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoList;
+import static com.epam.esm.service.entityFactory.EntityFactory.getNewCriteriaEntityWithDefaultVal;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId1;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntity;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId1;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityList;
+import static com.epam.esm.service.impl.GiftCertificateServiceImpl.CANNOT_ADD_OR_UPDATE_A_CHILD_ROW;
+import static com.epam.esm.service.impl.GiftCertificateServiceImpl.CREATE_PROBLEM;
+import static com.epam.esm.service.impl.GiftCertificateServiceImpl.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
+import static com.epam.esm.service.impl.GiftCertificateServiceImpl.RESOURCE_NOT_FOUND;
+import static com.epam.esm.service.impl.GiftCertificateServiceImpl.UPDATE_PROBLEM;
+import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
+import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityConverting;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityListToDtoConverting;
+import static com.epam.esm.service.util.GiftCertificateUtil.updateFieldsInDtoFromEntity;
+import static com.epam.esm.service.util.GiftCertificateUtil.updateNonNullFieldsFromDtoToEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-
 class GiftCertificateServiceImplTest {
 
+    public static final String MESSAGE = "message";
     @Mock
-    GiftCertificateRepository repository;
+    GiftCertificateRepository giftRepository;
 
     @Mock
     TagService tagService;
 
     @InjectMocks
-    GiftCertificateServiceImpl service;
-
-    GiftCertificateEntity gift1;
-    GiftCertificateEntity gift2;
-    List<GiftCertificateEntity> entityList;
-    List<TagEntity> tagListGift1;
-    List<TagEntity> tagListGift2;
-    List<GiftCertificateDto> dtoList;
-
-    @BeforeEach
-    void init() {
-        gift1 = getEntityId1();
-        gift2 = getEntityId2();
-
-        entityList = getEntityList();
-
-        dtoList = getDtoList();
-    }
+    GiftCertificateServiceImpl giftService;
 
     @Test
-    void testReadGiftCertificateStr() throws RepositoryException, ValidateException, ServiceException {
-        when(repository.readById(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
+    void readGiftCertificatePaginatedTest() throws ServiceException, RepositoryException, ValidateException {
+        CriteriaEntity crEntity = getNewCriteriaEntityWithDefaultVal();
+        CriteriaDto crDto = DtoFactory.getNewCriteriaDtoWithDefaultVal();
+        List<GiftCertificateEntity> giftEntityList = getNewGiftCertificateEntityList();
+        List<GiftCertificateDto> giftDtoList = getNewGiftCertificateDtoList();
+        List<GiftCertificateDto> actualDtoList;
+        long totalSize = giftEntityList.size();
 
-        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
-             MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
-            servUtil.when(() -> ServiceUtil.parseInt(anyString())).thenReturn(1);
-            util.when(() -> GiftCertificateUtil.giftCertificateEntityToDtoTransfer(getEntityId1()))
-                    .thenReturn(getDtoId1());
-            GiftCertificateDto actualDto = service.readGiftCertificateById("1");
-            assertEquals(dtoList.get(0), actualDto);
-        }
-        assertThrows(ServiceException.class, () -> service.readGiftCertificateById("2"));
-        assertThrows(ServiceException.class, () -> service.readGiftCertificateById("2"));
-    }
+        try (MockedStatic<CriteriaUtil> crUtil = Mockito.mockStatic(CriteriaUtil.class);
+             MockedStatic<GiftCertificateUtil> giftUtil = Mockito.mockStatic(GiftCertificateUtil.class)) {
 
-//    @Test
-//    void testReadGiftCertificateInt() throws RepositoryException, ValidateException, ServiceException {
-//        when(repository.readOne(anyInt())).thenReturn(getEntityId1()).thenThrow(new RepositoryException());
-//
-//        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
-//             MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
-//            validator.when(() -> GiftCertificateUtil.idValidation(1)).thenReturn(true);
-//            util.when(() -> GiftCertificateUtil.giftCertificateEntityToDtoTransfer(getEntityId1()))
-//                    .thenReturn(getDtoId1());
-//            GiftCertificateDto actualDto = service.readOne(1);
-//            assertEquals(getDtoId1(), actualDto);
-//        }
-//        assertThrows(ServiceException.class, () -> service.readOne(2));
-//        assertThrows(ServiceException.class, () -> service.readOne(2));
-//    }
+            when(giftRepository.readPaginated(crEntity)).thenReturn(giftEntityList);
+            giftUtil.when(() -> giftCertificateEntityListToDtoConverting(giftEntityList))
+                    .thenReturn(giftDtoList);
+            crUtil.when(() -> criteriaDtoToEntityConverting(crDto)).thenReturn(crEntity);
 
-//    @Test
-//    void testReadGiftCertificateIntWrongId(){
-//
-//        try (MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
-//            validator.when(() -> GiftCertificateUtil.idValidation(-1)).thenReturn(false);
-//
-//            assertThrows(ValidateException.class, () -> service.readOne(-1));
-//        }
-//    }
+            crEntity.setTotalSize(totalSize);
+            actualDtoList = giftService.readGiftCertificatesPaginated(crDto);
 
-    @Test
-    void testReadGiftCertificateThrowValidateException(){
-        try (MockedStatic<ServiceUtil> servUtil = Mockito.mockStatic(ServiceUtil.class)) {
-            servUtil.when(() -> ServiceUtil.parseInt(anyString())).thenThrow(new ValidateException());
-
-            assertThrows(ValidateException.class, () -> service.readGiftCertificateById("abc"));
+            verify(giftRepository).readPaginated(crEntity);
+            crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
+            crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
+            giftUtil.verify(() -> GiftCertificateUtil.sortingValidation(crDto));
+            assertEquals(giftDtoList, actualDtoList);
+            assertEquals(totalSize, crDto.getTotalSize());
         }
     }
 
     @Test
-    void createGiftCertificate() throws RepositoryException, ValidateException, ServiceException {
-        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
-             MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
+    void readGiftCertificatePaginatedWithExceptionTest() throws RepositoryException {
+        CriteriaEntity crEntity = getNewCriteriaEntityWithDefaultVal();
+        CriteriaDto crDto = DtoFactory.getNewCriteriaDtoWithDefaultVal();
+        List<GiftCertificateEntity> giftEntityList = getNewGiftCertificateEntityList();
+        List<GiftCertificateDto> giftDtoList = getNewGiftCertificateDtoList();
 
-            util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
-                    .thenReturn(gift1);
+        try (MockedStatic<CriteriaUtil> crUtil = Mockito.mockStatic(CriteriaUtil.class);
+             MockedStatic<GiftCertificateUtil> giftUtil = Mockito.mockStatic(GiftCertificateUtil.class)) {
 
-            service.createGiftCertificate(dtoList.get(0));
+            when(giftRepository.readPaginated(crEntity)).thenThrow(new RepositoryException(MESSAGE));
+            giftUtil.when(() -> giftCertificateEntityListToDtoConverting(giftEntityList))
+                    .thenReturn(giftDtoList);
+            crUtil.when(() -> criteriaDtoToEntityConverting(crDto)).thenReturn(crEntity);
 
-            verify(repository, times(1)).create(gift1);
+            ServiceException e = assertThrows(ServiceException.class,
+                    () -> giftService.readGiftCertificatesPaginated(crDto));
+
+            assertEquals(MESSAGE, e.getMessage());
         }
     }
 
     @Test
-    void createGiftCertificateNoDates() throws RepositoryException, ValidateException, ServiceException {
-        GiftCertificateDto dto = getDtoId1();
-        dto.setCreateDate(null);
-        dto.setLastUpdateDate(null);
+    void readGiftCertificateByIdTest() throws RepositoryException, ServiceException {
+        when(giftRepository.readById(anyLong()))
+                .thenReturn(getNewGiftCertificateEntityId1()).thenThrow(new RepositoryException());
 
-        LocalDateTime timeNow = LocalDateTime.now();
-        GiftCertificateEntity entity;
-        GiftCertificateUtil util = spy(new GiftCertificateUtil());
+        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class)) {
+            util.when(() -> GiftCertificateUtil.giftCertificateEntityToDtoConverting(getGiftCertificateEntityId1()))
+                    .thenReturn(getNewGiftCertificateDtoId1());
+            GiftCertificateDto actualDto = giftService.readGiftCertificateById(1);
 
-        service.createGiftCertificate(dto);
-        entity = util.giftCertificateDtoToEntityTransfer(dto);
-        assertEquals(timeNow.getMonthValue(), entity.getCreateDate().getMonthValue());
-        assertEquals(timeNow.getMonthValue(), entity.getLastUpdateDate().getMonthValue());
-
-        verify(repository, times(1)).create(entity);
+            assertEquals(getGiftCertificateDtoId1(), actualDto);
+        }
+        assertThrows(ServiceException.class, () -> giftService.readGiftCertificateById(222));
     }
 
 
     @Test
-    void updateGiftCertificateAllFieldsNotNull() throws ValidateException, ServiceException, RepositoryException {
-        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
-             MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
+    void findGiftCertificatesAllOkTest() throws RepositoryException, ValidateException, ServiceException {
+        List<GiftCertificateEntity> giftEntityList = getNewGiftCertificateEntityList();
+        List<GiftCertificateDto> giftDtoList = getNewGiftCertificateDtoList();
+        List<GiftCertificateDto> actualDtoList;
+        long totalSize = giftEntityList.size();
+        CriteriaDto crDto = getNewCriteriaDtoWithDefaultVal();
+        CriteriaEntity crEntity = getNewCriteriaEntityWithDefaultVal();
+        Map<String, String> criteriaMap = new HashMap<>();
+        criteriaMap.put(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "tag");
+        crDto.setSearchParam(criteriaMap);
+        crEntity.setSearchParam(criteriaMap);
 
-            validator.when(() -> GiftCertificateUtil.isNullFieldValidation(dtoList.get(0)))
-                    .thenReturn(true);
+        try (MockedStatic<CriteriaUtil> crUtil = Mockito.mockStatic(CriteriaUtil.class);
+             MockedStatic<GiftCertificateUtil> giftUtil = Mockito.mockStatic(GiftCertificateUtil.class)) {
 
-            util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
-                    .thenReturn(gift1);
+            when(giftRepository.findByCriteria(crEntity)).thenReturn(giftEntityList)
+                    .thenThrow(new RepositoryException(MESSAGE));
+            giftUtil.when(() -> giftCertificateEntityListToDtoConverting(giftEntityList))
+                    .thenReturn(giftDtoList);
+            crUtil.when(() -> criteriaDtoToEntityConverting(crDto)).thenReturn(crEntity);
 
-            service.updateGiftCertificate(dtoList.get(0));
+            crEntity.setTotalSize(totalSize);
+            actualDtoList = giftService.findGiftCertificatesByCriteria(crDto);
 
-            verify(repository, times(1)).merge(gift1);
+            verify(giftRepository).findByCriteria(crEntity);
+            crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
+            crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
+            giftUtil.verify(() -> GiftCertificateUtil.sortingValidation(crDto));
+            assertEquals(giftDtoList, actualDtoList);
+            assertEquals(totalSize, crDto.getTotalSize());
+
+            ServiceException e = assertThrows(ServiceException.class,
+                    () -> giftService.findGiftCertificatesByCriteria(crDto));
+            assertEquals(MESSAGE, e.getMessage());
         }
     }
-
-//    @Test
-//    void updateGiftCertificateHaveNullFields() throws ValidateException, ServiceException, RepositoryException {
-//        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class);
-//             MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
-//
-//            validator.when(() -> GiftCertificateUtil.allNotNullFieldValidation(dtoList.get(0)))
-//                    .thenReturn(false);
-//
-//            validator.when(() -> GiftCertificateUtil.idValidation(1))
-//                    .thenReturn(false);
-//
-//            when(service.readGiftCertificate(1)).thenReturn(dtoList.get(0));
-//
-//            util.when(() -> GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dtoList.get(0)))
-//                    .thenReturn(gift1);
-//
-//            service.updateGiftCertificate(dtoList.get(0));
-//
-//            verify(repository, times(1)).updateGiftCertificate(gift1);
-//        }
-//    }
 
     @Test
-    void deleteGiftCertificate() throws RepositoryException, ValidateException, ServiceException {
-        try (MockedStatic<ServiceUtil> util = Mockito.mockStatic(ServiceUtil.class)){
-            util.when(() -> ServiceUtil.parseInt("1")).thenReturn(1);
-            service.deleteGiftCertificateById(1);
-            verify(repository, times(1)).deleteById(1);
+    void createGiftCertificateTest() throws RepositoryException, ValidateException, ServiceException {
+        GiftCertificateDto newDto = getNewGiftCertificateDto();
+        GiftCertificateEntity newEntity = getNewGiftCertificateEntity();
+
+        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class)) {
+            util.when(() -> giftCertificateDtoToEntityConverting(newDto))
+                    .thenReturn(newEntity);
+
+            giftService.createGiftCertificate(newDto);
+
+            util.verify(() -> updateFieldsInDtoFromEntity(newEntity, newDto));
+            verify(tagService).setIdOrCreateTags(newDto.getTags());
+            verify(giftRepository).create(newEntity);
         }
     }
 
-//    @Test
-//    void findGiftCertificatesAllOk() throws RepositoryException, ValidateException, ServiceException {
-//        Map<String, String> criteriaMap = new HashMap<>();
-//        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "tag");
-//        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "name");
-//        criteriaMap.put(GiftCertificateSearchParam.SEARCH_DESCRIPTION, "description");
-//        String sorting = "-name";
-//
-//        when(repository.findByCriteria(criteriaMap)).thenReturn(entityList);
-//        service.findGiftCertificates(criteriaMap, sorting);
-//        verify(repository, times(1)).findByCriteria(criteriaMap);
-//    }
-//
-//    @Test
-//    void findGiftCertificatesIncorrectParam() throws RepositoryException, ValidateException, ServiceException {
-//        Map<String, String> criteriaMap = new HashMap<>();
-//        criteriaMap.put(GiftCertificateSearchParam.SEARCH_TAG_NAME, "tag");
-//        criteriaMap.put(GiftCertificateSearchParam.SEARCH_NAME, "name");
-//        criteriaMap.put("qqeqe", "description");
-//
-//        try (MockedStatic<GiftCertificateUtil> validator = Mockito.mockStatic(GiftCertificateUtil.class)) {
-//            validator.when(() -> GiftCertificateUtil.giftCertificateCriteriaValidation(criteriaMap, null))
-//                    .thenThrow(ValidateException.class);
-//        }
-//
-//        verify(repository, never()).findByCriteria(criteriaMap);
-//        assertThrows(ValidateException.class, () -> service.findGiftCertificates(criteriaMap, null));
-//    }
+    @Test
+    void createGiftCertificateWithExceptionTest() throws RepositoryException {
+        GiftCertificateDto newDto = getNewGiftCertificateDto();
+        GiftCertificateEntity newEntity = getNewGiftCertificateEntity();
 
-    private GiftCertificateEntity getEntityId1() {
-        return new GiftCertificateEntity(1, "Water skiing",
-                "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId1(), getTagEntityId2(), getTagEntityId7()).collect(Collectors.toList()));
+        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class)) {
+            util.when(() -> giftCertificateDtoToEntityConverting(newDto))
+                    .thenReturn(newEntity);
+
+            doThrow(new RepositoryException(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW))
+                    .doThrow(new RepositoryException(MESSAGE))
+                    .when(giftRepository).create(newEntity);
+
+            ServiceException e = assertThrows(ServiceException.class,
+                    () -> giftService.createGiftCertificate(newDto));
+            assertEquals(CREATE_PROBLEM, e.getResourceBundleCode());
+
+            e = assertThrows(ServiceException.class,
+                    () -> giftService.createGiftCertificate(newDto));
+            assertEquals(MESSAGE, e.getMessage());
+        }
     }
 
-    private GiftCertificateEntity getEntityId2() {
-        return new GiftCertificateEntity(2, "Car wash",
-                "Complex for cars with washing and body treatment from KlinArt", 100.0, 180, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId5()).collect(Collectors.toList()));
+    @Test
+    void updateGiftCertificateAllFieldsNotNullTest() throws ValidateException, ServiceException, RepositoryException {
+        GiftCertificateDto newDto = getNewGiftCertificateDto();
+        newDto.setId(1);
+        GiftCertificateEntity entityFromDb = getNewGiftCertificateEntityId1();
+
+        try (MockedStatic<GiftCertificateUtil> util = Mockito.mockStatic(GiftCertificateUtil.class)) {
+            when(giftRepository.readById(anyLong())).thenReturn(entityFromDb);
+
+            giftService.updateGiftCertificate(newDto);
+
+            verify(giftRepository).readById(newDto.getId());
+            verify(tagService).setIdOrCreateTags(newDto.getTags());
+            util.verify(() -> updateNonNullFieldsFromDtoToEntity(newDto, entityFromDb));
+            util.verify(() -> updateFieldsInDtoFromEntity(entityFromDb, newDto));
+        }
     }
 
-    private GiftCertificateEntity getEntityId4() {
-        return new GiftCertificateEntity(4, "Bowling for the company",
-                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId5(), getTagEntityId7()).collect(Collectors.toList()));
+    @Test
+    void updateGiftCertificateWithExceptionTest() throws RepositoryException {
+        when(giftRepository.readById(anyLong()))
+                .thenThrow(new RepositoryException(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0))
+                .thenThrow(new RepositoryException(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW))
+                .thenThrow(new RepositoryException(MESSAGE));
+
+
+        ServiceException e = assertThrows(ServiceException.class,
+                () -> giftService.updateGiftCertificate(getNewGiftCertificateDtoId1()));
+        assertEquals(RESOURCE_NOT_FOUND, e.getResourceBundleCode());
+
+        e = assertThrows(ServiceException.class,
+                () -> giftService.updateGiftCertificate(getNewGiftCertificateDtoId1()));
+        assertEquals(UPDATE_PROBLEM, e.getResourceBundleCode());
+
+        e = assertThrows(ServiceException.class,
+                () -> giftService.updateGiftCertificate(getNewGiftCertificateDtoId1()));
+        assertEquals(MESSAGE, e.getMessage());
     }
 
-    private GiftCertificateDto getDtoId1() {
-        return new GiftCertificateDto(1, "Water skiing",
-                "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId1(), getTagDtoId2(), getTagDtoId7()).collect(Collectors.toList()));
+    @Test
+    void deleteGiftCertificateTest() throws ServiceException, RepositoryException {
+        giftService.deleteGiftCertificateById(1);
+        verify(giftRepository).deleteById(1);
     }
 
-    private GiftCertificateDto getDtoId2() {
-        return new GiftCertificateDto(2, "Car wash",
-                "Complex for cars with washing and body treatment from KlinArt", 100.0, 180, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId5()).collect(Collectors.toList()));
-    }
+    @Test
+    void deleteGiftCertificateWithExceptionTest() throws RepositoryException {
+        doThrow(new RepositoryException()).when(giftRepository).deleteById(anyLong());
 
-    private GiftCertificateDto getDtoId4() {
-        return new GiftCertificateDto(4, "Bowling for the company",
-                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId5(), getTagDtoId7()).collect(Collectors.toList()));
+        ServiceException e = assertThrows(ServiceException.class,
+                () -> giftService.deleteGiftCertificateById(1));
+        assertEquals(RESOURCE_NOT_FOUND, e.getResourceBundleCode());
     }
-
-    private List<GiftCertificateEntity> getEntityList() {
-        List<GiftCertificateEntity> entityList = new ArrayList<>();
-        entityList.add(getEntityId1());
-        entityList.add(getEntityId2());
-        entityList.add(getEntityId4());
-        return entityList;
-    }
-
-    private List<GiftCertificateDto> getDtoList(){
-        List<GiftCertificateDto> dtoList = new ArrayList<>();
-        dtoList.add(getDtoId1());
-        dtoList.add(getDtoId2());
-        dtoList.add(getDtoId4());
-        return dtoList;
-    }
-
-    private TagEntity getTagEntityId1() {
-        return new TagEntity(1, "Sport");
-    }
-
-    private TagEntity getTagEntityId2() {
-        return new TagEntity(2, "Water");
-    }
-
-    private TagEntity getTagEntityId5() {
-        return new TagEntity(5, "Auto");
-    }
-
-    private TagEntity getTagEntityId7() {
-        return new TagEntity(7, "Health");
-    }
-
-    private TagDto getTagDtoId1() {
-        return new TagDto(1, "Sport");
-    }
-
-    private TagDto getTagDtoId2() {
-        return new TagDto(2, "Water");
-    }
-
-    private TagDto getTagDtoId5() {
-        return new TagDto(5, "Auto");
-    }
-
-    private TagDto getTagDtoId7() {
-        return new TagDto(7, "Health");
-    }
-
 }

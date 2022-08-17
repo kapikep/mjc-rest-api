@@ -22,7 +22,7 @@ public class OrderForGiftCertificateMySQLRepository extends AbstractMySQLReposit
     }
 
     @Override
-    public List<OrderForGiftCertificateEntity> getUserOrders(long userId, CriteriaEntity cr) throws RepositoryException {
+    public List<OrderForGiftCertificateEntity> getUserOrdersPaginated(long userId, CriteriaEntity cr) throws RepositoryException {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderForGiftCertificateEntity> cq = cb.createQuery(clazz);
         Root<OrderForGiftCertificateEntity> entity = cq.from(clazz);

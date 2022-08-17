@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_ENTITY_MUST_NOT_BE_NULL;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * Utils for tag
@@ -17,53 +22,55 @@ import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
  * @version 1.0
  */
 public class TagUtil {
-    public static List<TagDto> tagEntityListToDtoConverting(List<TagEntity> entities) throws ValidateException {
-        if(entities == null){
-            throw new ValidateException("TagItemEntity list is null");
-        }
+    public static List<TagDto> tagEntityListToDtoConverting(List<TagEntity> entities) {
+        notNull(entities, TAG_ENTITY_LIST_MUST_NOT_BE_NULL);
+
         List<TagDto> dtoList = new ArrayList<>();
         for (TagEntity entity : entities) {
-            dtoList.add(tagEntityToDtoTransfer(entity));
+            dtoList.add(tagEntityToDtoConverting(entity));
         }
         return dtoList;
     }
 
-    public static List<TagEntity> tagDtoListToEntityConverting(List<TagDto> dtoList) throws ValidateException {
-        if(dtoList == null){
-            throw new ValidateException("TagItemDto list is null");
-        }
+    public static List<TagEntity> tagDtoListToEntityConverting(List<TagDto> dtoList) {
+        notNull(dtoList, TAG_DTO_LIST_MUST_NOT_BE_NULL);
+
         List<TagEntity> entities = new ArrayList<>();
         for (TagDto dto : dtoList) {
-            entities.add(tagDtoToEntityTransfer(dto));
+            entities.add(tagDtoToEntityConverting(dto));
         }
         return entities;
     }
     
-    public static TagEntity tagDtoToEntityTransfer(TagDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("TagItemDto is null");
-        }
+    public static TagEntity tagDtoToEntityConverting(TagDto dto) {
+        notNull(dto, TAG_DTO_MUST_NOT_BE_NULL);
+
         TagEntity entity = new TagEntity();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
         return entity;
     }
     
-    public static TagDto tagEntityToDtoTransfer(TagEntity entity) throws ValidateException {
+    public static TagDto tagEntityToDtoConverting(TagEntity entity) {
         TagDto dto = new TagDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(TagEntity entity, TagDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("TagItemDto is null");
-        }
-        if(entity == null){
-            throw new ValidateException("TagEntity is null");
-        }
+    public static void updateFieldsInDtoFromEntity(TagEntity entity, TagDto dto) {
+        notNull(dto, TAG_DTO_MUST_NOT_BE_NULL);
+        notNull(entity, TAG_ENTITY_MUST_NOT_BE_NULL);
+
         dto.setId(entity.getId());
         dto.setName(entity.getName());
+    }
+
+    public static void updateFieldsInEntityFromDto(TagDto dto, TagEntity entity) {
+        notNull(dto, TAG_DTO_MUST_NOT_BE_NULL);
+        notNull(entity, TAG_ENTITY_MUST_NOT_BE_NULL);
+
+        entity.setId(dto.getId());
+        entity.setName(dto.getName());
     }
 
     public static void sortingValidation(CriteriaDto crDto) throws ValidateException {

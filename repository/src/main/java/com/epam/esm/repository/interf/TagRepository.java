@@ -16,7 +16,7 @@ import java.util.List;
 public interface TagRepository {
     List<TagEntity> readAll() throws RepositoryException;
 
-    List<TagEntity> readAllPaginated(CriteriaEntity criteria) throws RepositoryException;
+    List<TagEntity> readPaginated(CriteriaEntity criteria) throws RepositoryException;
 
     /**
      * Reads tag by id from database

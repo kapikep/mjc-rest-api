@@ -20,7 +20,7 @@ import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverti
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.UserUtil.sortingValidation;
 import static com.epam.esm.service.util.UserUtil.userEntityListToDtoConverting;
-import static com.epam.esm.service.util.UserUtil.userEntityToDtoTransfer;
+import static com.epam.esm.service.util.UserUtil.userEntityToDtoConverting;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<UserDto> readAllUsersPaginated(CriteriaDto crDto) throws ValidateException, ServiceException {
+    public List<UserDto> readUsersPaginated(CriteriaDto crDto) throws ValidateException, ServiceException {
         setDefaultPageValIfEmpty(crDto);
         sortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<UserDto> users;
         try {
-            users = userEntityListToDtoConverting(userRepository.readAllPaginated(cr));
+            users = userEntityListToDtoConverting(userRepository.readPaginated(cr));
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -44,30 +44,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto readUserById(long id) throws ValidateException, ServiceException {
+    public UserDto readUserById(long id) throws ServiceException {
         UserDto dto;
         try{
-            dto = userEntityToDtoTransfer(userRepository.readById(id));
+            dto = userEntityToDtoConverting(userRepository.readById(id));
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
         }
         return dto;
-    }
-
-    @Override
-    public List<OrderForGiftCertificateDto> getUserOrdersForGiftCertificate(long customerId, CriteriaDto crDto)
-            throws ValidateException, ServiceException {
-        setDefaultPageValIfEmpty(crDto);
-        sortingValidation(crDto);
-        CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
-        List<OrderForGiftCertificateDto> orders;
-        try {
-            orders = OrderForGiftCertificateUtil
-                    .OrderForGiftCertificateEntityListToDtoConverting(userRepository.readById(customerId).getOrders());
-        } catch (RepositoryException | DataAccessException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-        crDto.setTotalSize(cr.getTotalSize());
-        return orders;
     }
 }

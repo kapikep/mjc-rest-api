@@ -8,60 +8,65 @@ import com.epam.esm.service.exception.ValidateException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_ITEM_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_ITEM_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_ITEM_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.ORDER_ITEM_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.TAG_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static org.springframework.util.Assert.notNull;
+
 public class OrderItemUtil {
-    public static List<OrderItemDto> orderItemEntityListToDtoConverting(List<OrderItemEntity> entities) throws ValidateException {
-        if(entities == null){
-            throw new ValidateException("OrderItem entities list is null");
-        }
+    public static List<OrderItemDto> orderItemEntityListToDtoConverting(List<OrderItemEntity> entities) {
+        notNull(entities, ORDER_ITEM_ENTITY_LIST_MUST_NOT_BE_NULL);
+
         List<OrderItemDto> dtoList = new ArrayList<>();
         for (OrderItemEntity entity : entities) {
-            dtoList.add(orderItemEntityToDtoTransfer(entity));
+            dtoList.add(orderItemEntityToDtoConverting(entity));
         }
         return dtoList;
     }
 
-    public static List<OrderItemEntity> orderItemDtoListToEntityConverting(List<OrderItemDto> dtoList, OrderForGiftCertificateEntity order) throws ValidateException {
-        if(dtoList == null){
-            throw new ValidateException("OrderItem dto list is null");
-        }
+    public static List<OrderItemEntity> orderItemDtoListToEntityConverting(List<OrderItemDto> dtoList,
+                                                                           OrderForGiftCertificateEntity order) {
+        notNull(dtoList, ORDER_ITEM_DTO_LIST_MUST_NOT_BE_NULL);
+        notNull(order, ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL);
+
         List<OrderItemEntity> entities = new ArrayList<>();
         for (OrderItemDto dto : dtoList) {
-            entities.add(orderItemDtoToEntityTransfer(dto, order));
+            entities.add(orderItemDtoToEntityConverting(dto, order));
         }
         return entities;
     }
 
-    public static OrderItemEntity orderItemDtoToEntityTransfer(OrderItemDto dto, OrderForGiftCertificateEntity order) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("OrderItem is null");
-        }
+    public static OrderItemEntity orderItemDtoToEntityConverting(OrderItemDto dto,
+                                                                 OrderForGiftCertificateEntity order) {
+        notNull(dto, ORDER_ITEM_DTO_MUST_NOT_BE_NULL);
+        notNull(order, ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL);
+
         OrderItemEntity entity = new OrderItemEntity();
         entity.setId(dto.getId());
         entity.setOrder(order);
-//        entity.setOrder(OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityTransfer(dto.getOrder()));
-        dto.getGiftCertificate().setTags(new ArrayList<>());
-        entity.setGiftCertificate(GiftCertificateUtil.giftCertificateDtoToEntityTransfer(dto.getGiftCertificate()));
+        entity.setGiftCertificate(GiftCertificateUtil.giftCertificateDtoToEntityConverting(dto.getGiftCertificate()));
         entity.setQuantity(dto.getQuantity());
         return entity;
     }
 
-    public static OrderItemDto orderItemEntityToDtoTransfer(OrderItemEntity entity) throws ValidateException {
+    public static OrderItemDto orderItemEntityToDtoConverting(OrderItemEntity entity) {
         OrderItemDto dto = new OrderItemDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(OrderItemEntity entity, OrderItemDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("OrderItemDto is null");
-        }
-        if(entity == null){
-            throw new ValidateException("OrderItemEntity is null");
-        }
+    public static void updateFieldsInDtoFromEntity(OrderItemEntity entity, OrderItemDto dto) {
+        notNull(entity, ORDER_ITEM_ENTITY_MUST_NOT_BE_NULL);
+        notNull(dto, ORDER_ITEM_DTO_MUST_NOT_BE_NULL);
+
         dto.setId(entity.getId());
-//        dto.setOrder(OrderForGiftCertificateUtil.orderForGiftCertificateEntityToDtoTransfer(entity.getOrder()));
         entity.getGiftCertificate().setTags(new ArrayList<>());
-        dto.setGiftCertificate(GiftCertificateUtil.giftCertificateEntityToDtoTransfer(entity.getGiftCertificate()));
+        dto.setGiftCertificate(GiftCertificateUtil.
+                giftCertificateEntityToDtoConverting(entity.getGiftCertificate()));
         dto.setQuantity(entity.getQuantity());
     }
 }

@@ -21,14 +21,7 @@ import java.util.List;
  */
 @Validated
 public interface TagService {
-    List<TagDto> readAllTagsPaginated(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
-
-    /**
-     * Validates id and reads tag by id from repository
-     *
-     * @return tag from repository
-     */
-    TagDto readTagById(String id) throws ServiceException, ValidateException;
+    List<TagDto> readTagsPaginated(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
     /**
      * Validates id and reads tag by id from repository

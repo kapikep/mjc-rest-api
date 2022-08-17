@@ -1,165 +1,268 @@
 package com.epam.esm.service.util;
 
+import com.epam.esm.dto.CriteriaDto;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.TagEntity;
 import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityTransfer;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId1;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId2;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId3;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId4;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoList;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId1;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId2;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId3;
+import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId4;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId2;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId3;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId4;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityList;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId1;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId2;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId3;
+import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId4;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoListToEntityConverting;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityConverting;
 import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityListToDtoConverting;
-import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityToDtoTransfer;
-import static com.epam.esm.service.util.GiftCertificateUtil.updateFields;
+import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityToDtoConverting;
+import static com.epam.esm.service.util.GiftCertificateUtil.isNullFieldValidation;
+import static com.epam.esm.service.util.GiftCertificateUtil.sortingValidation;
+import static com.epam.esm.service.util.GiftCertificateUtil.updateFieldsInDto;
+import static com.epam.esm.service.util.GiftCertificateUtil.updateNonNullFieldsFromDtoToEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GiftCertificateUtilTest {
 
     @Test
-    void giftCertificateEntityListToDtoConvertingTest() throws ValidateException {
-        List<GiftCertificateDto> actualList = giftCertificateEntityListToDtoConverting(getEntityList());
+    void giftCertificateEntityListToDtoConvertingTest() {
+        List<GiftCertificateDto> actualList = giftCertificateEntityListToDtoConverting(getGiftCertificateEntityList());
 
-        assertEquals(getDtoList(), actualList);
+        assertEquals(getGiftCertificateDtoList(), actualList);
     }
 
     @Test
-    void giftCertificateDtoToEntityTransferTest() throws ValidateException {
-        GiftCertificateEntity actualEntity = giftCertificateDtoToEntityTransfer(getDtoId1());
-        assertEquals(getEntityId1(), actualEntity);
+    void giftCertificateEntityListToDtoConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> giftCertificateEntityListToDtoConverting(null));
+
+        assertEquals(GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL, e.getMessage());
     }
 
     @Test
-    void giftCertificateEntityToDtoTransferTest() throws ValidateException {
-        GiftCertificateDto actualDto = giftCertificateEntityToDtoTransfer(getEntityId2());
-        assertEquals(getDtoId2(), actualDto);
+    void giftCertificateDtoListToEntityConvertingTest() {
+        List<GiftCertificateEntity> actualList = giftCertificateDtoListToEntityConverting(getGiftCertificateDtoList());
+
+        assertEquals(getGiftCertificateEntityList(), actualList);
     }
 
+    @Test
+    void giftCertificateDtoListToEntityConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> giftCertificateDtoListToEntityConverting(null));
+
+        assertEquals(GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL, e.getMessage());
+    }
 
     @Test
-    void updateFieldsWithNullTagTest(){
-        GiftCertificateDto oldGift = getDtoId4();
-        GiftCertificateDto newGift = getDtoId4();
+    void giftCertificateDtoToEntityConvertingTest() {
+        GiftCertificateEntity actualEntity = giftCertificateDtoToEntityConverting(getGiftCertificateDtoId3());
+
+        assertEquals(getGiftCertificateEntityId3(), actualEntity);
+    }
+
+    @Test
+    void giftCertificateDtoToEntityConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> giftCertificateDtoToEntityConverting(null));
+
+        assertEquals(GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL, e.getMessage());
+    }
+
+    @Test
+    void giftCertificateEntityToDtoConvertingTest() {
+        GiftCertificateDto actualDto = giftCertificateEntityToDtoConverting(getGiftCertificateEntityId4());
+        assertEquals(getGiftCertificateDtoId4(), actualDto);
+    }
+
+    @Test
+    void giftCertificateEntityToDtoConvertingNullTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> giftCertificateEntityToDtoConverting(null));
+
+        assertEquals(GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL, e.getMessage());
+    }
+
+    @Test
+    void updateFieldsWithNullTagTest() {
+        GiftCertificateDto oldGift = getNewGiftCertificateDtoId4();
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId4();
         newGift.setTags(null);
 
-        updateFields(newGift, oldGift);
+        updateFieldsInDto(newGift, oldGift);
         assertEquals(newGift, oldGift);
-        assertEquals(oldGift, getDtoId4());
+        assertEquals(oldGift, getGiftCertificateDtoId4());
     }
 
     @Test
-    void updateFieldsWithAllNotNullFieldsTest(){
-        GiftCertificateDto oldGift = getDtoId4();
-        GiftCertificateDto newGift = getDtoId1();
+    void updateFieldsWithAllNotNullFieldsTest() {
+        GiftCertificateDto oldGift = getNewGiftCertificateDtoId4();
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId1();
 
-        updateFields(newGift, oldGift);
+        updateFieldsInDto(newGift, oldGift);
         assertNotEquals(newGift, oldGift);
-        assertEquals(newGift, getDtoId1());
-        assertEquals(oldGift, getDtoId4());
+        assertEquals(newGift, getGiftCertificateDtoId1());
+        assertEquals(oldGift, getGiftCertificateDtoId4());
     }
 
     @Test
-    void updateFieldsWithNullFieldsTest(){
-        GiftCertificateDto oldGift = getDtoId2();
-        GiftCertificateDto newGift = getDtoId2();
+    void updateFieldsWithNullFieldsTest() {
+        GiftCertificateDto oldGift = getNewGiftCertificateDtoId2();
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId2();
+        GiftCertificateDto expectedGift = getNewGiftCertificateDtoId2();
         newGift.setName("New name");
         newGift.setDescription(null);
         newGift.setCreateDate(null);
         newGift.setDuration(null);
-        GiftCertificateDto updatedGift = getDtoId2();
-        updatedGift.setName("New name");
+        expectedGift.setName("New name");
 
-        updateFields(newGift, oldGift);
-        assertEquals(updatedGift, newGift);
+        updateFieldsInDto(newGift, oldGift);
+        assertEquals(expectedGift, newGift);
+        assertNotEquals(oldGift, newGift);
     }
 
-    private GiftCertificateEntity getEntityId1() {
-        return new GiftCertificateEntity(1, "Water skiing",
-                "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId1(), getTagEntityId2(), getTagEntityId7()).collect(Collectors.toList()));
+    @Test
+    void updateNonNullFieldsFromDtoToEntityWithNullTagTest() {
+        GiftCertificateEntity oldGift = getNewGiftCertificateEntityId4();
+        oldGift.setId(3);
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId3();
+        newGift.setTags(null);
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntityId3();
+        expectedGift.setTags(oldGift.getTags());
+
+        updateNonNullFieldsFromDtoToEntity(newGift, oldGift);
+        assertEquals(expectedGift, oldGift);
     }
 
-    private GiftCertificateEntity getEntityId2() {
-        return new GiftCertificateEntity(2, "Car wash",
-                "Complex for cars with washing and body treatment from KlinArt", 100.0, 180, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId5()).collect(Collectors.toList()));
+    @Test
+    void updateNonNullFieldsFromDtoToEntityAllNotNullFieldsTest() {
+        GiftCertificateEntity oldGift = getNewGiftCertificateEntityId4();
+        oldGift.setId(1);
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId1();
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntityId1();
+
+        updateNonNullFieldsFromDtoToEntity(newGift, oldGift);
+
+        assertEquals(expectedGift, oldGift);
+        assertEquals(getGiftCertificateDtoId1(), newGift);
     }
 
-    private GiftCertificateEntity getEntityId4() {
-        return new GiftCertificateEntity(4, "Bowling for the company",
-                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagEntityId5(), getTagEntityId7()).collect(Collectors.toList()));
+    @Test
+    void updateNonNullFieldsFromDtoToEntityWithNullFieldsTest() {
+        GiftCertificateEntity oldGift = getNewGiftCertificateEntityId2();
+        GiftCertificateDto newGift = getNewGiftCertificateDtoId2();
+        GiftCertificateEntity expectedGift = getNewGiftCertificateEntityId2();
+        newGift.setName("New name");
+        newGift.setDescription(null);
+        newGift.setCreateDate(null);
+        newGift.setDuration(null);
+        expectedGift.setName("New name");
+
+        updateNonNullFieldsFromDtoToEntity(newGift, oldGift);
+
+        assertEquals(expectedGift, oldGift);
     }
 
-    private GiftCertificateDto getDtoId1() {
-        return new GiftCertificateDto(1, "Water skiing",
-                "Water skiing on Minsk sea", 20.0, 50, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId1(), getTagDtoId2(), getTagDtoId7()).collect(Collectors.toList()));
+    @Test
+    void sortingValidationTest() throws ValidateException {
+        CriteriaDto cr = new CriteriaDto();
+        cr.setSorting("id");
+        sortingValidation(cr);
+
+        cr.setSorting("-id");
+        sortingValidation(cr);
+
+        cr.setSorting("criteria");
+        assertThrows(ValidateException.class,
+                () -> sortingValidation(cr));
     }
 
-    private GiftCertificateDto getDtoId2() {
-        return new GiftCertificateDto(2, "Car wash",
-                "Complex for cars with washing and body treatment from KlinArt", 100.0, 180, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId5()).collect(Collectors.toList()));
+    @Test
+    void allNotNullFieldValidationTest() {
+        GiftCertificateDto dto = new GiftCertificateDto();
+
+        assertTrue(isNullFieldValidation(dto));
+
+        dto = getNewGiftCertificateDtoId1();
+        assertFalse(isNullFieldValidation(dto));
+
+        dto.setName(null);
+        assertTrue(isNullFieldValidation(dto));
+
+        dto.setName("Name");
+        dto.setTags(null);
+        assertTrue(isNullFieldValidation(dto));
     }
 
-    private GiftCertificateDto getDtoId4() {
-        return new GiftCertificateDto(4, "Bowling for the company",
-                "Bowling will be an excellent option for outdoor activities for a large company", 45.0, 60, LocalDateTime.parse("2022-04-27T04:43:55.000"),
-                LocalDateTime.parse("2022-04-27T04:43:55.000"), Stream.of(getTagDtoId5(), getTagDtoId7()).collect(Collectors.toList()));
-    }
+//    @Test
+//    void giftCertificateCriteriaValidationAllOk() throws ValidateException {
+//        Map<String, String> criteriaMap = new HashMap<>();
+//        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag1");
+//        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+//        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
+//        String sorting = "-name";
+//
+//        GiftCertificateUtil.giftCertificateCriteriaValidation(criteriaMap, sorting);
+//    }
 
-    private List<GiftCertificateEntity> getEntityList() {
-        List<GiftCertificateEntity> entityList = new ArrayList<>();
-        entityList.add(getEntityId1());
-        entityList.add(getEntityId2());
-        entityList.add(getEntityId4());
-        return entityList;
-    }
+//    @Test
+//    void giftCertificateCriteriaWrongTagName(){
+//        Map<String, String> criteriaMap = new HashMap<>();
+//        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tagsaaaaaaaaaaaaaaaaaaddddddddddddddddde1daaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//        criteriaMap.put(GIFT_SEARCH_NAME, "namenioooooooooooooooovbyiiiiiiiiiiiadsssssiiiiii");
+//        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
+//        String sorting = "+name";
+//
+//        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateUtil.giftCertificateCriteriaValidation(criteriaMap, sorting));
+//        assertEquals("incorrect.param.tag", e.getResourceBundleCodeList().get(1));
+//        assertEquals("incorrect.param.name", e.getResourceBundleCodeList().get(0));
+//        assertEquals(2, e.getResourceBundleCodeList().size());
+//    }
 
-    private List<GiftCertificateDto> getDtoList(){
-        List<GiftCertificateDto> dtoList = new ArrayList<>();
-        dtoList.add(getDtoId1());
-        dtoList.add(getDtoId2());
-        dtoList.add(getDtoId4());
-        return dtoList;
-    }
-
-    private TagEntity getTagEntityId1() {
-        return new TagEntity(1, "Sport");
-    }
-
-    private TagEntity getTagEntityId2() {
-        return new TagEntity(2, "Water");
-    }
-
-    private TagEntity getTagEntityId5() {
-        return new TagEntity(5, "Auto");
-    }
-
-    private TagEntity getTagEntityId7() {
-        return new TagEntity(7, "Health");
-    }
-
-    private TagDto getTagDtoId1() {
-        return new TagDto(1, "Sport");
-    }
-
-    private TagDto getTagDtoId2() {
-        return new TagDto(2, "Water");
-    }
-
-    private TagDto getTagDtoId5() {
-        return new TagDto(5, "Auto");
-    }
-
-    private TagDto getTagDtoId7() {
-        return new TagDto(7, "Health");
-    }
+//    @Test
+//    void giftCertificateCriteriaWrongSortingName(){
+//        Map<String, String> criteriaMap = new HashMap<>();
+//        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag");
+//        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+//        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
+//        String sorting = "++name";
+//
+//        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateUtil.giftCertificateCriteriaValidation(criteriaMap, sorting));
+//        assertEquals("incorrect.param.sorting", e.getResourceBundleCodeList().get(0));
+//        assertEquals(1, e.getResourceBundleCodeList().size());
+//    }
+//
+//    @Test
+//    void giftCertificateCriteriaWrongParam(){
+//        Map<String, String> criteriaMap = new HashMap<>();
+//        criteriaMap.put(GIFT_SEARCH_BY_TAG_NAME, "tag");
+//        criteriaMap.put(GIFT_SEARCH_NAME, "name");
+//        criteriaMap.put(GIFT_SEARCH_DESCRIPTION, "description");
+//        criteriaMap.put("incorrect", "description");
+//
+//        ValidateException e = assertThrows(ValidateException.class, () ->  GiftCertificateUtil.giftCertificateCriteriaValidation(criteriaMap, null));
+//        assertEquals("incorrect.param", e.getResourceBundleCodeList().get(0));
+//        assertEquals(1, e.getResourceBundleCodeList().size());
+//    }
 }

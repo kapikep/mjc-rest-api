@@ -14,8 +14,8 @@ import java.util.List;
 
 @Validated
 public interface OrderForGiftCertificateService {
-    List<OrderForGiftCertificateDto> getUserOrdersForGiftCertificate(@Positive long userId,
-                                                                     @Valid CriteriaDto criteriaDto) throws ValidateException, ServiceException;
+    List<OrderForGiftCertificateDto> readUserOrdersForGiftCertificatePaginated(@Positive long userId,
+                                                                               @Valid CriteriaDto criteriaDto) throws ValidateException, ServiceException;
 
     OrderForGiftCertificateDto createOrderForGiftCertificate(@Positive long customerId,
                                                              @NotEmpty List<@Valid OrderItemDto> orderItems) throws ValidateException, ServiceException;

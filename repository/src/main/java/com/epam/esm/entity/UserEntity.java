@@ -3,6 +3,7 @@ package com.epam.esm.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -18,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "orders")
 @ToString(exclude = "orders")
 @Entity
 @Table(name = "users")

@@ -20,7 +20,7 @@ public interface GiftCertificateRepository {
      */
     List<GiftCertificateEntity> readAll() throws RepositoryException;
 
-    List<GiftCertificateEntity> readAllPaginated(CriteriaEntity cr) throws RepositoryException;
+    List<GiftCertificateEntity> readPaginated(CriteriaEntity cr) throws RepositoryException;
 
     /**
      * Reads gift certificate by id from database

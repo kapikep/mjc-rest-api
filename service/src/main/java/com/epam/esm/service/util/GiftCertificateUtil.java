@@ -11,6 +11,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.epam.esm.repository.constant.SearchParam.GIFT_CERTIFICATE_SORT_PARAM;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.ExceptionMes.GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * Utils for gift certificate
@@ -22,32 +27,29 @@ public class GiftCertificateUtil {
     /**
      * Converting giftCertificateEntity to giftCertificateListDto
      */
-    public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificateEntity> giftCertificateList) throws ValidateException {
-        if(giftCertificateList == null){
-            throw new ValidateException("GiftCertificate entities list is null");
-        }
+    public static List<GiftCertificateDto> giftCertificateEntityListToDtoConverting(List<GiftCertificateEntity> giftCertificateList) {
+        notNull(giftCertificateList, GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL);
+
         List<GiftCertificateDto> giftCertificateDtoList = new ArrayList<>();
         for (GiftCertificateEntity entity : giftCertificateList) {
-            giftCertificateDtoList.add(giftCertificateEntityToDtoTransfer(entity));
+            giftCertificateDtoList.add(giftCertificateEntityToDtoConverting(entity));
         }
         return giftCertificateDtoList;
     }
 
-    public static List<GiftCertificateEntity> giftCertificateDtoListToEntityConverting(List<GiftCertificateDto> dtos) throws ValidateException {
-        if(dtos == null){
-            throw new ValidateException("GiftCertificate dto list is null");
-        }
+    public static List<GiftCertificateEntity> giftCertificateDtoListToEntityConverting(List<GiftCertificateDto> giftCertificateDtoList) {
+        notNull(giftCertificateDtoList, GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL);
+
         List<GiftCertificateEntity> entities = new ArrayList<>();
-        for (GiftCertificateDto dto : dtos) {
-            entities.add(giftCertificateDtoToEntityTransfer(dto));
+        for (GiftCertificateDto dto : giftCertificateDtoList) {
+            entities.add(giftCertificateDtoToEntityConverting(dto));
         }
         return entities;
     }
 
-    public static GiftCertificateEntity giftCertificateDtoToEntityTransfer(GiftCertificateDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("GiftCertificateDto is null");
-        }
+    public static GiftCertificateEntity giftCertificateDtoToEntityConverting(GiftCertificateDto dto) {
+        notNull(dto, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+
         GiftCertificateEntity entity = new GiftCertificateEntity();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
@@ -60,19 +62,17 @@ public class GiftCertificateUtil {
         return entity;
     }
 
-    public static GiftCertificateDto giftCertificateEntityToDtoTransfer(GiftCertificateEntity entity) throws ValidateException {
+    public static GiftCertificateDto giftCertificateEntityToDtoConverting(GiftCertificateEntity entity) {
         GiftCertificateDto dto = new GiftCertificateDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
-    public static void updateFieldsInDtoFromEntity(GiftCertificateEntity entity, GiftCertificateDto dto) throws ValidateException {
-        if(dto == null){
-            throw new ValidateException("GiftCertificateDto is null");
-        }
-        if(entity == null){
-            throw new ValidateException("GiftCertificateEntity is null");
-        }
+    public static void updateFieldsInDtoFromEntity(GiftCertificateEntity entity,
+                                                   GiftCertificateDto dto) {
+        notNull(entity, GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL);
+        notNull(dto, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
@@ -86,11 +86,14 @@ public class GiftCertificateUtil {
     /**
      * Updates fields in new GiftCertificate from old GiftCertificate if it's null in new GiftCertificate
      */
-    public static void updateFields(GiftCertificateDto newGiftCertificate, GiftCertificateDto oldGiftCertificate) {
+    public static void updateFieldsInDto(GiftCertificateDto newGiftCertificate, GiftCertificateDto oldGiftCertificate) {
+        notNull(newGiftCertificate, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+        notNull(oldGiftCertificate, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+
         if (newGiftCertificate.getName() == null) {
             newGiftCertificate.setName(oldGiftCertificate.getName());
         }
-        if(newGiftCertificate.getDescription() == null){
+        if (newGiftCertificate.getDescription() == null) {
             newGiftCertificate.setDescription(oldGiftCertificate.getDescription());
         }
         if (newGiftCertificate.getPrice() == null) {
@@ -110,15 +113,34 @@ public class GiftCertificateUtil {
         }
     }
 
+    public static void updateNonNullFieldsFromDtoToEntity(GiftCertificateDto newGiftCertificate,
+                                                          GiftCertificateEntity oldGiftCertificate) {
+        notNull(newGiftCertificate, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+        notNull(oldGiftCertificate, GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
+
+        if (newGiftCertificate.getName() != null) {
+            oldGiftCertificate.setName(newGiftCertificate.getName());
+        }
+        if (newGiftCertificate.getDescription() != null) {
+            oldGiftCertificate.setDescription(newGiftCertificate.getDescription());
+        }
+        if (newGiftCertificate.getPrice() != null) {
+            oldGiftCertificate.setPrice(newGiftCertificate.getPrice());
+        }
+        if (newGiftCertificate.getDuration() != null) {
+            oldGiftCertificate.setDuration(newGiftCertificate.getDuration());
+        }
+        if (newGiftCertificate.getTags() != null) {
+            oldGiftCertificate.setTags(TagUtil.tagDtoListToEntityConverting(newGiftCertificate.getTags()));
+        }
+    }
+
     public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
         CriteriaUtil.sortingValidation(crDto, GIFT_CERTIFICATE_SORT_PARAM);
     }
 
-    public static boolean isNullFieldValidation(GiftCertificateDto g) throws ValidateException {
-        if (g.getId() == 0) {
-            throw new ValidateException("incorrect.id");
-        }
+    public static boolean isNullFieldValidation(GiftCertificateDto g) {
         return Stream.of(g.getId(), g.getName(), g.getDescription(), g.getPrice(), g.getDuration(),
-                g.getCreateDate(), g.getTags()).anyMatch(Objects::isNull);
+                g.getTags()).anyMatch(Objects::isNull);
     }
 }

@@ -15,11 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "order")
 @ToString(exclude = "order")
 @Entity
 @Table(name = "order_item")
@@ -42,4 +43,6 @@ public class OrderItemEntity  extends AuditingEntity implements Serializable {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+
 }

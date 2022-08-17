@@ -41,7 +41,7 @@ public class UserRestController {
         cr.setSize(size);
         cr.setSorting(sort);
 
-        List<UserDto> dtoList = userService.readAllUsersPaginated(cr);
+        List<UserDto> dtoList = userService.readUsersPaginated(cr);
 
         dtoList.forEach(dto -> dto.add(getSelfLink(UserRestController.class, dto.getId())));
 
@@ -59,7 +59,7 @@ public class UserRestController {
         cr.setPage(page);
         cr.setSize(size);
         cr.setSorting(sort);
-        List<OrderForGiftCertificateDto> order = orderService.getUserOrdersForGiftCertificate(customerId, cr);
+        List<OrderForGiftCertificateDto> order = orderService.readUserOrdersForGiftCertificatePaginated(customerId, cr);
 
         PagedModel<OrderForGiftCertificateDto> pagedModel = PaginationUtil.createPagedModel(order, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
@@ -67,7 +67,7 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}")
-    public UserDto readUser(@PathVariable long id) throws ValidateException, ServiceException {
+    public UserDto readUser(@PathVariable long id) throws ServiceException {
         UserDto dto = userService.readUserById(id);
         dto.add(getSelfLink(UserRestController.class, dto.getId()));
         return dto;
@@ -78,7 +78,6 @@ public class UserRestController {
     public OrderForGiftCertificateDto createOrder(@PathVariable long customerId,
                                                   @RequestBody List<OrderItemDto> items) throws ValidateException, ServiceException {
 
-        OrderForGiftCertificateDto order = orderService.createOrderForGiftCertificate(customerId, items);
-        return order;
+        return orderService.createOrderForGiftCertificate(customerId, items);
     }
 }

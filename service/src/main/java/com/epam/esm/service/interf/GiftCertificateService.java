@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Validated
 public interface GiftCertificateService {
-    List<GiftCertificateDto> readAllGiftCertificatesPaginated(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
+    List<GiftCertificateDto> readGiftCertificatesPaginated(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
 
     List<GiftCertificateDto> findGiftCertificatesByCriteria(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
 
@@ -29,14 +29,7 @@ public interface GiftCertificateService {
      *
      * @return gift certificate from repository
      */
-    GiftCertificateDto readGiftCertificateById(String id) throws ServiceException, ValidateException;
-
-    /**
-     * Validates id and reads gift certificates by id from repository
-     *
-     * @return gift certificate from repository
-     */
-    GiftCertificateDto readGiftCertificateById(@Positive long id) throws ServiceException, ValidateException;
+    GiftCertificateDto readGiftCertificateById(@Positive long id) throws ServiceException;
 
     @Validated(OnCreate.class)
     void createGiftCertificate(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
@@ -44,5 +37,5 @@ public interface GiftCertificateService {
     @Validated(OnUpdate.class)
     void updateGiftCertificate(@Valid GiftCertificateDto dto) throws ServiceException, ValidateException;
 
-    void deleteGiftCertificateById(@Positive long id) throws ServiceException, ValidateException;
+    void deleteGiftCertificateById(@Positive long id) throws ServiceException;
 }

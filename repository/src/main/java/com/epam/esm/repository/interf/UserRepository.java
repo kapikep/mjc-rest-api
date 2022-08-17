@@ -7,7 +7,7 @@ import com.epam.esm.repository.exception.RepositoryException;
 import java.util.List;
 
 public interface UserRepository {
-    List<UserEntity> readAllPaginated(CriteriaEntity cr) throws RepositoryException;
+    List<UserEntity> readPaginated(CriteriaEntity cr) throws RepositoryException;
 
     UserEntity readById(long id) throws RepositoryException;
 
