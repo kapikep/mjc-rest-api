@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.epam.esm.repository.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_BE_1;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_BE_BETWEEN_1_AND;
 import static com.epam.esm.repository.impl.EntityFactory.EntityFactory.getNewCriteriaWithDefaultVal;
 import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId1;
 import static com.epam.esm.repository.impl.EntityFactory.OrderAndItemEntityFactory.getOrderForGiftCertificateEntityId1;
@@ -77,13 +80,13 @@ class OrderForGiftCertificateMySQLRepositoryTest {
         CriteriaEntity cr = new CriteriaEntity(3, 5, "id");
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> orderRepository.readPaginated(cr));
-        assertEquals("Page must be between 1 and 2", e.getMessage());
+        assertEquals(PAGE_MUST_BE_BETWEEN_1_AND + 2, e.getMessage());
 
         cr.setPage(2);
         cr.setSize(20);
 
         e = assertThrows(RepositoryException.class, () -> orderRepository.readPaginated(cr));
-        assertEquals("Page must be 1", e.getMessage());
+        assertEquals(PAGE_MUST_BE_1, e.getMessage());
     }
 
     @Test
@@ -93,7 +96,7 @@ class OrderForGiftCertificateMySQLRepositoryTest {
 
         assertEquals(expectedOrder, actualOrder);
         RepositoryException e = assertThrows(RepositoryException.class, () -> orderRepository.readById(11));
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+        assertEquals(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0, e.getMessage());
     }
 
     @Test
@@ -173,7 +176,7 @@ class OrderForGiftCertificateMySQLRepositoryTest {
     @Test
     void getUserOrdersTest() throws RepositoryException {
         CriteriaEntity cr = getNewCriteriaWithDefaultVal();
-        List<OrderForGiftCertificateEntity> actualOrders = orderRepository.getUserOrdersPaginated(3, cr);
+        List<OrderForGiftCertificateEntity> actualOrders = orderRepository.readUserOrdersPaginated(3, cr);
 
         List<OrderForGiftCertificateEntity> expectedOrders = Arrays.asList(getOrderForGiftCertificateEntityId1(),
                 getOrderForGiftCertificateEntityId2(), getOrderForGiftCertificateEntityId3());

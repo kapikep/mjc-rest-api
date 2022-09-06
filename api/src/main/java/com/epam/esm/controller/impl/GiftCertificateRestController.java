@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink;
@@ -31,7 +32,7 @@ import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink
  * Handles requests to /gift-certificates url
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +42,20 @@ public class GiftCertificateRestController {
     private final MessageSource messageSource;
 
     /**
-     * Finds gift certificate by parameters
+     * Find GiftCertificateDto by tag name, name, description and sort by sorting param paginated.
+     * If optional search parameters not present read gift certificates paginated.
+     * Add pagination information.
+     *
+     * @param tagName     read gift certificates with tag name or several tags. The parameter is optional.
+     * @param name        read gift certificates with name. The parameter is optional.
+     * @param description read gift certificates with description. The parameter is optional.
+     * @param page        page to read. The parameter is optional. Default value 1.
+     * @param size        size of page. The parameter is optional. Default value 20.
+     * @param sort        sorting field. The parameter is optional.
+     * @return GiftCertificateDto list.
+     * @throws ValidateException if page or size is null or less 1.
+     *                           If the page is larger than the total size of the pages.
+     * @throws ServiceException  if sorting field does not match GIFT_CERTIFICATE_SORT_PARAM.
      */
     @GetMapping
     public PagedModel<GiftCertificateDto> findGiftCertificateByParams(
@@ -67,16 +81,8 @@ public class GiftCertificateRestController {
             cr.addSearchParam(SearchParam.GIFT_SEARCH_DESCRIPTION, description);
         }
 
-        long a = System.currentTimeMillis();
-
         gifts = cr.getSearchParam() == null ? giftCertificateService.readGiftCertificatesPaginated(cr)
                 : giftCertificateService.findGiftCertificatesByCriteria(cr);
-
-        long b = System.currentTimeMillis();
-
-        System.out.println("total time -> " + (b - a) + " ms");
-        System.out.println("total size -> " + cr.getTotalSize());
-        System.out.println("list size -> " + gifts.size());
 
         gifts.forEach(PaginationUtil::addGiftCertificateLink);
 
@@ -86,10 +92,13 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Gets gift certificate by id
+     * Read GiftCertificateDto by id.
+     * Add self links to GiftCertificateDto.
      *
-     * @param id id for search
-     * @return gift certificate by id
+     * @param id id for GiftCertificateDto search.
+     * @return GiftCertificateDto by id.
+     * @throws ServiceException             if TagDto with id does not exist.
+     * @throws ConstraintViolationException if id is not positive.
      */
     @GetMapping("/{id}")
     public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ServiceException {
@@ -99,28 +108,36 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Creates gift certificate
+     * Create new gift certificate.
+     * Add self links to GiftCertificateDto.
      *
-     * @param gift gift certificate to create
-     * @return id created gift certificate
+     * @param gift GiftCertificateDto to create.
+     * @return Created GiftCertificateDto.
+     * @throws ConstraintViolationException if GiftCertificateDto fields is constraint violation.
+     * @throws ServiceException if there is problem with creating gift certificate.
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto gift) throws ValidateException, ServiceException {
+    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto gift) throws ServiceException {
         giftCertificateService.createGiftCertificate(gift);
         addGiftCertificateLink(gift);
         return gift;
     }
 
     /**
-     * Updates gift certificate
+     * Update gift certificate
+     * Add self links to GiftCertificateDto.
      *
-     * @param gift gift certificate to update
-     * @return id created gift certificate
+     * @param id   GiftCertificateDto id.
+     * @param gift GiftCertificateDto to update.
+     * @return Updated GiftCertificateDto.
+     * @throws ConstraintViolationException if GiftCertificateDto fields is constraint violation
+     * @throws ServiceException             if entity with this id does not exist.
+     *                                      If there is a problem with updating gift certificate.
      */
     @PatchMapping("/{id}")
     public GiftCertificateDto updateGiftCertificate(@PathVariable long id,
-                                                    @RequestBody GiftCertificateDto gift) throws ValidateException, ServiceException {
+                                                    @RequestBody GiftCertificateDto gift) throws ServiceException {
         gift.setId(id);
         giftCertificateService.updateGiftCertificate(gift);
         addGiftCertificateLink(gift);
@@ -128,10 +145,11 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Deletes gift certificate
+     * Deletes gift certificate by id
      *
      * @param id id gift certificate to delete
-     * @return id deleted gift certificate
+     * @return informational message about success
+     * @throws ServiceException if gift certificate with this id does not exist in repository.
      */
     @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
     public String deleteGiftCertificate(@PathVariable long id) throws ServiceException {

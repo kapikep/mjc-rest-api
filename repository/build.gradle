@@ -26,12 +26,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
-//    runtimeOnly 'mysql:mysql-connector-java'
-
-//    implementation 'org.springframework:spring-jdbc'
-//    implementation 'com.mchange:c3p0:0.9.5.5'
-//    implementation 'org.mariadb.jdbc:mariadb-java-client'
-
     testImplementation 'com.h2database:h2:2.1.210'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

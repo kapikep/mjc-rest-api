@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.epam.esm.repository.constant.ExceptionMes.CRITERIA_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.repository.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
+import static com.epam.esm.repository.constant.ExceptionMes.NO_ENTITY_FOUND_FOR_QUERY;
+import static com.epam.esm.repository.constant.ExceptionMes.NO_ENTITY_FOUND_FOR_QUERY;
+import static com.epam.esm.repository.constant.ExceptionMes.NO_ENTITY_FOUND_FOR_QUERY;
+import static com.epam.esm.repository.constant.ExceptionMes.NO_ENTITY_FOUND_FOR_QUERY;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_BE_1;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_BE_BETWEEN_1_AND;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_NOT_BE_NULL;
 import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId3;
 import static com.epam.esm.repository.impl.EntityFactory.GiftCertificateEntityFactory.getGiftCertificateEntityId5;
 import static com.epam.esm.repository.impl.EntityFactory.TagEntityFactory.getNewTagEntity;
@@ -41,11 +51,11 @@ import static com.epam.esm.repository.impl.EntityFactory.TagEntityFactory.getTag
 import static com.epam.esm.repository.impl.EntityFactory.TagEntityFactory.getTagEntityId6;
 import static com.epam.esm.repository.impl.EntityFactory.TagEntityFactory.getTagEntityId7;
 import static com.epam.esm.repository.impl.EntityFactory.UserEntityFactory.getUserEntityId4;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -61,14 +71,14 @@ class TagMySQLRepositoryTest {
     List<TagEntity> tags;
 
     @Test
-    void readAllTagsTest() throws RepositoryException {
+    void readAllTagsTest() {
         tags = tagRepository.readAll();
         assertFalse(tags.isEmpty());
         tags.forEach(Assertions::assertNotNull);
     }
 
     @Test
-    void readAllTagsDataConsistenceTest() throws RepositoryException {
+    void readAllTagsDataConsistenceTest() {
         tags = tagRepository.readAll();
 
         assertEquals(getTagEntityId1(), tags.get(0));
@@ -101,28 +111,29 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void readAllTagsNullCriteriaTest(){
-        RepositoryException e = assertThrows(RepositoryException.class,
+    void readAllTagsNullCriteriaTest() {
+        InvalidDataAccessApiUsageException e = assertThrows(InvalidDataAccessApiUsageException.class,
                 () -> tagRepository.readPaginated(null));
-        assertEquals("Criteria must be not null", e.getMessage());
+        assertTrue(e.getMessage().contains(CRITERIA_ENTITY_MUST_NOT_BE_NULL));
 
-        e = assertThrows(RepositoryException.class,
-                () -> tagRepository.readPaginated(new CriteriaEntity(null , 5, null)));
-        assertEquals("Size and page must be not null", e.getMessage());
+
+        e = assertThrows(InvalidDataAccessApiUsageException.class,
+                () -> tagRepository.readPaginated(new CriteriaEntity(null, 5, null)));
+        assertTrue(e.getMessage().contains(PAGE_MUST_NOT_BE_NULL));
     }
 
     @Test
-    void readAllTagsPaginatedWithExceptionTest(){
+    void readAllTagsPaginatedWithExceptionTest() {
         CriteriaEntity cr = new CriteriaEntity(3, 5, "id");
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> tagRepository.readPaginated(cr));
-        assertEquals("Page must be between 1 and 2", e.getMessage());
+        assertEquals(PAGE_MUST_BE_BETWEEN_1_AND + "2", e.getMessage());
 
         cr.setPage(2);
         cr.setSize(20);
 
         e = assertThrows(RepositoryException.class, () -> tagRepository.readPaginated(cr));
-        assertEquals("Page must be 1", e.getMessage());
+        assertEquals(PAGE_MUST_BE_1, e.getMessage());
     }
 
     @Test
@@ -132,7 +143,7 @@ class TagMySQLRepositoryTest {
 
         assertEquals(expectedTag, actualTag);
         RepositoryException e = assertThrows(RepositoryException.class, () -> tagRepository.readById(-1));
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+        assertEquals(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0, e.getMessage());
     }
 
     @Test
@@ -161,7 +172,6 @@ class TagMySQLRepositoryTest {
         expectedTag.setId(66);
         expectedTag = tagRepository.merge(expectedTag);
         long id = expectedTag.getId();
-        System.out.println(id);
         TagEntity actualTag = tagRepository.readByName("New tag");
         assertEquals(expectedTag.getName(), actualTag.getName());
         actualTag = tagRepository.readById(id);
@@ -186,7 +196,7 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void createExistsTagTest(){
+    void createExistsTagTest() {
         TagEntity expectedTag = new TagEntity(0, "Sport");
         assertThrows(DataIntegrityViolationException.class, () -> tagRepository.create(expectedTag));
     }
@@ -224,7 +234,7 @@ class TagMySQLRepositoryTest {
         EmptyResultDataAccessException e = assertThrows(EmptyResultDataAccessException.class,
                 () -> tagRepository.readByName("Tag3"));
 
-        assertTrue(Objects.requireNonNull(e.getMessage()).contains("No entity found for query"));
+        assertTrue(Objects.requireNonNull(e.getMessage()).contains(NO_ENTITY_FOUND_FOR_QUERY));
     }
 
     @Test
@@ -233,7 +243,7 @@ class TagMySQLRepositoryTest {
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> tagRepository.readById(7));
 
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+        assertEquals(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0, e.getMessage());
     }
 
     @Test
@@ -242,7 +252,7 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void findMostWidelyTagTest(){
+    void findMostWidelyTagTest() {
         tags = tagRepository.findMostWidelyTag();
 
         assertEquals(2, tags.size());
@@ -251,7 +261,7 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void findMostWidelyTagTwoUsersTest() throws RepositoryException {
+    void findMostWidelyTagTwoUsersTest() {
         OrderItemEntity orderItem = new OrderItemEntity(0, getGiftCertificateEntityId5(), null, 1);
         OrderForGiftCertificateEntity expectedOrder = new OrderForGiftCertificateEntity(0, LocalDateTime.now(),
                 new BigDecimal("130.0"), getUserEntityId4(), Stream.of(orderItem).collect(Collectors.toList()));
@@ -267,7 +277,7 @@ class TagMySQLRepositoryTest {
     }
 
     @Test
-    void findMostWidelyTagAddOrderToUserId4Test() throws RepositoryException {
+    void findMostWidelyTagAddOrderToUserId4Test() {
         OrderItemEntity orderItem = new OrderItemEntity(0, getGiftCertificateEntityId3(), null, 3);
         OrderForGiftCertificateEntity expectedOrder = new OrderForGiftCertificateEntity(0, LocalDateTime.now(),
                 new BigDecimal("230.0"), getUserEntityId4(), Stream.of(orderItem).collect(Collectors.toList()));
@@ -279,16 +289,4 @@ class TagMySQLRepositoryTest {
         assertEquals(1, tags.size());
         assertEquals(getTagEntityId7(), tags.get(0));
     }
-
-//    @Test
-//    void put1000tags() throws RepositoryException {
-//
-//        for (int i = 0; i < 1000; i++) {
-//            try {
-//                repository.create(new TagEntity(0, "Tag" + i));
-//            }catch (Exception e){
-//                System.out.println(e);
-//            }
-//        }
-//    }
 }

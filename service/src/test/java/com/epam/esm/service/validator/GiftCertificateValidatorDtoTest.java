@@ -17,7 +17,7 @@ public class GiftCertificateValidatorDtoTest {
     private Set<ConstraintViolation<GiftCertificateDto>> constraintViolations;
 
     @Test
-    void onCreateGiftCertificateValidatorTest(){
+    void onCreateGiftCertificateValidatorTest() {
         GiftCertificateDto gift = new GiftCertificateDto();
 
         constraintViolations = validator.validate(gift, OnCreate.class);
@@ -45,7 +45,7 @@ public class GiftCertificateValidatorDtoTest {
     }
 
     @Test
-    void onUpdateGiftCertificateValidatorTest(){
+    void onUpdateGiftCertificateValidatorTest() {
         GiftCertificateDto gift = new GiftCertificateDto();
 
         constraintViolations = validator.validate(gift, OnUpdate.class);

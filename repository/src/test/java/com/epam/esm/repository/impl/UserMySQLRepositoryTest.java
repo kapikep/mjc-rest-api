@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.epam.esm.repository.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
+import static com.epam.esm.repository.constant.ExceptionMes.PAGE_MUST_BE_1;
 import static com.epam.esm.repository.impl.EntityFactory.EntityFactory.getNewCriteriaWithDefaultVal;
 import static com.epam.esm.repository.impl.EntityFactory.UserEntityFactory.getNewUserEntityId1;
 import static com.epam.esm.repository.impl.EntityFactory.UserEntityFactory.getNewUserEntityId3;
@@ -63,7 +65,7 @@ class UserMySQLRepositoryTest {
         cr.setSize(20);
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> userRepository.readPaginated(cr));
-        assertEquals("Page must be 1", e.getMessage());
+        assertEquals(PAGE_MUST_BE_1, e.getMessage());
     }
 
     @Test
@@ -73,7 +75,7 @@ class UserMySQLRepositoryTest {
 
         assertEquals(expectedTag, actualTag);
         RepositoryException e = assertThrows(RepositoryException.class, () -> userRepository.readById(6));
-        assertEquals("Incorrect result size: expected 1, actual 0", e.getMessage());
+        assertEquals(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0, e.getMessage());
     }
 
     @Test
@@ -84,7 +86,7 @@ class UserMySQLRepositoryTest {
     }
 
     @Test
-    void findUserWithHighestCostAddNewOrderTest() throws RepositoryException {
+    void findUserWithHighestCostAddNewOrderTest() {
         orderRepository.create(new OrderForGiftCertificateEntity(0, LocalDateTime.now(), new BigDecimal(130),
                 getNewUserEntityId4(), null));
         users = userRepository.findUserWithHighestCostOfAllOrders();
@@ -92,29 +94,4 @@ class UserMySQLRepositoryTest {
         assertEquals(getNewUserEntityId3(), users.get(0));
         assertEquals(getNewUserEntityId4(), users.get(1));
     }
-
-//    @Test
-//    void put1000users(){
-//        Random r = new Random();
-//        UserEntity user;
-//        long phoneNumber = 375_292_899_999L;
-//        String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789&";
-//
-//        for (int i = 0; i < 1000; i++) {
-//            StringBuilder password = new StringBuilder();
-//            for (int j = 0; j < Math.random() * (15 - 6) + 6; j++) {
-//                char ch = alphabet.charAt(r.nextInt(alphabet.length()));
-//                password.append(ch);
-//            }
-//            try {
-//                phoneNumber += i;
-//                user = new UserEntity(0L, "First name" + r.nextInt(100),
-//                        "Second name" + r.nextInt(100), "login" + i, password.toString(),
-//                        "+" + phoneNumber);
-//                repository.create(user);
-//            } catch (Exception ignored) {
-//            }
-//        }
-//    }
-
 }

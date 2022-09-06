@@ -6,7 +6,6 @@ import com.epam.esm.entity.OrderItemEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,123 +36,123 @@ public class OrderAndItemEntityFactory {
     private static final OrderItemEntity orderItemId6 = getNewOrderItemEntityId6();
     private static final OrderItemEntity orderItemId7 = getNewOrderItemEntityId7();
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId1(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId1() {
         return new OrderForGiftCertificateEntity(1, LocalDateTime.parse("2022-05-27T04:43:55.000"),
                 new BigDecimal("50.0"), getUserEntityId3(), Stream.of(getNewOrderItemEntityId1()).collect(Collectors.toList()));
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId2(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId2() {
         return new OrderForGiftCertificateEntity(2, LocalDateTime.parse("2022-06-27T04:43:55.000"),
                 new BigDecimal("150.0"), getUserEntityId3(), Stream.of(getNewOrderItemEntityId2()).collect(Collectors.toList()));
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId3(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId3() {
         return new OrderForGiftCertificateEntity(3, LocalDateTime.parse("2022-07-27T04:43:55.000"),
                 new BigDecimal("150.0"), getUserEntityId3(), Stream.of(getNewOrderItemEntityId3()).collect(Collectors.toList()));
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId4(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId4() {
         return new OrderForGiftCertificateEntity(4, LocalDateTime.parse("2022-06-27T04:43:55.000"),
                 new BigDecimal("150.0"), getUserEntityId4(),
                 Stream.of(getNewOrderItemEntityId5(), getNewOrderItemEntityId6()).collect(Collectors.toList()));
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId5(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId5() {
         return new OrderForGiftCertificateEntity(5, LocalDateTime.parse("2022-06-27T04:43:55.000"),
                 new BigDecimal("70.0"), getUserEntityId4(), Stream.of(getNewOrderItemEntityId7()).collect(Collectors.toList()));
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId6(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId6() {
         return new OrderForGiftCertificateEntity(6, LocalDateTime.parse("2022-06-27T04:43:55.000"),
                 new BigDecimal("100.0"), getUserEntityId2(), new ArrayList<>());
     }
 
-    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId7(){
+    public static OrderForGiftCertificateEntity getNewOrderForGiftCertificateEntityId7() {
         return new OrderForGiftCertificateEntity(7, LocalDateTime.parse("2022-06-27T04:43:55.000"),
                 new BigDecimal("30.0"), getUserEntityId1(), Stream.of(getNewOrderItemEntityId4()).collect(Collectors.toList()));
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId1(){
+    public static OrderItemEntity getNewOrderItemEntityId1() {
         return new OrderItemEntity(1, getGiftCertificateEntityId1(), orderForGiftCertificateId1, 2);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId2(){
+    public static OrderItemEntity getNewOrderItemEntityId2() {
         return new OrderItemEntity(2, getGiftCertificateEntityId4(), orderForGiftCertificateId2, 1);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId3(){
+    public static OrderItemEntity getNewOrderItemEntityId3() {
         return new OrderItemEntity(3, getGiftCertificateEntityId5(), orderForGiftCertificateId3, 2);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId4(){
+    public static OrderItemEntity getNewOrderItemEntityId4() {
         return new OrderItemEntity(4, getGiftCertificateEntityId1(), orderForGiftCertificateId7, 5);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId5(){
+    public static OrderItemEntity getNewOrderItemEntityId5() {
         return new OrderItemEntity(5, getGiftCertificateEntityId1(), orderForGiftCertificateId4, 2);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId6(){
+    public static OrderItemEntity getNewOrderItemEntityId6() {
         return new OrderItemEntity(6, getGiftCertificateEntityId2(), orderForGiftCertificateId4, 3);
     }
 
-    public static OrderItemEntity getNewOrderItemEntityId7(){
+    public static OrderItemEntity getNewOrderItemEntityId7() {
         return new OrderItemEntity(7, getGiftCertificateEntityId3(), orderForGiftCertificateId5, 1);
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId1(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId1() {
         return orderForGiftCertificateId1;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId2(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId2() {
         return orderForGiftCertificateId2;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId3(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId3() {
         return orderForGiftCertificateId3;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId4(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId4() {
         return orderForGiftCertificateId4;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId5(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId5() {
         return orderForGiftCertificateId5;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId6(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId6() {
         return orderForGiftCertificateId6;
     }
 
-    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId7(){
+    public static OrderForGiftCertificateEntity getOrderForGiftCertificateEntityId7() {
         return orderForGiftCertificateId7;
     }
 
-    public static OrderItemEntity getOrderItemEntityId1(){
+    public static OrderItemEntity getOrderItemEntityId1() {
         return orderItemId1;
     }
 
-    public static OrderItemEntity getOrderItemEntityId2(){
+    public static OrderItemEntity getOrderItemEntityId2() {
         return orderItemId2;
     }
 
-    public static OrderItemEntity getOrderItemEntityId3(){
+    public static OrderItemEntity getOrderItemEntityId3() {
         return orderItemId3;
     }
 
-    public static OrderItemEntity getOrderItemEntityId4(){
+    public static OrderItemEntity getOrderItemEntityId4() {
         return orderItemId4;
     }
 
-    public static OrderItemEntity getOrderItemEntityId5(){
+    public static OrderItemEntity getOrderItemEntityId5() {
         return orderItemId5;
     }
 
-    public static OrderItemEntity getOrderItemEntityId6(){
+    public static OrderItemEntity getOrderItemEntityId6() {
         return orderItemId6;
     }
 
-    public static OrderItemEntity getOrderItemEntityId7(){
+    public static OrderItemEntity getOrderItemEntityId7() {
         return orderItemId7;
     }
 }

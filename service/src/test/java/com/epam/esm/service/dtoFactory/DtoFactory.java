@@ -4,7 +4,7 @@ import com.epam.esm.dto.CriteriaDto;
 
 import java.util.HashMap;
 
-import static com.epam.esm.service.constant.Constant.ID;
+import static com.epam.esm.repository.constant.Constant.ID;
 
 public class DtoFactory {
     private static final CriteriaDto criteriaDto1 = getNewCriteriaDto1();

@@ -13,58 +13,97 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.List;
+
 /**
- * Service for tags
+ * Service interface for tags
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @Validated
 public interface TagService {
-    List<TagDto> readTagsPaginated(@Valid CriteriaDto cr) throws ServiceException, ValidateException;
-
     /**
-     * Validates id and reads tag by id from repository
+     * Validate CriteriaDto.
+     * Set default value in CriteriaDto.
+     * Read TagEntities from repository and converting it to TagDto list.
      *
-     * @return tag from repository
+     * @param crDto CriteriaEntity with params for pagination.
+     * @return TagDto list
+     * @throws ServiceException  if page or size is null or less 1.
+     *                           If the page is larger than the total size of the pages.
+     *                           If any RepositoryException or DataAccessException has occurred.
+     * @throws ValidateException if sorting field does not match TAG_SORT_PARAM.
      */
-    TagDto readTagById(@Positive long id) throws ServiceException, ValidateException;
+    List<TagDto> readTagsPaginated(@Valid CriteriaDto crDto) throws ServiceException, ValidateException;
 
     /**
-     * Validates name and reads tag by name from repository
+     * Validate id.
+     * Read TagEntity by id from repository and convert it to TagDto.
      *
-     * @return tag from repository
+     * @param id unique identifier of the tag to search for.
+     * @return TagDto by id.
+     * @throws ServiceException if TagEntity with id does not exist.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
-    TagDto readTagByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException, ValidateException;
-
-    List<TagDto> getMostWidelyTag() throws ServiceException;
+    TagDto readTagById(@Positive long id) throws ServiceException;
 
     /**
-     * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
-     * write id in list
+     * Validate name.
+     * Read TagEntity by name from repository and convert it to TagDto.
      *
-     * @param tags list for get ids
+     * @param name TagEntity name. Must be not empty. Min size 2, max 20.
+     * @return TagDto.
+     */
+    TagDto readTagByName(@NotEmpty @Size(min = 2, max = 20) String name) throws ServiceException;
+
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     * If there are several users or tags match to the condition,
+     * all matching tags are returned.
+     *
+     * @return List with TagEntities.
+     */
+    List<TagDto> getMostWidelyTag();
+
+    /**
+     * Validate TagDto fields OnCreate group.
+     * If tag doesn't have an id, a search by name from repository will occur,
+     * if tag does not exist - create new. id field will update from repository.
+     *
+     * @param tags TagDto list.
      */
     @Validated(OnCreate.class)
-    List<TagDto> setIdOrCreateTags(@Valid List<TagDto> tags) throws ServiceException, ValidateException;
+    List<TagDto> setIdOrCreateTags(@Valid List<TagDto> tags) throws ServiceException;
 
     /**
-     * Validates tag fields and creates tag in repository
+     * Validate TagDto fields OnCreate group.
+     * Convert to TagEntity and create new tag in repository.
      *
+     * @param tagDto TagDto to save.
+     * @throws ServiceException if tag name is not unique.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Validated(OnCreate.class)
-    void createTag(@Valid TagDto tag) throws ServiceException, ValidateException;
+    void createTag(@Valid TagDto tagDto) throws ServiceException;
 
     /**
-     * Updates tag in repository
+     * Validate TagDto fields OnUpdate group.
+     * Convert to TagEntity and update tag in repository.
      *
-     * @param tag tag to update
+     * @param tagDto TagDto to update.
+     * @throws ServiceException if tag name is not unique.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Validated(OnUpdate.class)
-    void updateTag(@Valid TagDto tag) throws ServiceException, ValidateException;
+    void updateTag(@Valid TagDto tagDto) throws ServiceException;
 
     /**
-     * Validates id and deletes tag by id in repository
+     * Validate id.
+     * Delete tag by id in repository.
+     *
+     * @param id unique identifier of the tag to delete from repository.
+     * @throws ServiceException if tag with this id does not exist in repository.
+     *                          If tag is linked to any gift certificate.
      */
-    void deleteTagById(@Positive long id) throws ServiceException, ValidateException;
+    void deleteTagById(@Positive long id) throws ServiceException;
 }

@@ -26,7 +26,7 @@ import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGift
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateEntityListToDtoConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateEntityToDtoConverting;
-import static com.epam.esm.service.util.OrderForGiftCertificateUtil.sortingValidation;
+import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateSortingValidation;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -114,16 +114,16 @@ class OrderForGiftCertificateUtilTest {
     }
 
     @Test
-    void sortingValidationTest() throws ValidateException {
+    void orderForGiftCertificateSortingValidationTest() throws ValidateException {
         CriteriaDto cr = new CriteriaDto();
         cr.setSorting("id");
-        sortingValidation(cr);
+        orderForGiftCertificateSortingValidation(cr);
 
         cr.setSorting("-id");
-        sortingValidation(cr);
+        orderForGiftCertificateSortingValidation(cr);
 
         cr.setSorting("criteria");
         assertThrows(ValidateException.class,
-                () -> sortingValidation(cr));
+                () -> orderForGiftCertificateSortingValidation(cr));
     }
 }

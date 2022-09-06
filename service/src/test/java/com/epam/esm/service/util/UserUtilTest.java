@@ -21,7 +21,7 @@ import static com.epam.esm.service.entityFactory.UserEntityFactory.getUserEntity
 import static com.epam.esm.service.entityFactory.UserEntityFactory.getUserEntityId3;
 import static com.epam.esm.service.entityFactory.UserEntityFactory.getUserEntityId4;
 import static com.epam.esm.service.entityFactory.UserEntityFactory.getUserEntityList;
-import static com.epam.esm.service.util.UserUtil.sortingValidation;
+import static com.epam.esm.service.util.UserUtil.userSortingValidation;
 import static com.epam.esm.service.util.UserUtil.updateFieldsInDtoFromEntity;
 import static com.epam.esm.service.util.UserUtil.userDtoListToEntityConverting;
 import static com.epam.esm.service.util.UserUtil.userDtoToEntityConverting;
@@ -110,13 +110,13 @@ class UserUtilTest {
     void sortingValidationTest() throws ValidateException {
         CriteriaDto cr = new CriteriaDto();
         cr.setSorting("id");
-        sortingValidation(cr);
+        userSortingValidation(cr);
 
         cr.setSorting("-id");
-        sortingValidation(cr);
+        userSortingValidation(cr);
 
         cr.setSorting("criteria");
         assertThrows(ValidateException.class,
-                () -> sortingValidation(cr));
+                () -> userSortingValidation(cr));
     }
 }

@@ -9,14 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.repository.constant.SearchParam.ORDER_SORT_PARAM;
-import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL;
-import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL;
-import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
-import static com.epam.esm.service.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.repository.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.repository.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL;
+import static com.epam.esm.repository.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL;
+import static com.epam.esm.repository.constant.ExceptionMes.ORDER_FOR_GIFT_CERTIFICATE_ENTITY_MUST_NOT_BE_NULL;
 import static org.springframework.util.Assert.notNull;
 
+/**
+ * Utils for order for giftCertificate
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 public class OrderForGiftCertificateUtil {
-    public static List<OrderForGiftCertificateDto> orderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities){
+    /**
+     * Converting OrderForGiftCertificateEntity list to OrderForGiftCertificateDto list
+     */
+    public static List<OrderForGiftCertificateDto> orderForGiftCertificateEntityListToDtoConverting(List<OrderForGiftCertificateEntity> entities) {
         notNull(entities, ORDER_FOR_GIFT_CERTIFICATE_ENTITY_LIST_MUST_NOT_BE_NULL);
 
         List<OrderForGiftCertificateDto> dtoList = new ArrayList<>();
@@ -26,6 +35,9 @@ public class OrderForGiftCertificateUtil {
         return dtoList;
     }
 
+    /**
+     * Converting OrderForGiftCertificateDto list to OrderForGiftCertificateEntity list
+     */
     public static List<OrderForGiftCertificateEntity> orderForGiftCertificateDtoListToEntityConverting(List<OrderForGiftCertificateDto> dtoList) {
         notNull(dtoList, ORDER_FOR_GIFT_CERTIFICATE_DTO_LIST_MUST_NOT_BE_NULL);
 
@@ -36,6 +48,9 @@ public class OrderForGiftCertificateUtil {
         return entities;
     }
 
+    /**
+     * Converting OrderForGiftCertificateDto to OrderForGiftCertificateEntity
+     */
     public static OrderForGiftCertificateEntity orderForGiftCertificateDtoToEntityConverting(OrderForGiftCertificateDto dto) {
         notNull(dto, ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
 
@@ -48,12 +63,18 @@ public class OrderForGiftCertificateUtil {
         return entity;
     }
 
+    /**
+     * Converting OrderForGiftCertificateEntity to OrderForGiftCertificateDto
+     */
     public static OrderForGiftCertificateDto orderForGiftCertificateEntityToDtoConverting(OrderForGiftCertificateEntity entity) {
         OrderForGiftCertificateDto dto = new OrderForGiftCertificateDto();
         updateFieldsInDtoFromEntity(entity, dto);
         return dto;
     }
 
+    /**
+     * Update fields in OrderForGiftCertificateDto from OrderForGiftCertificateEntity
+     */
     public static void updateFieldsInDtoFromEntity(OrderForGiftCertificateEntity entity,
                                                    OrderForGiftCertificateDto dto) {
         notNull(dto, ORDER_FOR_GIFT_CERTIFICATE_DTO_MUST_NOT_BE_NULL);
@@ -66,7 +87,13 @@ public class OrderForGiftCertificateUtil {
         dto.setOrderItems(OrderItemUtil.orderItemEntityListToDtoConverting(entity.getOrderItems()));
     }
 
-    public static void sortingValidation(CriteriaDto crDto) throws ValidateException {
+    /**
+     * Validate CriteriaDto sorting field for OrderForGiftCertificateEntity
+     *
+     * @param crDto CriteriaDto
+     * @throws ValidateException if sorting field does not match ORDER_SORT_PARAM
+     */
+    public static void orderForGiftCertificateSortingValidation(CriteriaDto crDto) throws ValidateException {
         CriteriaUtil.sortingValidation(crDto, ORDER_SORT_PARAM);
     }
 }

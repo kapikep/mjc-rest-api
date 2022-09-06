@@ -41,7 +41,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    public static final String MESSAGE = "message";
+    private static final String MESSAGE = "message";
+
     @Mock
     UserRepository userRepository;
 
@@ -71,7 +72,7 @@ class UserServiceImplTest {
             verify(userRepository).readPaginated(crEntity);
             crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
             crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
-            userUtil.verify(() -> UserUtil.sortingValidation(crDto));
+            userUtil.verify(() -> UserUtil.userSortingValidation(crDto));
             assertEquals(userDtoList, actualDtoList);
             assertEquals(totalSize, crDto.getTotalSize());
         }

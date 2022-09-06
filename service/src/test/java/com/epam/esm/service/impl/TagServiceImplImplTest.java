@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.epam.esm.service.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
 import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDtoWithDefaultVal;
 import static com.epam.esm.service.dtoFactory.TagDtoFactory.getNewTagDto;
 import static com.epam.esm.service.dtoFactory.TagDtoFactory.getNewTagDtoId1;
@@ -39,10 +40,9 @@ import static com.epam.esm.service.entityFactory.TagEntityFactory.getNewTagEntit
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getNewTagEntityList;
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId1;
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId5;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.RESOURCE_NOT_FOUND;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
-import static com.epam.esm.service.util.TagUtil.sortingValidation;
+import static com.epam.esm.service.util.TagUtil.tagSortingValidation;
 import static com.epam.esm.service.util.TagUtil.tagEntityListToDtoConverting;
 import static com.epam.esm.service.util.TagUtil.updateFieldsInEntityFromDto;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -57,8 +57,9 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class TagServiceImplImplTest {
+    private static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
+    private static final String MESSAGE = "message";
 
-    public static final String MESSAGE = "message";
     @Mock
     TagRepository tagRepository;
 
@@ -88,7 +89,7 @@ class TagServiceImplImplTest {
             verify(tagRepository).readPaginated(crEntity);
             crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
             crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
-            tagUtil.verify(() -> sortingValidation(crDto));
+            tagUtil.verify(() -> tagSortingValidation(crDto));
             assertEquals(tagDtoList, actualDtoList);
             assertEquals(totalSize, crDto.getTotalSize());
         }
@@ -119,7 +120,7 @@ class TagServiceImplImplTest {
     void readTagByIdTest() throws ServiceException, RepositoryException {
         when(tagRepository.readById(anyLong()))
                 .thenReturn(getNewTagEntityId1())
-                .thenThrow(new RepositoryException("Incorrect result size: expected 1, actual 0"));
+                .thenThrow(new RepositoryException(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0));
 
         TagDto actualTag = tagServiceImpl.readTagById(1);
 
@@ -194,8 +195,6 @@ class TagServiceImplImplTest {
         assertEquals(getTagDtoId5(), actualTag);
 
         verify(tagRepository).readByName("Auto");
-//        assertThrows(ValidateException.class, () -> service.readTagByName(""));
-//        assertThrows(ValidateException.class, () -> service.readTagByName(null));
         assertThrows(ServiceException.class, () -> tagServiceImpl.readTagByName("noSuchName"));
         assertThrows(ServiceException.class, () -> tagServiceImpl.readTagByName("Auto"));
     }
@@ -236,14 +235,12 @@ class TagServiceImplImplTest {
 
         verify(tagRepository).readById(3);
         assertNotEquals(oldTagDto, newTagDto);
-//        assertThrows(ValidateException.class, () -> service.updateTag(new TagDto(-1, null)));
-//        assertThrows(ValidateException.class, () -> service.updateTag(new TagDto(0, "tag")));
     }
 
     @Test
     void updateNotExistTagTest() throws RepositoryException {
         when(tagRepository.readById(anyLong()))
-                .thenThrow(new RepositoryException("Incorrect result size: expected 1, actual 0"));
+                .thenThrow(new RepositoryException(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0));
 
         ServiceException e = assertThrows(ServiceException.class,
                 () -> tagServiceImpl.updateTag(getNewTagDtoId1()));
@@ -259,26 +256,5 @@ class TagServiceImplImplTest {
                 .when(tagRepository).deleteById(1);
         assertThrows(ServiceException.class, () -> tagServiceImpl.deleteTagById(1));
         assertThrows(ServiceException.class, () -> tagServiceImpl.deleteTagById(1));
-
-//        assertThrows(ValidateException.class, () -> service.deleteTagById(-1));
     }
-
-//    @Test
-//    public void iterator_will_return_hello_world() {
-//        //подготавливаем
-//        Iterator i = mock(Iterator.class);
-//        when(i.next()).thenReturn("Hello").thenReturn("World");
-//        //выполняем
-//        String result = i.next() + " " + i.next();
-//        //сравниваем
-//        System.out.println(result);
-//        assertEquals("Hello World", result);
-//    }
-//
-//    @Test
-//    public void with_arguments() {
-//        Comparable c = mock(Comparable.class);
-//        when(c.compareTo("Tet")).thenReturn(1);
-//        assertEquals(1, c.compareTo("Tet"));
-//    }
 }

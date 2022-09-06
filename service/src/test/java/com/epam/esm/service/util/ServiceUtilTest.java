@@ -27,6 +27,6 @@ class ServiceUtilTest {
         assertEquals(89998, actualLong);
 
         assertThrows(ValidateException.class,
-                () -> parseInt("555i4"));
+                () -> parseLong("555i4"));
     }
 }

@@ -18,6 +18,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User entity object
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Data
 @Getter
 @NoArgsConstructor

@@ -12,6 +12,9 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+/**
+ * JPA entity listener to capture auditing information on persisting and updating entities.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

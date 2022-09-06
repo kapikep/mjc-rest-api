@@ -4,7 +4,7 @@ import com.epam.esm.entity.CriteriaEntity;
 
 import java.util.HashMap;
 
-import static com.epam.esm.service.constant.Constant.ID;
+import static com.epam.esm.repository.constant.Constant.ID;
 
 public class EntityFactory {
     private static final CriteriaEntity criteriaEntity1 = getNewCriteriaEntity1();
