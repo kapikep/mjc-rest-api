@@ -46,35 +46,35 @@ public class TagEntityFactory {
         return new TagEntity(0, "New tag");
     }
 
-    public static TagEntity getTagEntityId1(){
+    public static TagEntity getTagEntityId1() {
         return tagId1;
     }
 
-    public static TagEntity getTagEntityId2(){
+    public static TagEntity getTagEntityId2() {
         return tagId2;
     }
 
-    public static TagEntity getTagEntityId3(){
+    public static TagEntity getTagEntityId3() {
         return tagId3;
     }
 
-    public static TagEntity getTagEntityId4(){
+    public static TagEntity getTagEntityId4() {
         return tagId4;
     }
 
-    public static TagEntity getTagEntityId5(){
+    public static TagEntity getTagEntityId5() {
         return tagId5;
     }
 
-    public static TagEntity getTagEntityId6(){
+    public static TagEntity getTagEntityId6() {
         return tagId6;
     }
 
-    public static TagEntity getTagEntityId7(){
+    public static TagEntity getTagEntityId7() {
         return tagId7;
     }
 
-    public static List<TagEntity> getEntityList(){
+    public static List<TagEntity> getEntityList() {
         return Arrays.asList(tagId1, tagId2, tagId3, tagId4, tagId5, tagId6, tagId7);
     }
 }

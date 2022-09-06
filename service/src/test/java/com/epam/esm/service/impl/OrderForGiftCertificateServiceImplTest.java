@@ -1,24 +1,19 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.CriteriaDto;
-import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.OrderForGiftCertificateDto;
 import com.epam.esm.dto.OrderItemDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.CriteriaEntity;
-import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.OrderForGiftCertificateEntity;
 import com.epam.esm.repository.exception.RepositoryException;
-import com.epam.esm.repository.interf.GiftCertificateRepository;
 import com.epam.esm.repository.interf.OrderForGiftCertificateRepository;
 import com.epam.esm.service.dtoFactory.DtoFactory;
 import com.epam.esm.service.entityFactory.EntityFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
-import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.interf.UserService;
 import com.epam.esm.service.util.CriteriaUtil;
-import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.OrderForGiftCertificateUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,50 +28,37 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDtoWithDefaultVal;
-import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDto;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId1;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId2;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId3;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoId5;
-import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDtoList;
-import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderForGiftCertificateDtoId1;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderForGiftCertificateDtoId4;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderForGiftCertificateDtoList;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId1;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId3;
-import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId4;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId5;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId6;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getNewOrderItemDtoId7;
-import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getOrderForGiftCertificateDtoList;
 import static com.epam.esm.service.dtoFactory.OrderAndItemDtoFactory.getOrderItemDtoId1;
 import static com.epam.esm.service.dtoFactory.UserDtoFactory.getNewUserDtoId4;
-import static com.epam.esm.service.dtoFactory.UserDtoFactory.getUserDtoId4;
-import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId3;
-import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityList;
 import static com.epam.esm.service.entityFactory.OrderAndItemEntityFactory.getNewOrderForGiftCertificateEntityId1;
 import static com.epam.esm.service.entityFactory.OrderAndItemEntityFactory.getNewOrderForGiftCertificateEntityId4;
 import static com.epam.esm.service.entityFactory.OrderAndItemEntityFactory.getNewOrderForGiftCertificateEntityList;
-import static com.epam.esm.service.entityFactory.UserEntityFactory.getNewUserEntityId4;
-import static com.epam.esm.service.impl.OrderForGiftCertificateServiceImpl.ERROR_GIFT_NOT_FOUND;
-import static com.epam.esm.service.impl.OrderForGiftCertificateServiceImpl.ERROR_USER_NOT_FOUND;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
-import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateEntityListToDtoConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateEntityListToDtoConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,8 +67,10 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class OrderForGiftCertificateServiceImplTest {
+    private static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
+    private static final String ERROR_GIFT_NOT_FOUND = "error.gift.not.found";
+    private static final String MESSAGE = "message";
 
-    public static final String MESSAGE = "message";
     @Mock
     OrderForGiftCertificateRepository orderRepository;
 
@@ -112,7 +96,7 @@ class OrderForGiftCertificateServiceImplTest {
         try (MockedStatic<CriteriaUtil> crUtil = Mockito.mockStatic(CriteriaUtil.class);
              MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
 
-            when(orderRepository.getUserOrdersPaginated(userId, crEntity)).thenReturn(orderEntityList);
+            when(orderRepository.readUserOrdersPaginated(userId, crEntity)).thenReturn(orderEntityList);
             orderUtil.when(() -> orderForGiftCertificateEntityListToDtoConverting(orderEntityList))
                     .thenReturn(orderDtoList);
             crUtil.when(() -> criteriaDtoToEntityConverting(crDto)).thenReturn(crEntity);
@@ -120,10 +104,10 @@ class OrderForGiftCertificateServiceImplTest {
             crEntity.setTotalSize(totalSize);
             actualDtoList = orderService.readUserOrdersForGiftCertificatePaginated(userId, crDto);
 
-            verify(orderRepository).getUserOrdersPaginated(userId, crEntity);
+            verify(orderRepository).readUserOrdersPaginated(userId, crEntity);
             crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
             crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
-            orderUtil.verify(() -> OrderForGiftCertificateUtil.sortingValidation(crDto));
+            orderUtil.verify(() -> OrderForGiftCertificateUtil.orderForGiftCertificateSortingValidation(crDto));
             assertEquals(orderDtoList, actualDtoList);
             assertEquals(totalSize, crDto.getTotalSize());
         }
@@ -140,7 +124,7 @@ class OrderForGiftCertificateServiceImplTest {
         try (MockedStatic<CriteriaUtil> crUtil = Mockito.mockStatic(CriteriaUtil.class);
              MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
 
-            when(orderRepository.getUserOrdersPaginated(userId, crEntity)).thenThrow(new RepositoryException(MESSAGE));
+            when(orderRepository.readUserOrdersPaginated(userId, crEntity)).thenThrow(new RepositoryException(MESSAGE));
             orderUtil.when(() -> orderForGiftCertificateEntityListToDtoConverting(orderEntityList))
                     .thenReturn(orderDtoList);
             crUtil.when(() -> criteriaDtoToEntityConverting(crDto)).thenReturn(crEntity);
@@ -210,7 +194,6 @@ class OrderForGiftCertificateServiceImplTest {
         LocalDateTime time = LocalDateTime.now();
 
         try (MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
-//            orderUtil.when(() -> orderForGiftCertificateDtoToEntityConverting(any())).thenReturn(orderEntity);
             OrderForGiftCertificateDto actualOrderDto = orderService.createOrderForGiftCertificate(anyLong(), new ArrayList<>());
 
             assertTrue((time.toEpochSecond(ZoneOffset.UTC) -
@@ -244,8 +227,8 @@ class OrderForGiftCertificateServiceImplTest {
     }
 
     @Test
-    void createOrderForGiftCertificateWithExceptionTest() throws RepositoryException {
-        doThrow(new RepositoryException(MESSAGE)).when(orderRepository).create(any());
+    void createOrderForGiftCertificateWithExceptionTest() {
+        doThrow(new IllegalArgumentException(MESSAGE)).when(orderRepository).create(any());
 
         try (MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
             ServiceException e = assertThrows(ServiceException.class, () -> orderService
@@ -256,7 +239,7 @@ class OrderForGiftCertificateServiceImplTest {
     }
 
     @Test
-    void createOrderForGiftCertificateTest() throws ServiceException, RepositoryException {
+    void createOrderForGiftCertificateTest() throws ServiceException {
         LocalDateTime time = LocalDateTime.now();
         BigDecimal expectedTotalAmount = new BigDecimal("340.0");
         UserDto userDto = getNewUserDtoId4();

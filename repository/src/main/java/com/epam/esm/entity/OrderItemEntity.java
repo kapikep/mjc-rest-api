@@ -17,6 +17,12 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Order item entity object
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +30,7 @@ import java.util.Objects;
 @ToString(exclude = "order")
 @Entity
 @Table(name = "order_item")
-public class OrderItemEntity  extends AuditingEntity implements Serializable {
+public class OrderItemEntity extends AuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +49,4 @@ public class OrderItemEntity  extends AuditingEntity implements Serializable {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
-
-
 }

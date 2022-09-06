@@ -19,10 +19,10 @@ public class CriteriaDto {
     @Min(1)
     @Max(30)
     private Integer size;
-    @Size(min=2, max=15)
+    @Size(min = 2, max = 15)
     private String sorting;
     private Long totalSize;
-    private Map<@Size(min=2, max=40)String, @Size(min=2, max=40) String> searchParam;
+    private Map<@Size(min = 2, max = 40) String, @Size(min = 2, max = 40) String> searchParam;
 
     public CriteriaDto(Integer page, Integer size, String sorting) {
         this.page = page;
@@ -30,8 +30,8 @@ public class CriteriaDto {
         this.sorting = sorting;
     }
 
-    public void addSearchParam(String fieldName, String fieldValue){
-        if(searchParam == null){
+    public void addSearchParam(String fieldName, String fieldValue) {
+        if (searchParam == null) {
             searchParam = new HashMap<>();
         }
         searchParam.put(fieldName, fieldValue);

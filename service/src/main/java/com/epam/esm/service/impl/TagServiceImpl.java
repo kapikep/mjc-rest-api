@@ -10,7 +10,6 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.util.CriteriaUtil;
-import com.epam.esm.service.util.ServiceUtil;
 import com.epam.esm.service.util.TagUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -20,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.RESOURCE_NOT_FOUND;
+import static com.epam.esm.repository.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
+import static com.epam.esm.repository.constant.ExceptionMes.ZERO_UPDATED_ROWS;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.TagUtil.tagDtoToEntityConverting;
 import static com.epam.esm.service.util.TagUtil.tagEntityListToDtoConverting;
@@ -29,21 +29,41 @@ import static com.epam.esm.service.util.TagUtil.updateFieldsInDtoFromEntity;
 import static com.epam.esm.service.util.TagUtil.updateFieldsInEntityFromDto;
 
 /**
- * Service for tags
+ * Service for tags.
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
+    private static final String NAME_UNIQUE = "name_UNIQUE";
+    private static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
+    private static final String TAG_EXISTING = "tag.existing";
+    private static final String TAG_NAME_NOT_EXIST = "tag.name.not.exist";
+    private static final String ERROR_RESOURCE_NOT_FOUND = "error.resource.not.found";
+    private static final String INCORRECT_SEARCH_ID = "incorrect.search.id";
+    private static final String ERROR_TAG_LINKED = "error.tag.linked";
+
     private final TagRepository tagRepository;
 
+    /**
+     * Validate CriteriaDto.
+     * Set default value in CriteriaDto.
+     * Read TagEntities from repository and converting it to TagDto list.
+     *
+     * @param crDto CriteriaEntity with params for pagination.
+     * @return TagDto list
+     * @throws ServiceException  if page or size is null or less 1.
+     *                           If the page is larger than the total size of the pages.
+     *                           If any RepositoryException or DataAccessException has occurred.
+     * @throws ValidateException if sorting field does not match TAG_SORT_PARAM.
+     */
     @Override
     public List<TagDto> readTagsPaginated(CriteriaDto crDto) throws ServiceException, ValidateException {
         List<TagDto> tags;
         CriteriaUtil.setDefaultPageValIfEmpty(crDto);
-        TagUtil.sortingValidation(crDto);
+        TagUtil.tagSortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         try {
             tags = tagEntityListToDtoConverting(tagRepository.readPaginated(cr));
@@ -55,25 +75,33 @@ public class TagServiceImpl implements TagService {
     }
 
     /**
-     * Validates id and reads tag by id from repository
+     * Validate id.
+     * Read TagEntity by id from repository and convert it to TagDto.
      *
-     * @return tag from repository
+     * @param id unique identifier of the tag to search for.
+     * @return TagDto by id.
+     * @throws ServiceException if TagEntity with id does not exist.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Override
     public TagDto readTagById(long id) throws ServiceException {
         TagDto tag;
         try {
             tag = tagEntityToDtoConverting(tagRepository.readById(id));
-        } catch (RepositoryException | DataAccessException e) {
-            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e, ERROR_RESOURCE_NOT_FOUND, id);
+        } catch (DataAccessException e) {
+            throw new ServiceException(e.getMessage(), e);
         }
         return tag;
     }
 
     /**
-     * Validates name and reads tag by name from repository
+     * Validate name.
+     * Read TagEntity by name from repository and convert it to TagDto.
      *
-     * @return tag from repository
+     * @param name TagEntity name. Must be not empty. Min size 2, max 20.
+     * @return TagDto.
      */
     @Override
     public TagDto readTagByName(String name) throws ServiceException {
@@ -81,21 +109,29 @@ public class TagServiceImpl implements TagService {
         try {
             tag = tagEntityToDtoConverting(tagRepository.readByName(name));
         } catch (RepositoryException | DataAccessException e) {
-            throw new ServiceException(e.getMessage(), e, "tag.name.not.exist", name);
+            throw new ServiceException(e.getMessage(), e, TAG_NAME_NOT_EXIST, name);
         }
         return tag;
     }
 
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     * If there are several users or tags match to the condition,
+     * all matching tags are returned.
+     *
+     * @return List with TagEntities.
+     */
     @Override
     public List<TagDto> getMostWidelyTag() {
         return tagEntityListToDtoConverting(tagRepository.findMostWidelyTag());
     }
 
     /**
-     * Validates tags. Update tags id in list from db, if tag not exist - creates new, and
-     * write in list
+     * Validate TagDto fields OnCreate group.
+     * If tag doesn't have an id, a search by name from repository will occur,
+     * if tag does not exist - create new. id field will update from repository.
      *
-     * @param tags list for get ids
+     * @param tags TagDto list.
      */
     @Override
     public List<TagDto> setIdOrCreateTags(List<TagDto> tags) throws ServiceException {
@@ -118,26 +154,36 @@ public class TagServiceImpl implements TagService {
     }
 
     /**
-     * Validates tag fields and creates tag in repository
+     * Validate TagDto fields OnCreate group.
+     * Convert to TagEntity and create new tag in repository.
+     *
+     * @param tagDto TagDto to save.
+     * @throws ServiceException if tag name is not unique.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Override
-    public void createTag(TagDto tag) throws ServiceException {
-        tag.setId(0);
+    public void createTag(TagDto tagDto) throws ServiceException {
+        tagDto.setId(0);
         try {
-            TagEntity entity = tagDtoToEntityConverting(tag);
+            TagEntity entity = tagDtoToEntityConverting(tagDto);
             tagRepository.create(entity);
-            TagUtil.updateFieldsInDtoFromEntity(entity, tag);
+            TagUtil.updateFieldsInDtoFromEntity(entity, tagDto);
         } catch (RepositoryException | DataAccessException e) {
             String mes = e.getMessage();
-            if (mes != null && mes.contains("name_UNIQUE")) {
-                throw new ServiceException(e.getMessage(), e, "tag.existing", tag.getName());
+            if (mes != null && mes.contains(NAME_UNIQUE)) {
+                throw new ServiceException(e.getMessage(), e, TAG_EXISTING, tagDto.getName());
             }
             throw new ServiceException(mes, e);
         }
     }
 
     /**
-     * Validates tag fields and updates tag in repository
+     * Validate TagDto fields OnUpdate group.
+     * Convert to TagEntity and update tag in repository.
+     *
+     * @param tagDto TagDto to update.
+     * @throws ServiceException if tag name is not unique.
+     *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Override
     @Transactional
@@ -145,33 +191,37 @@ public class TagServiceImpl implements TagService {
         try {
             TagEntity entityFromDb = tagRepository.readById(tagDto.getId());
             updateFieldsInEntityFromDto(tagDto, entityFromDb);
-            //TODO close tr
         } catch (RepositoryException | DataAccessException e) {
             String mes = e.getMessage();
-            if (mes != null && mes.contains("Incorrect result size: expected 1, actual 0")) {
+            if (mes != null && mes.contains(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0)) {
                 throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, tagDto.getId());
             }
-            if (mes != null && mes.contains("name_UNIQUE")) {
-                throw new ServiceException(e.getMessage(), e, "tag.existing", tagDto.getName());
+            if (mes != null && mes.contains(NAME_UNIQUE)) {
+                throw new ServiceException(e.getMessage(), e, TAG_EXISTING, tagDto.getName());
             }
-            if (mes != null && mes.contains("0 updated rows")) {
-                throw new ServiceException(e.getMessage(), e, "incorrect.search.id", tagDto.getId());
+            if (mes != null && mes.contains(ZERO_UPDATED_ROWS)) {
+                throw new ServiceException(e.getMessage(), e, INCORRECT_SEARCH_ID, tagDto.getId());
             }
             throw new ServiceException(mes, e);
         }
     }
 
     /**
-     * Validates id and deletes tag by id in repository
+     * Validate id.
+     * Delete tag by id in repository.
+     *
+     * @param id unique identifier of the tag to delete from repository.
+     * @throws ServiceException if tag with this id does not exist in repository.
+     *                          If tag is linked to any gift certificate.
      */
     @Override
     public void deleteTagById(long id) throws ServiceException {
         try {
             tagRepository.deleteById(id);
         } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage(), e, "error.resource.not.found", id);
+            throw new ServiceException(e.getMessage(), e, ERROR_RESOURCE_NOT_FOUND, id);
         } catch (DataIntegrityViolationException e) {
-            throw new ServiceException(e.getMessage(), e, "error.tag.linked");
+            throw new ServiceException(e.getMessage(), e, ERROR_TAG_LINKED);
         }
     }
 }

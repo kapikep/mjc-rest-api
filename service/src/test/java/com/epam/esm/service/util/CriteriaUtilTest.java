@@ -5,16 +5,19 @@ import com.epam.esm.entity.CriteriaEntity;
 import com.epam.esm.service.exception.ValidateException;
 import org.junit.jupiter.api.Test;
 
-import static com.epam.esm.repository.constant.SearchParam.TAG_SORT_PARAM;
 import static com.epam.esm.service.constant.ExceptionMes.CRITERIA_DTO_MUST_NOT_BE_NULL;
 import static com.epam.esm.service.constant.ExceptionMes.CRITERIA_ENTITY_MUST_NOT_BE_NULL;
+import static com.epam.esm.service.constant.SearchParam.GIFT_CERTIFICATE_SEARCH_PARAM;
+import static com.epam.esm.service.constant.SearchParam.TAG_SORT_PARAM;
 import static com.epam.esm.service.dtoFactory.DtoFactory.getCriteriaDto1;
 import static com.epam.esm.service.dtoFactory.DtoFactory.getCriteriaDto2;
+import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDto1;
 import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDto2;
 import static com.epam.esm.service.entityFactory.EntityFactory.getCriteriaEntity1;
 import static com.epam.esm.service.entityFactory.EntityFactory.getCriteriaEntity2;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaEntityToDtoConverting;
+import static com.epam.esm.service.util.CriteriaUtil.searchParamKeyValidation;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.CriteriaUtil.sortingValidation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,7 +92,23 @@ class CriteriaUtilTest {
         sortingValidation(cr, TAG_SORT_PARAM);
 
         cr.setSorting("duration");
-        assertThrows(ValidateException.class,
-                () -> sortingValidation(cr, TAG_SORT_PARAM));
+        assertThrows(ValidateException.class, () -> sortingValidation(cr, TAG_SORT_PARAM));
+    }
+
+    @Test
+    void searchParamKeyValidationTest() throws ValidateException {
+        CriteriaDto cr = getNewCriteriaDto1();
+
+        cr.addSearchParam("name", "search name");
+        searchParamKeyValidation(cr, GIFT_CERTIFICATE_SEARCH_PARAM);
+
+        cr.addSearchParam("id", "search id");
+        searchParamKeyValidation(cr, GIFT_CERTIFICATE_SEARCH_PARAM);
+
+        cr.addSearchParam("description", "search description");
+        searchParamKeyValidation(cr, GIFT_CERTIFICATE_SEARCH_PARAM);
+
+        cr.addSearchParam("create_date", "search date");
+        assertThrows(ValidateException.class, () -> searchParamKeyValidation(cr, GIFT_CERTIFICATE_SEARCH_PARAM));
     }
 }

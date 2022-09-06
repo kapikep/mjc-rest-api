@@ -20,7 +20,7 @@ import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId2;
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityId3;
 import static com.epam.esm.service.entityFactory.TagEntityFactory.getTagEntityList;
-import static com.epam.esm.service.util.TagUtil.sortingValidation;
+import static com.epam.esm.service.util.TagUtil.tagSortingValidation;
 import static com.epam.esm.service.util.TagUtil.tagDtoListToEntityConverting;
 import static com.epam.esm.service.util.TagUtil.tagDtoToEntityConverting;
 import static com.epam.esm.service.util.TagUtil.tagEntityListToDtoConverting;
@@ -139,13 +139,13 @@ class TagUtilTest {
     void sortingValidationTest() throws ValidateException {
         CriteriaDto cr = new CriteriaDto();
         cr.setSorting("id");
-        sortingValidation(cr);
+        tagSortingValidation(cr);
 
         cr.setSorting("-id");
-        sortingValidation(cr);
+        tagSortingValidation(cr);
 
         cr.setSorting("duration");
         assertThrows(ValidateException.class,
-                () -> sortingValidation(cr));
+                () -> tagSortingValidation(cr));
     }
 }

@@ -21,7 +21,7 @@ import java.util.List;
  * Tag entity object
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @Data
 @NoArgsConstructor

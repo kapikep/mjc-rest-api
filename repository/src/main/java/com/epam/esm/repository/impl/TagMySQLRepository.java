@@ -9,14 +9,16 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import static com.epam.esm.repository.constant.Constant.NAME;
+
 /**
- * MySQL repository for tags
+ * MySQL repository for TagEntity
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @Repository
-public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository{
+public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> implements TagRepository {
     private static final String WHERE_T_NAME = "select object (t) from TagEntity t where t.name = :name";
     public static final String MOST_WIDELY_TAG_OF_USER_WITH_HIGHEST_COST = "select `id`, `name`, `create_date`, `last_update_date`" +
             "from (select `t`.id as `id`, `t`.name as `name`," +
@@ -40,16 +42,28 @@ public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> imple
         setClazz(TagEntity.class);
     }
 
+    /**
+     * Find TagEntity by name from database
+     *
+     * @param name TagEntity name.
+     * @return TagEntity.
+     */
     @Override
-    public TagEntity readByName(String name){
+    public TagEntity readByName(String name) {
         TypedQuery<TagEntity> query = entityManager.createQuery(WHERE_T_NAME, TagEntity.class);
-        query.setParameter("name", name);
+        query.setParameter(NAME, name);
         return query.getSingleResult();
     }
 
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     * If there are several users or tags match to the condition, all matching tags are returned.
+     *
+     * @return List with TagEntities
+     */
     @Override
     @SuppressWarnings(value = "unchecked")
-    public List<TagEntity> findMostWidelyTag(){
+    public List<TagEntity> findMostWidelyTag() {
         Query query = entityManager.createNativeQuery(MOST_WIDELY_TAG_OF_USER_WITH_HIGHEST_COST, TagEntity.class);
         return query.getResultList();
     }

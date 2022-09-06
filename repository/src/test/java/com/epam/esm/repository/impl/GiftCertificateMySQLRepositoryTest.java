@@ -44,7 +44,7 @@ class GiftCertificateMySQLRepositoryTest {
     EntityManager entityManager;
 
     @Test
-    void readAllTest() throws RepositoryException {
+    void readAllTest() {
         List<GiftCertificateEntity> gifts = giftCertificateRepository.readAll();
 
         assertEquals(5, gifts.size());
@@ -194,7 +194,7 @@ class GiftCertificateMySQLRepositoryTest {
     }
 
     @Test
-    void createGiftCertificateCheckTagsCascadeTypeTest() throws RepositoryException {
+    void createGiftCertificateCheckTagsCascadeTypeTest() {
         TestTransaction.end();
 
         GiftCertificateEntity expectedGift = getNewGiftCertificateEntity();
@@ -258,49 +258,4 @@ class GiftCertificateMySQLRepositoryTest {
     void deleteNotExistingGiftCertificateTest() {
         assertThrows(RepositoryException.class, () -> giftCertificateRepository.deleteById(111));
     }
-
-//    @Test
-//    void search1000Gifts() throws RepositoryException {
-//        CriteriaEntity cr = getNewCriteriaWithDefaultVal();
-//        long a = System.currentTimeMillis();
-//        for (int i = 0; i < 1000; i++) {
-//            giftCertificateRepository.findByCriteria(cr);
-//        }
-//        long b = System.currentTimeMillis();
-//
-//        System.out.println("total time -> " + (b - a) + " ms");
-//        System.out.println("total size -> " + cr.getTotalSize());
-//    }
-//
-//    @Test
-//    void put10000Gifts() throws RepositoryException {
-//        int maxLinkedTags = 7;
-//        Random tagSizeRand = new Random();
-//        Random r = new Random();
-//        Random randomTag = new Random();
-//
-//        for (int i = 0; i < 10000; i++) {
-//            try {
-//                List<TagEntity> tagEntities = linkGiftsAndTags(tagSizeRand.nextInt(maxLinkedTags) + 1, randomTag);
-//                repository.create(new GiftCertificateEntity(0, "name" + i, "description" + i, (double)r.nextInt(600),
-//                        r.nextInt(300), LocalDateTime.now(), LocalDateTime.now(), tagEntities));
-//            } catch (Exception ignored) {
-//            }
-//        }
-//    }
-
-
-//    private List<TagEntity> linkGiftsAndTags(int size, Random randomTag) throws RepositoryException {
-//        int totalSize = 1075;
-//        List<TagEntity> tagEntities = new ArrayList<>(size);
-//
-//        for (int i = 0; i < size; i++) {
-//            try {
-//                long id = randomTag.nextInt(totalSize);
-//                tagEntities.add(tagMySQLRepository.readOne(id));
-//            }catch (Exception ignored){
-//            }
-//        }
-//        return tagEntities;
-//    }
 }

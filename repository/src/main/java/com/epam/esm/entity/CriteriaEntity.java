@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Criteria entity object.
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Data
 @NoArgsConstructor
 public class CriteriaEntity {
@@ -21,8 +27,8 @@ public class CriteriaEntity {
         this.sorting = sorting;
     }
 
-    public void addSearchParam(String fieldName, String fieldValue){
-        if(searchParam == null){
+    public void addSearchParam(String fieldName, String fieldValue) {
+        if (searchParam == null) {
             searchParam = new HashMap<>();
         }
         searchParam.put(fieldName, fieldValue);

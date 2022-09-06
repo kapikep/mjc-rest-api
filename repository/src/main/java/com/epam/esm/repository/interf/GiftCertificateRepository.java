@@ -7,52 +7,71 @@ import com.epam.esm.repository.exception.RepositoryException;
 import java.util.List;
 
 /**
- * Repository for gift certificates
+ * Repository interface for GiftCertificateEntity
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 public interface GiftCertificateRepository {
     /**
-     * Reads all gift certificates from database
+     * Read all GiftCertificateEntities from db.
      *
-     * @return list with all GiftCertificateEntity
+     * @return list with all GiftCertificateEntities from db.
      */
-    List<GiftCertificateEntity> readAll() throws RepositoryException;
+    List<GiftCertificateEntity> readAll();
 
+    /**
+     * Read GiftCertificateEntities paginated from db
+     *
+     * @param cr CriteriaEntity with params for pagination
+     * @return List with GiftCertificateEntities
+     * @throws RepositoryException if page or size is null or less 1
+     */
     List<GiftCertificateEntity> readPaginated(CriteriaEntity cr) throws RepositoryException;
 
     /**
-     * Reads gift certificate by id from database
+     * Read GiftCertificateEntity by id from db.
      *
-     * @return list with gift GiftCertificateEntity
+     * @param id unique identifier of the entity to search for.
+     * @return GiftCertificateEntity by id.
+     * @throws RepositoryException if GiftCertificateEntity with id does not exist.
      */
     GiftCertificateEntity readById(long id) throws RepositoryException;
 
     /**
-     * Finds gift certificates by criteria map and sorted by sorting param from database
+     * Find GiftCertificateEntity by criteria map and sort by sorting param from database.
      *
-     * @param cr@return list with GiftCertificateEntity
+     * @param cr CriteriaEntity with criteria map and sorting param.
+     * @return list with GiftCertificateEntities.
+     * @throws RepositoryException if sorting field does not match GIFT_CERTIFICATE_SORT_PARAM.
+     *                             If page or size is null or less 1.
+     *                             If the page is larger than the total size of the pages.
      */
     List<GiftCertificateEntity> findByCriteria(CriteriaEntity cr) throws RepositoryException;
 
     /**
-     * Creates new gift certificate in database
+     * Create new GiftCertificateEntity in database.
      *
-     * @param giftCertificate gift certificate entity to create in db, excluding tag field
+     * @param giftCertificate GiftCertificateEntity to create in db.
+     * @throws IllegalArgumentException if instance is not an entity.
      */
-    void create(GiftCertificateEntity giftCertificate) throws RepositoryException;
+    void create(GiftCertificateEntity giftCertificate);
 
     /**
-     * Updates new gift certificate
+     * Merge GiftCertificateEntity in database.
      *
-     * @param giftCertificate gift certificate entity to update in db, excluding tag field
+     * @param giftCertificate GiftCertificateEntity to merge in db.
+     * @return the managed instance that the state was merged to.
+     * @throws IllegalArgumentException if instance is not an
+     *                                  entity or is a removed entity.
      */
-    GiftCertificateEntity merge(GiftCertificateEntity giftCertificate)  throws RepositoryException;
+    GiftCertificateEntity merge(GiftCertificateEntity giftCertificate);
 
     /**
-     * Delete gift certificate by id from database
+     * Delete GiftCertificateEntity by id in db.
      *
+     * @param id unique identifier of the gift certificate to delete.
+     * @throws IllegalArgumentException if there is no entity with this id in db.
      */
-    void deleteById(long id)  throws RepositoryException;
+    void deleteById(long id) throws RepositoryException;
 }

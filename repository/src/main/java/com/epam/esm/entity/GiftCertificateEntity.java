@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Gift certificate entity object
+ * Gift certificate entity object.
  *
  * @author Artsemi Kapitula
- * @version 1.0
+ * @version 2.0
  */
 @Data
 @NoArgsConstructor

@@ -6,52 +6,80 @@ import com.epam.esm.repository.exception.RepositoryException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 /**
- * Repository for tags
+ * Repository interface for TagEntity.
  *
- * @author Artsemi Kapitula
- * @version 1.0
+ * @author Artsemi Kapitula.
+ * @version 2.0
  */
 @Repository
 public interface TagRepository {
-    List<TagEntity> readAll() throws RepositoryException;
-
-    List<TagEntity> readPaginated(CriteriaEntity criteria) throws RepositoryException;
-
     /**
-     * Reads tag by id from database
+     * Read all TagEntities from database.
      *
-     * @return tagEntity  from database
+     * @return list with all TagEntities.
      */
+    List<TagEntity> readAll();
 
-    TagEntity readById(long id) throws RepositoryException;
     /**
-     * Reads tag by name from database
+     * Read TagEntities paginated from db.
      *
-     * @return tagEntity from database
+     * @param cr CriteriaEntity with params for pagination.
+     * @return List with TagEntities.
+     * @throws RepositoryException if page or size is null or less 1.
+     *                             If the page is larger than the total size of the pages.
+     */
+    List<TagEntity> readPaginated(CriteriaEntity cr) throws RepositoryException;
+
+    /**
+     * Read TagEntity by id from database.
+     *
+     * @param id unique identifier of the TagEntity to search for.
+     * @return TagEntity by id.
+     * @throws RepositoryException if TagEntity with id does not exist.
+     */
+    TagEntity readById(long id) throws RepositoryException;
+
+    /**
+     * Find TagEntity by name from database.
+     *
+     * @param name TagEntity name.
+     * @return TagEntity.
      */
     TagEntity readByName(String name) throws RepositoryException;
 
     /**
-     * Creates tag in database
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     * If there are several users or tags match to the condition, all matching tags are returned.
      *
-     * @param tag tagEntity to create in db
+     * @return List with TagEntities.
+     */
+    List<TagEntity> findMostWidelyTag();
+
+    /**
+     * Create new TagEntity in database.
+     *
+     * @param tag TagEntity to create in db.
+     * @throws IllegalArgumentException if instance is not an entity.
      */
     void create(TagEntity tag) throws RepositoryException;
 
     /**
-     * Updates tag in database
+     * Merge TagEntity in database.
      *
-     * @param tag tag to create in db
+     * @param tag TagEntity to merge in db.
+     * @return the managed instance that the state was merged to.
+     * @throws IllegalArgumentException if instance is not an entity or is a removed entity.
      */
     TagEntity merge(TagEntity tag) throws RepositoryException;
 
     /**
-     * Deletes tag in database
+     * Delete TagEntity by id in db.
      *
-     * @param id  id to create in db
+     * @param id unique identifier to delete from db.
+     * @throws IllegalArgumentException if there is no entity with this id  in db.
+     *                                  If tag is linked to any gift certificate
      */
     void deleteById(long id) throws RepositoryException;
-
-    List<TagEntity> findMostWidelyTag();
 }

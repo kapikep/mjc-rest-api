@@ -1,15 +1,9 @@
-package com.epam.esm.repository.constant;
+package com.epam.esm.service.constant;
 
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Constants for search param for Entities
- *
- * @author Artsemi Kapitula
- * @version 1.0
- */
-public final class SearchParam {
+public class SearchParam {
     public static final String GIFT_SEARCH_NAME = "name";
     public static final String GIFT_SEARCH_DESCRIPTION = "description";
     public static final String GIFT_SEARCH_BY_TAG_NAME = "t.name";
@@ -25,8 +19,7 @@ public final class SearchParam {
     public static final String PRICE = "price";
     public static final String DURATION = "duration";
 
-    public static final List<String> GIFT_CERTIFICATE_SEARCH_PARAM = Arrays
-            .asList(ID, GIFT_SEARCH_NAME, GIFT_SEARCH_DESCRIPTION, GIFT_SEARCH_BY_TAG_NAME);
+    public static final List<String> GIFT_CERTIFICATE_SEARCH_PARAM = Arrays.asList(ID, GIFT_SEARCH_NAME, GIFT_SEARCH_DESCRIPTION);
 
     public static final List<String> GIFT_CERTIFICATE_SORT_PARAM = Arrays.asList(ID, CREATE_DATE,
             LAST_UPDATE_DATE, NAME, DESCRIPTION, PRICE, DURATION);

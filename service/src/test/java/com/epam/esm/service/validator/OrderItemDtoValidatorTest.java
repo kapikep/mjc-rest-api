@@ -1,6 +1,5 @@
 package com.epam.esm.service.validator;
 
-import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.OrderItemDto;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +13,7 @@ public class OrderItemDtoValidatorTest {
     private Set<ConstraintViolation<OrderItemDto>> constraintViolations;
 
     @Test
-    void  onCreateOrderItemDtoValidatorTest(){
+    void onCreateOrderItemDtoValidatorTest() {
 
     }
 }

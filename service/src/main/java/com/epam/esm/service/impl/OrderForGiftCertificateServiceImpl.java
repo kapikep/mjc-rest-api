@@ -25,18 +25,39 @@ import java.util.List;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityConverting;
-import static com.epam.esm.service.util.OrderForGiftCertificateUtil.sortingValidation;
+import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateSortingValidation;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity;
 
+/**
+ * Service for OrderForGiftCertificate.
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertificateService {
-    public static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
-    public static final String ERROR_GIFT_NOT_FOUND = "error.gift.not.found";
+    private static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
+    private static final String ERROR_GIFT_NOT_FOUND = "error.gift.not.found";
+
     private final OrderForGiftCertificateRepository orderRepository;
     private final UserService userService;
     private final GiftCertificateService giftService;
 
+    /**
+     * Validate CriteriaDto.
+     * Set default value in CriteriaDto.
+     * Read OrderForGiftCertificateEntities from repository by user id.
+     * and converting it to OrderForGiftCertificateDto list.
+     * Set total size.
+     *
+     * @param userId user id to search for OrdersForGiftCertificate.
+     * @param crDto  CriteriaEntity with params for pagination.
+     * @return OrderForGiftCertificateDto list.
+     * @throws ServiceException  if page or size is null or less 1.
+     *                           If any RepositoryException or DataAccessException has occurred.
+     * @throws ValidateException if sorting field does not match ORDER_SORT_PARAM.
+     */
     @Override
     public List<OrderForGiftCertificateDto> readUserOrdersForGiftCertificatePaginated(long userId, CriteriaDto crDto)
             throws ValidateException, ServiceException {
@@ -46,12 +67,12 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
             throw new ServiceException(e.getMessage(), e, ERROR_USER_NOT_FOUND, userId);
         }
         setDefaultPageValIfEmpty(crDto);
-        sortingValidation(crDto);
+        orderForGiftCertificateSortingValidation(crDto);
         CriteriaEntity cr = criteriaDtoToEntityConverting(crDto);
         List<OrderForGiftCertificateDto> orders;
         try {
             orders = OrderForGiftCertificateUtil
-                    .orderForGiftCertificateEntityListToDtoConverting(orderRepository.getUserOrdersPaginated(userId, cr));
+                    .orderForGiftCertificateEntityListToDtoConverting(orderRepository.readUserOrdersPaginated(userId, cr));
         } catch (RepositoryException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -59,6 +80,22 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
         return orders;
     }
 
+    /**
+     * Validate OrderItemDto list fields OnCreate group.
+     * Validate customerId. It must be positive.
+     * Read user by customerId.
+     * Read gift certificate by OrderItemDto giftCertificate id field.
+     * Set giftCertificate with full data from repository to OrderItemDto.
+     * Calculate total price.
+     * Convert OrderForGiftCertificateDto to OrderForGiftCertificateEntity.
+     * Create new OrderForGiftCertificateEntity in repository.
+     *
+     * @param customerId customer id for the OrderForGiftCertificate.
+     * @param orderItems order items for the OrderForGiftCertificate.
+     * @throws ServiceException if user with this customerId does not exist in repository.
+     *                          If gift certificate does not exist in repository.
+     *                          If any IllegalArgumentException or  has occurred.
+     */
     @Override
     public OrderForGiftCertificateDto createOrderForGiftCertificate(long customerId, List<OrderItemDto> orderItems) throws ServiceException {
         OrderForGiftCertificateDto orderDto = new OrderForGiftCertificateDto();
@@ -81,7 +118,6 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
                 throw new ServiceException(e.getMessage(), e, ERROR_GIFT_NOT_FOUND, item.getGiftCertificate().getId());
             }
         }
-
         orderDto.setTotalAmount(totalAmount);
         orderDto.setOrderItems(orderItems);
         orderDto.setOrderTime(LocalDateTime.now());
@@ -89,7 +125,7 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
             OrderForGiftCertificateEntity orderEntity = orderForGiftCertificateDtoToEntityConverting(orderDto);
             orderRepository.create(orderEntity);
             updateFieldsInDtoFromEntity(orderEntity, orderDto);
-        } catch (RepositoryException | DataAccessException e) {
+        } catch (IllegalArgumentException | DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
         return orderDto;

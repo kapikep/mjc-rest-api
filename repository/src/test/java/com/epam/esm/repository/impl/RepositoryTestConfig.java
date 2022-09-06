@@ -29,7 +29,6 @@ import javax.sql.DataSource;
 @EnableAutoConfiguration
 @EntityScan(basePackages = "com.epam.esm.entity")
 public class RepositoryTestConfig {
-
 }
 
 

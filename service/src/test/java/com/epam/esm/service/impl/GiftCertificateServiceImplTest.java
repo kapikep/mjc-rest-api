@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.epam.esm.service.constant.ExceptionMes.CANNOT_ADD_OR_UPDATE_A_CHILD_ROW;
+import static com.epam.esm.service.constant.ExceptionMes.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
 import static com.epam.esm.service.dtoFactory.DtoFactory.getNewCriteriaDtoWithDefaultVal;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getGiftCertificateDtoId1;
 import static com.epam.esm.service.dtoFactory.GiftCertificateDtoFactory.getNewGiftCertificateDto;
@@ -36,11 +38,6 @@ import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.ge
 import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntity;
 import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityId1;
 import static com.epam.esm.service.entityFactory.GiftCertificateEntityFactory.getNewGiftCertificateEntityList;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.CANNOT_ADD_OR_UPDATE_A_CHILD_ROW;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.CREATE_PROBLEM;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.RESOURCE_NOT_FOUND;
-import static com.epam.esm.service.impl.GiftCertificateServiceImpl.UPDATE_PROBLEM;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.GiftCertificateUtil.giftCertificateDtoToEntityConverting;
@@ -58,7 +55,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GiftCertificateServiceImplTest {
 
-    public static final String MESSAGE = "message";
+    private static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
+    private static final String CREATE_PROBLEM = "create.problem";
+    private static final String UPDATE_PROBLEM = "update.problem";
+    private static final String MESSAGE = "message";
+    private static final String TAG = "tag";
+
     @Mock
     GiftCertificateRepository giftRepository;
 
@@ -91,7 +93,7 @@ class GiftCertificateServiceImplTest {
             verify(giftRepository).readPaginated(crEntity);
             crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
             crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
-            giftUtil.verify(() -> GiftCertificateUtil.sortingValidation(crDto));
+            giftUtil.verify(() -> GiftCertificateUtil.giftCertificateSortingValidation(crDto));
             assertEquals(giftDtoList, actualDtoList);
             assertEquals(totalSize, crDto.getTotalSize());
         }
@@ -144,7 +146,7 @@ class GiftCertificateServiceImplTest {
         CriteriaDto crDto = getNewCriteriaDtoWithDefaultVal();
         CriteriaEntity crEntity = getNewCriteriaEntityWithDefaultVal();
         Map<String, String> criteriaMap = new HashMap<>();
-        criteriaMap.put(SearchParam.GIFT_SEARCH_BY_TAG_NAME, "tag");
+        criteriaMap.put(SearchParam.GIFT_SEARCH_BY_TAG_NAME, TAG);
         crDto.setSearchParam(criteriaMap);
         crEntity.setSearchParam(criteriaMap);
 
@@ -163,7 +165,7 @@ class GiftCertificateServiceImplTest {
             verify(giftRepository).findByCriteria(crEntity);
             crUtil.verify(() -> criteriaDtoToEntityConverting(crDto));
             crUtil.verify(() -> setDefaultPageValIfEmpty(crDto));
-            giftUtil.verify(() -> GiftCertificateUtil.sortingValidation(crDto));
+            giftUtil.verify(() -> GiftCertificateUtil.giftCertificateSortingValidation(crDto));
             assertEquals(giftDtoList, actualDtoList);
             assertEquals(totalSize, crDto.getTotalSize());
 
@@ -174,7 +176,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void createGiftCertificateTest() throws RepositoryException, ValidateException, ServiceException {
+    void createGiftCertificateTest() throws ValidateException, ServiceException {
         GiftCertificateDto newDto = getNewGiftCertificateDto();
         GiftCertificateEntity newEntity = getNewGiftCertificateEntity();
 
@@ -191,7 +193,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void createGiftCertificateWithExceptionTest() throws RepositoryException {
+    void createGiftCertificateWithExceptionTest() {
         GiftCertificateDto newDto = getNewGiftCertificateDto();
         GiftCertificateEntity newEntity = getNewGiftCertificateEntity();
 
@@ -199,8 +201,8 @@ class GiftCertificateServiceImplTest {
             util.when(() -> giftCertificateDtoToEntityConverting(newDto))
                     .thenReturn(newEntity);
 
-            doThrow(new RepositoryException(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW))
-                    .doThrow(new RepositoryException(MESSAGE))
+            doThrow(new IllegalArgumentException(CANNOT_ADD_OR_UPDATE_A_CHILD_ROW))
+                    .doThrow(new IllegalArgumentException(MESSAGE))
                     .when(giftRepository).create(newEntity);
 
             ServiceException e = assertThrows(ServiceException.class,

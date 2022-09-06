@@ -8,6 +8,12 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+/**
+ * MySQL repository for UserEntity
+ *
+ * @author Artsemi Kapitula
+ * @version 1.0
+ */
 @Repository
 public class UserMySQLRepository extends AbstractMySQLRepository<UserEntity> implements UserRepository {
     public static final String USER_WITH_HIGHEST_COST = "select o.user from OrderForGiftCertificateEntity o group by o.user having sum (o.totalAmount) >=" +
@@ -17,6 +23,12 @@ public class UserMySQLRepository extends AbstractMySQLRepository<UserEntity> imp
         setClazz(UserEntity.class);
     }
 
+    /**
+     * Find user with the highest cost of all orders.
+     * If there are several users match to the condition, all matching users are returned.
+     *
+     * @return List with UserEntities.
+     */
     @Override
     public List<UserEntity> findUserWithHighestCostOfAllOrders() {
         TypedQuery<UserEntity> query = entityManager.createQuery(
