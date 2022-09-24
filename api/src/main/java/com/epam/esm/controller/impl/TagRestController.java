@@ -27,6 +27,14 @@ import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 
+import static com.epam.esm.controller.constant.EndPoints.ID;
+import static com.epam.esm.controller.constant.EndPoints.MOST_WIDELY;
+import static com.epam.esm.controller.constant.EndPoints.TAGS;
+import static com.epam.esm.controller.constant.Constant.NAME;
+import static com.epam.esm.controller.constant.Constant.PAGE;
+import static com.epam.esm.controller.constant.Constant.SIZE;
+import static com.epam.esm.controller.constant.Constant.SORT;
+import static com.epam.esm.controller.util.ControllerUtil.idInBodyValidation;
 import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
 
 /**
@@ -37,7 +45,7 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tags")
+@RequestMapping(TAGS)
 public class TagRestController {
     private final TagService tagService;
     private final MessageSource messageSource;
@@ -59,10 +67,10 @@ public class TagRestController {
      */
     @GetMapping
     public PagedModel<TagDto> readTags(
-            @RequestParam(required = false, name = "name") String name,
-            @RequestParam(required = false, name = "page") Integer page,
-            @RequestParam(required = false, name = "size") Integer size,
-            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+            @RequestParam(required = false, name = NAME) String name,
+            @RequestParam(required = false, name = PAGE) Integer page,
+            @RequestParam(required = false, name = SIZE) Integer size,
+            @RequestParam(required = false, name = SORT) String sort) throws ValidateException, ServiceException {
         List<TagDto> tags;
 
         CriteriaDto cr = new CriteriaDto();
@@ -91,7 +99,7 @@ public class TagRestController {
      *
      * @return List with TagDto.
      */
-    @GetMapping("most-widely")
+    @GetMapping(MOST_WIDELY)
     public List<TagDto> getMostWidelyTag() {
         List<TagDto> tags = tagService.getMostWidelyTag();
         tags.forEach(tag -> tag.add(getSelfLink(TagRestController.class, tag.getId())));
@@ -107,7 +115,7 @@ public class TagRestController {
      * @throws ServiceException             if TagDto with id does not exist.
      * @throws ConstraintViolationException if id is not positive.
      */
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public TagDto readTag(@PathVariable long id) throws ServiceException {
         TagDto tag = tagService.readTagById(id);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
@@ -120,12 +128,15 @@ public class TagRestController {
      *
      * @param tag TagDto to create.
      * @return Created TagDto
-     * @throws ServiceException             TagDto tag name is not unique.
-     * @throws ConstraintViolationException if TagDto fields is constraint violation.
+     * @throws ConstraintViolationException if TagDto fields is constraint violation
+     * @throws ValidateException            if id is in request body.
+     * @throws ServiceException             if tag name is not unique.
+     *                                      If there is a problem with creating tag.
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public TagDto crateTag(@RequestBody TagDto tag) throws ServiceException {
+    public TagDto crateTag(@RequestBody TagDto tag) throws ServiceException, ValidateException {
+        idInBodyValidation(tag.getId());
         tagService.createTag(tag);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
         return tag;
@@ -135,17 +146,18 @@ public class TagRestController {
      * Update TagDto
      * Add self links to TagDto.
      *
-     * @param id TagDto id.
+     * @param id  TagDto id.
      * @param tag TagDto to update
      * @return Updated TagDto
-     * @throws ServiceException             if tag name is not unique.
      * @throws ConstraintViolationException if TagDto fields is constraint violation
+     * @throws ValidateException            if id is in request body.
      * @throws ServiceException             if tag name is not unique.
      *                                      If there is a problem with updating tag.
      */
-    @PutMapping("/{id}")
+    @PutMapping(ID)
     public TagDto updateTag(@PathVariable long id,
-                            @RequestBody TagDto tag) throws ServiceException {
+                            @RequestBody TagDto tag) throws ServiceException, ValidateException {
+        idInBodyValidation(tag.getId());
         tag.setId(id);
         tagService.updateTag(tag);
         tag.add(getSelfLink(TagRestController.class, tag.getId()));
@@ -160,7 +172,7 @@ public class TagRestController {
      * @throws ServiceException if tag with this id does not exist in repository.
      *                          If tag is linked to any gift certificate.
      */
-    @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
+    @DeleteMapping(value = ID, produces = "text/plain;charset=UTF-8")
     public String deleteTag(@PathVariable Long id) throws ServiceException {
         tagService.deleteTagById(id);
         return messageSource.getMessage("tag.deleted", new Object[]{id}, LocaleContextHolder.getLocale());

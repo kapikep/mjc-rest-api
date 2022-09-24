@@ -22,8 +22,4 @@ public class RepositoryException extends Exception {
     public RepositoryException(Throwable cause) {
         super(cause);
     }
-
-    protected RepositoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

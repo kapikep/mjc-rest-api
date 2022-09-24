@@ -32,7 +32,7 @@ public class TagMySQLRepository extends AbstractMySQLRepository<TagEntity> imple
             "      where user_id in (select user_id" +
             "                        from orders_for_gift_certificates" +
             "                        group by user_id" +
-            "                        having SUM(total_amount) >= ALL (select SUM(total_amount) as sum" +
+            "                        having SUM(total_amount) >= ALL(select SUM(total_amount)" +
             "                                                         from orders_for_gift_certificates" +
             "                                                         group by user_id))" +
             "      group by user_id, t.id) as `inner`" +

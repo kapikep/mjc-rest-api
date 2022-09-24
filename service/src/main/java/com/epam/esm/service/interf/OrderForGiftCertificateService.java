@@ -37,6 +37,8 @@ public interface OrderForGiftCertificateService {
     List<OrderForGiftCertificateDto> readUserOrdersForGiftCertificatePaginated(@Positive long userId,
                                                                                @Valid CriteriaDto crDto) throws ValidateException, ServiceException;
 
+    OrderForGiftCertificateDto readOrderForGiftCertificateById(long id) throws ServiceException;
+
     /**
      * Validate OrderItemDto list fields OnCreate group.
      * Validate customerId. It must be positive.

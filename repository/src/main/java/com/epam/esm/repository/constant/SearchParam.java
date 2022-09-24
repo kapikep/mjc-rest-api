@@ -28,8 +28,7 @@ public final class SearchParam {
     public static final List<String> GIFT_CERTIFICATE_SEARCH_PARAM = Arrays
             .asList(ID, GIFT_SEARCH_NAME, GIFT_SEARCH_DESCRIPTION, GIFT_SEARCH_BY_TAG_NAME);
 
-    public static final List<String> GIFT_CERTIFICATE_SORT_PARAM = Arrays.asList(ID, CREATE_DATE,
-            LAST_UPDATE_DATE, NAME, DESCRIPTION, PRICE, DURATION);
+    public static final List<String> GIFT_CERTIFICATE_SORT_PARAM = Arrays.asList(ID, NAME, DESCRIPTION, PRICE, DURATION);
     public static final List<String> TAG_SORT_PARAM = Arrays.asList(ID, NAME);
     public static final List<String> USER_SORT_PARAM = Arrays.asList(ID, FIRST_NAME, SECOND_NAME);
     public static final List<String> ORDER_SORT_PARAM = Arrays.asList(ID, TOTAL_AMOUNT);

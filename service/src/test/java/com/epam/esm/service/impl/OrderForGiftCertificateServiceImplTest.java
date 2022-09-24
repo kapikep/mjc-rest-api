@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.CriteriaDto;
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.OrderForGiftCertificateDto;
 import com.epam.esm.dto.OrderItemDto;
 import com.epam.esm.dto.UserDto;
@@ -181,6 +182,35 @@ class OrderForGiftCertificateServiceImplTest {
                 .thenReturn(getNewGiftCertificateDtoId2());
         when(giftService.readGiftCertificateById(orderItemDtoId7.getGiftCertificate().getId()))
                 .thenReturn(getNewGiftCertificateDtoId3());
+
+        try (MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
+            orderUtil.when(() -> orderForGiftCertificateDtoToEntityConverting(any())).thenReturn(getNewOrderForGiftCertificateEntityId1());
+            OrderForGiftCertificateDto actualOrderDto = orderService.createOrderForGiftCertificate(anyLong(), orderItems);
+            assertEquals(expectedTotalAmount, actualOrderDto.getTotalAmount());
+        }
+    }
+
+    @Test
+    void createOrderForGiftCertificateTotalAmount2Test() throws ServiceException {
+        BigDecimal expectedTotalAmount = new BigDecimal("343.42");
+        OrderItemDto orderItemDtoId1 = getNewOrderItemDtoId1();
+        OrderItemDto orderItemDtoId3 = getNewOrderItemDtoId3();
+        List<OrderItemDto> orderItems = Stream.of(orderItemDtoId1, orderItemDtoId3)
+                .collect(Collectors.toList());
+
+        orderItemDtoId1.setQuantity(11);
+        orderItemDtoId3.setQuantity(11);
+
+        GiftCertificateDto giftCertificateDtoId1 = getNewGiftCertificateDtoId1();
+        GiftCertificateDto giftCertificateDtoId5 = getNewGiftCertificateDtoId5();
+
+        giftCertificateDtoId1.setPrice(20.11);
+        giftCertificateDtoId5.setPrice(11.11);
+
+        when(giftService.readGiftCertificateById(orderItemDtoId1.getGiftCertificate().getId()))
+                .thenReturn(giftCertificateDtoId1);
+        when(giftService.readGiftCertificateById(orderItemDtoId3.getGiftCertificate().getId()))
+                .thenReturn(giftCertificateDtoId5);
 
         try (MockedStatic<OrderForGiftCertificateUtil> orderUtil = Mockito.mockStatic(OrderForGiftCertificateUtil.class)) {
             orderUtil.when(() -> orderForGiftCertificateDtoToEntityConverting(any())).thenReturn(getNewOrderForGiftCertificateEntityId1());

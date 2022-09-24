@@ -76,7 +76,7 @@ class OrderForGiftCertificateMySQLRepositoryTest {
     }
 
     @Test
-    void readAllOrdersPaginatedWithExceptionTest(){
+    void readAllOrdersPaginatedWithExceptionTest() {
         CriteriaEntity cr = new CriteriaEntity(3, 5, "id");
 
         RepositoryException e = assertThrows(RepositoryException.class, () -> orderRepository.readPaginated(cr));

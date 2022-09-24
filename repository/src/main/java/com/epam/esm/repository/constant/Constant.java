@@ -1,6 +1,6 @@
 package com.epam.esm.repository.constant;
 
-public class Constant {
+public final class Constant {
     public static final String PLUS = "+";
     public static final String MINUS = "-";
     public static final String SPACE = " ";
@@ -19,6 +19,7 @@ public class Constant {
     public static final String COLON = ":";
     public static final String DOT = ".";
     public static final String LEFT_SQUARE_BRACKET = "[";
+    public static final String RIGHT_SQUARE_BRACKET = "]";
     public static final String GIFT_CERTIFICATES = "gift-certificates";
     public static final String ORDERS = "orders";
     public static final String TAG = "tag";

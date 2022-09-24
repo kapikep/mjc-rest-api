@@ -26,6 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
+import static com.epam.esm.controller.constant.Constant.DESCRIPTION;
+import static com.epam.esm.controller.constant.Constant.NAME;
+import static com.epam.esm.controller.constant.Constant.PAGE;
+import static com.epam.esm.controller.constant.Constant.SIZE;
+import static com.epam.esm.controller.constant.Constant.SORT;
+import static com.epam.esm.controller.constant.Constant.TAG;
+import static com.epam.esm.controller.constant.EndPoints.GIFT_CERTIFICATES;
+import static com.epam.esm.controller.constant.EndPoints.ID;
+import static com.epam.esm.controller.util.ControllerUtil.idInBodyValidation;
 import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink;
 
 /**
@@ -36,7 +45,7 @@ import static com.epam.esm.controller.util.PaginationUtil.addGiftCertificateLink
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/gift-certificates")
+@RequestMapping(GIFT_CERTIFICATES)
 public class GiftCertificateRestController {
     private final GiftCertificateService giftCertificateService;
     private final MessageSource messageSource;
@@ -59,12 +68,12 @@ public class GiftCertificateRestController {
      */
     @GetMapping
     public PagedModel<GiftCertificateDto> findGiftCertificateByParams(
-            @RequestParam(required = false, name = "tag") String tagName,
-            @RequestParam(required = false, name = "name") String name,
-            @RequestParam(required = false, name = "description") String description,
-            @RequestParam(required = false, name = "page") Integer page,
-            @RequestParam(required = false, name = "size") Integer size,
-            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+            @RequestParam(required = false, name = TAG) String tagName,
+            @RequestParam(required = false, name = NAME) String name,
+            @RequestParam(required = false, name = DESCRIPTION) String description,
+            @RequestParam(required = false, name = PAGE) Integer page,
+            @RequestParam(required = false, name = SIZE) Integer size,
+            @RequestParam(required = false, name = SORT) String sort) throws ValidateException, ServiceException {
         CriteriaDto cr = new CriteriaDto();
         List<GiftCertificateDto> gifts;
         cr.setPage(page);
@@ -100,7 +109,7 @@ public class GiftCertificateRestController {
      * @throws ServiceException             if TagDto with id does not exist.
      * @throws ConstraintViolationException if id is not positive.
      */
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public GiftCertificateDto readGiftCertificate(@PathVariable long id) throws ServiceException {
         GiftCertificateDto gift = giftCertificateService.readGiftCertificateById(id);
         addGiftCertificateLink(gift);
@@ -114,11 +123,13 @@ public class GiftCertificateRestController {
      * @param gift GiftCertificateDto to create.
      * @return Created GiftCertificateDto.
      * @throws ConstraintViolationException if GiftCertificateDto fields is constraint violation.
-     * @throws ServiceException if there is problem with creating gift certificate.
+     * @throws ValidateException            if id is in request body.
+     * @throws ServiceException             if there is problem with creating gift certificate.
      */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto gift) throws ServiceException {
+    public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificateDto gift) throws ServiceException, ValidateException {
+        idInBodyValidation(gift.getId());
         giftCertificateService.createGiftCertificate(gift);
         addGiftCertificateLink(gift);
         return gift;
@@ -132,12 +143,14 @@ public class GiftCertificateRestController {
      * @param gift GiftCertificateDto to update.
      * @return Updated GiftCertificateDto.
      * @throws ConstraintViolationException if GiftCertificateDto fields is constraint violation
+     * @throws ValidateException            if id is in request body.
      * @throws ServiceException             if entity with this id does not exist.
      *                                      If there is a problem with updating gift certificate.
      */
-    @PatchMapping("/{id}")
+    @PatchMapping(ID)
     public GiftCertificateDto updateGiftCertificate(@PathVariable long id,
-                                                    @RequestBody GiftCertificateDto gift) throws ServiceException {
+                                                    @RequestBody GiftCertificateDto gift) throws ServiceException, ValidateException {
+        idInBodyValidation(gift.getId());
         gift.setId(id);
         giftCertificateService.updateGiftCertificate(gift);
         addGiftCertificateLink(gift);
@@ -151,7 +164,7 @@ public class GiftCertificateRestController {
      * @return informational message about success
      * @throws ServiceException if gift certificate with this id does not exist in repository.
      */
-    @DeleteMapping(value = "/{id}", produces = "text/plain;charset=UTF-8")
+    @DeleteMapping(value = ID, produces = "text/plain;charset=UTF-8")
     public String deleteGiftCertificate(@PathVariable long id) throws ServiceException {
         giftCertificateService.deleteGiftCertificateById(id);
         return messageSource.getMessage("gift.certificate.deleted", new Object[]{id}, LocaleContextHolder.getLocale());

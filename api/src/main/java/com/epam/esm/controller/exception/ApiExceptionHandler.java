@@ -4,6 +4,7 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidateException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.hibernate.validator.internal.engine.path.NodeImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.context.MessageSource;
@@ -27,7 +28,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.repository.constant.Constant.COLON;
@@ -35,6 +38,7 @@ import static com.epam.esm.repository.constant.Constant.DOT;
 import static com.epam.esm.repository.constant.Constant.GIFT_CERTIFICATES;
 import static com.epam.esm.repository.constant.Constant.LEFT_SQUARE_BRACKET;
 import static com.epam.esm.repository.constant.Constant.ORDERS;
+import static com.epam.esm.repository.constant.Constant.RIGHT_SQUARE_BRACKET;
 import static com.epam.esm.repository.constant.Constant.SPACE;
 import static com.epam.esm.repository.constant.Constant.TAG;
 import static com.epam.esm.repository.constant.Constant.USERS;
@@ -74,13 +78,15 @@ public class ApiExceptionHandler {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException();
         Throwable tr = e.getCause();
+
         if (tr != null) {
-            resMes = e.getCause().getMessage();
+            resMes = tr.getMessage();
 
             if (tr instanceof InvalidFormatException) {
-                InvalidFormatException inv = (InvalidFormatException) tr;
-                JsonMappingException.Reference ref = inv.getPath().get(0);
-                resMes = ref.getFieldName() + COLON + getMessageForParse(inv.getTargetType());
+                resMes = handleInvalidFormatException(resMes, (InvalidFormatException) tr);
+            } else if (tr instanceof MismatchedInputException) {
+                MismatchedInputException mismatchedInputException = (MismatchedInputException) tr;
+                resMes = mismatchedInputException.getOriginalMessage();
             }
         } else {
             resMes = e.getMessage();
@@ -96,11 +102,6 @@ public class ApiExceptionHandler {
         apiException.setErrorMessage(resMes);
 
         return new ResponseEntity<>(apiException, httpStatus);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiException> handleNullPointerException(NullPointerException e) {
-        return null;
     }
 
     /**
@@ -352,5 +353,22 @@ public class ApiExceptionHandler {
         return source.getMessage(MUST_BE_WITH, null, LocaleContextHolder.getLocale()) +
                 SPACE + lowCaseClassName + SPACE +
                 source.getMessage(WORD_SIZE, null, LocaleContextHolder.getLocale());
+    }
+
+    private String handleInvalidFormatException(String resMes, InvalidFormatException tr) {
+        List<JsonMappingException.Reference> pathList = tr.getPath();
+
+        Optional<JsonMappingException.Reference> ref = pathList.stream()
+                .filter(path1 -> path1.getFieldName() != null).findFirst();
+        if(ref.isPresent()){
+            String field = ref.get().getFieldName();
+            Optional<JsonMappingException.Reference> i = tr.getPath().stream()
+                    .filter(path -> path.getIndex() >= 0).findFirst();
+            if (i.isPresent()){
+                field += DOT + LEFT_SQUARE_BRACKET + i.get().getIndex() + RIGHT_SQUARE_BRACKET;
+            }
+            resMes = field + COLON + getMessageForParse(tr.getTargetType());
+        }
+        return resMes;
     }
 }

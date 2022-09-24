@@ -48,7 +48,7 @@ public class PaginationUtil {
         return linkTo(controller).slash(id).withSelfRel();
     }
 
-    public static Link getUserOrderLink(long userId, long orderId) {
+    public static Link getUserOrderLink(long userId) {
         return linkTo(UserRestController.class).slash(userId).slash("orders").withSelfRel();
     }
 

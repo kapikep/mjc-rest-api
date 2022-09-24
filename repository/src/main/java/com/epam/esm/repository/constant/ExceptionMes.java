@@ -1,6 +1,6 @@
 package com.epam.esm.repository.constant;
 
-public class ExceptionMes {
+public final class ExceptionMes {
     public static final String INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0 = "Incorrect result size: expected 1, actual 0";
     public static final String ZERO_UPDATED_ROWS = "0 updated rows";
     public static final String NO_ENTITY_FOUND_FOR_QUERY = "No entity found for query";

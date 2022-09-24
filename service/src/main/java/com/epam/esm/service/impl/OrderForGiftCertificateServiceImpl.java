@@ -25,6 +25,7 @@ import java.util.List;
 import static com.epam.esm.service.util.CriteriaUtil.criteriaDtoToEntityConverting;
 import static com.epam.esm.service.util.CriteriaUtil.setDefaultPageValIfEmpty;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateDtoToEntityConverting;
+import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateEntityToDtoConverting;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.orderForGiftCertificateSortingValidation;
 import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFieldsInDtoFromEntity;
 
@@ -39,6 +40,7 @@ import static com.epam.esm.service.util.OrderForGiftCertificateUtil.updateFields
 public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertificateService {
     private static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
     private static final String ERROR_GIFT_NOT_FOUND = "error.gift.not.found";
+    private static final String ERROR_RESOURCE_NOT_FOUND = "error.resource.not.found";
 
     private final OrderForGiftCertificateRepository orderRepository;
     private final UserService userService;
@@ -78,6 +80,28 @@ public class OrderForGiftCertificateServiceImpl implements OrderForGiftCertifica
         }
         crDto.setTotalSize(cr.getTotalSize());
         return orders;
+    }
+
+    /**
+     * Validate id.
+     * Read TagEntity by id from repository and convert it to TagDto.
+     *
+     * @param id unique identifier of the tag to search for.
+     * @return TagDto by id.
+     * @throws ServiceException if TagEntity with id does not exist.
+     *                          If any RepositoryException or DataAccessException has occurred.
+     */
+    @Override
+    public OrderForGiftCertificateDto readOrderForGiftCertificateById(long id) throws ServiceException {
+        OrderForGiftCertificateDto orderDto;
+        try {
+            orderDto = orderForGiftCertificateEntityToDtoConverting(orderRepository.readById(id));
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage(), e, ERROR_RESOURCE_NOT_FOUND, id);
+        } catch (DataAccessException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+        return orderDto;
     }
 
     /**

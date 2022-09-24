@@ -24,7 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
+import static com.epam.esm.controller.constant.EndPoints.CUSTOMER_ID;
+import static com.epam.esm.controller.constant.EndPoints.ID;
+import static com.epam.esm.controller.constant.EndPoints.ORDERS;
+import static com.epam.esm.controller.constant.Constant.PAGE;
+import static com.epam.esm.controller.constant.Constant.SIZE;
+import static com.epam.esm.controller.constant.Constant.SORT;
+import static com.epam.esm.controller.constant.EndPoints.USERS;
+import static com.epam.esm.controller.util.ControllerUtil.idInBodyValidation;
 import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
+import static com.epam.esm.controller.util.PaginationUtil.getUserOrderLink;
 
 /**
  * Handles requests to /users url
@@ -34,14 +43,14 @@ import static com.epam.esm.controller.util.PaginationUtil.getSelfLink;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping(USERS)
 public class UserRestController {
     private final UserService userService;
     private final OrderForGiftCertificateService orderService;
 
     /**
      * Read UserDto paginated.
-     * Add self links to UserDto.
+     * Add self links to UserDto and to user orders.
      * Add pagination information.
      *
      * @param page page to read. The parameter is optional. Default value 1.
@@ -54,9 +63,9 @@ public class UserRestController {
      * @throws ValidateException if sorting field does not match USER_SORT_PARAM.
      */
     @GetMapping
-    public PagedModel<UserDto> readUsersPaginated(@RequestParam(required = false, name = "page") Integer page,
-                                                  @RequestParam(required = false, name = "size") Integer size,
-                                                  @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+    public PagedModel<UserDto> readUsersPaginated(@RequestParam(required = false, name = PAGE) Integer page,
+                                                  @RequestParam(required = false, name = SIZE) Integer size,
+                                                  @RequestParam(required = false, name = SORT) String sort) throws ValidateException, ServiceException {
         CriteriaDto cr = new CriteriaDto();
         cr.setPage(page);
         cr.setSize(size);
@@ -64,7 +73,8 @@ public class UserRestController {
 
         List<UserDto> dtoList = userService.readUsersPaginated(cr);
 
-        dtoList.forEach(dto -> dto.add(getSelfLink(UserRestController.class, dto.getId())));
+        dtoList.forEach(dto ->
+                dto.add(getSelfLink(UserRestController.class, dto.getId()), getUserOrderLink(dto.getId())));
 
         PagedModel<UserDto> pagedModel = PaginationUtil.createPagedModel(dtoList, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
@@ -85,25 +95,27 @@ public class UserRestController {
      * @throws ServiceException             if sorting field does not match ORDER_SORT_PARAM.
      * @throws ConstraintViolationException if customerId is not positive.
      */
-    @GetMapping(value = "/{customerId}/orders")
+    @GetMapping(value = CUSTOMER_ID + ORDERS)
     public PagedModel<OrderForGiftCertificateDto> readUserOrdersForGiftCertificatePaginated(@PathVariable long customerId,
-                                                                                            @RequestParam(required = false, name = "page") Integer page,
-                                                                                            @RequestParam(required = false, name = "size") Integer size,
-                                                                                            @RequestParam(required = false, name = "sort") String sort) throws ValidateException, ServiceException {
+                                                                                            @RequestParam(required = false, name = PAGE) Integer page,
+                                                                                            @RequestParam(required = false, name = SIZE) Integer size,
+                                                                                            @RequestParam(required = false, name = SORT) String sort) throws ValidateException, ServiceException {
         CriteriaDto cr = new CriteriaDto();
         cr.setPage(page);
         cr.setSize(size);
         cr.setSorting(sort);
-        List<OrderForGiftCertificateDto> order = orderService.readUserOrdersForGiftCertificatePaginated(customerId, cr);
+        List<OrderForGiftCertificateDto> orders = orderService.readUserOrdersForGiftCertificatePaginated(customerId, cr);
 
-        PagedModel<OrderForGiftCertificateDto> pagedModel = PaginationUtil.createPagedModel(order, cr);
+        orders.forEach(order -> order.getOrderItems().forEach(items -> items.getGiftCertificate()
+                .add(getSelfLink(GiftCertificateRestController.class, items.getGiftCertificate().getId()))));
+        PagedModel<OrderForGiftCertificateDto> pagedModel = PaginationUtil.createPagedModel(orders, cr);
         PaginationUtil.addPaginationLinks(pagedModel);
         return pagedModel;
     }
 
     /**
      * Read UserDto by id.
-     * Add self links to the user.
+     * Add self links to UserDto and to user orders.
      *
      * @param id id of user to search for.
      * @return UserDto by id.
@@ -111,10 +123,10 @@ public class UserRestController {
      *                                      If any RepositoryException or DataAccessException has occurred.
      * @throws ConstraintViolationException if id is not positive.
      */
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public UserDto readUser(@PathVariable long id) throws ServiceException {
         UserDto dto = userService.readUserById(id);
-        dto.add(getSelfLink(UserRestController.class, dto.getId()));
+        dto.add(getSelfLink(UserRestController.class, dto.getId()), getUserOrderLink(dto.getId()));
         return dto;
     }
 
@@ -128,12 +140,15 @@ public class UserRestController {
      *                                      If gift certificate does not exist in repository.
      *                                      If any IllegalArgumentException or has occurred.
      * @throws ConstraintViolationException if customerId is not positive.
+     * @throws ValidateException            if id is in request body.
      */
-    @PostMapping(value = "/{customerId}/orders")
+    @PostMapping(value = CUSTOMER_ID + ORDERS)
     @ResponseStatus(code = HttpStatus.CREATED)
     public OrderForGiftCertificateDto createOrder(@PathVariable long customerId,
-                                                  @RequestBody List<OrderItemDto> items) throws ServiceException {
-
+                                                  @RequestBody List<OrderItemDto> items) throws ServiceException, ValidateException {
+        for (OrderItemDto item : items) {
+            idInBodyValidation(item.getId());
+        }
         return orderService.createOrderForGiftCertificate(customerId, items);
     }
 }

@@ -13,6 +13,7 @@ import com.epam.esm.service.interf.TagService;
 import com.epam.esm.service.util.GiftCertificateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final String RESOURCE_NOT_FOUND = "error.resource.not.found";
     private static final String CREATE_PROBLEM = "create.problem";
     private static final String UPDATE_PROBLEM = "update.problem";
+    private static final String ERROR_TAG_LINKED = "error.gift.certificate.linked";
 
     private final GiftCertificateRepository giftCertificateRepository;
     private final TagService tagService;
@@ -166,10 +168,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void updateGiftCertificate(GiftCertificateDto giftDto) throws ServiceException {
         try {
-            GiftCertificateEntity entityFromDb = giftCertificateRepository
-                    .readById(giftDto.getId());
+            GiftCertificateEntity entityFromDb = giftCertificateRepository.readById(giftDto.getId());
             tagService.setIdOrCreateTags(giftDto.getTags());
             updateNonNullFieldsFromDtoToEntity(giftDto, entityFromDb);
+            giftCertificateRepository.merge(entityFromDb);
             updateFieldsInDtoFromEntity(entityFromDb, giftDto);
             giftDto.setLastUpdateDate(LocalDateTime.now());
         } catch (RepositoryException | IllegalArgumentException e) {
@@ -197,6 +199,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificateRepository.deleteById(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage(), e, RESOURCE_NOT_FOUND, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException(e.getMessage(), e, ERROR_TAG_LINKED);
         }
     }
 }

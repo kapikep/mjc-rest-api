@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -186,11 +185,11 @@ public class TagServiceImpl implements TagService {
      *                          If any RepositoryException or DataAccessException has occurred.
      */
     @Override
-    @Transactional
     public void updateTag(TagDto tagDto) throws ServiceException {
         try {
             TagEntity entityFromDb = tagRepository.readById(tagDto.getId());
             updateFieldsInEntityFromDto(tagDto, entityFromDb);
+            tagRepository.merge(entityFromDb);
         } catch (RepositoryException | DataAccessException e) {
             String mes = e.getMessage();
             if (mes != null && mes.contains(INCORRECT_RESULT_SIZE_EXPECTED_1_ACTUAL_0)) {
